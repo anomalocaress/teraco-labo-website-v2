@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EmailJS設定更新ツール - TERACO.LABO</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Hiragino Sans', 'Yu Gothic', 'Meiryo', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 24px;
+            padding: 3rem;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            color: #667eea;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .warning {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            color: #856404;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        input[type="text"] {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+        
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .update-btn {
+            background: #667eea;
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 2rem;
+        }
+        
+        .update-btn:hover {
+            background: #5a6fd8;
+        }
+        
+        .result {
+            margin-top: 2rem;
+            padding: 1rem;
+            border-radius: 8px;
+            display: none;
+        }
+        
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .step {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>EmailJS設定更新ツール</h1>
+        
+        <div class="warning">
+            <strong>⚠️ 重要:</strong> このツールはEmailJS設定完了後に使用してください。<br>
+            設定手順書（EMAILJS_SETUP_STEP_BY_STEP.md）を参照して、EmailJSアカウント作成とテンプレート設定を完了してください。
+        </div>
+        
+        <div class="step">
+            <h3>ステップ1: EmailJS設定値を入力</h3>
+            <p>EmailJSダッシュボードから以下の値をコピーして入力してください。</p>
+        </div>
+        
+        <form id="configForm">
+            <div class="form-group">
+                <label for="publicKey">Public Key (例: user_abc123def456)</label>
+                <input type="text" id="publicKey" name="publicKey" placeholder="EmailJSのPublic Keyを入力" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="serviceId">Service ID (例: service_gmail123)</label>
+                <input type="text" id="serviceId" name="serviceId" placeholder="GmailサービスのIDを入力" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="adminTemplateId">管理者用Template ID (例: template_admin456)</label>
+                <input type="text" id="adminTemplateId" name="adminTemplateId" placeholder="管理者通知テンプレートのIDを入力" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="userTemplateId">ユーザー用Template ID (例: template_user789)</label>
+                <input type="text" id="userTemplateId" name="userTemplateId" placeholder="ユーザー自動返信テンプレートのIDを入力" required>
+            </div>
+            
+            <button type="submit" class="update-btn">設定値を生成</button>
+        </form>
+        
+        <div id="result" class="result">
+            <h3>生成された設定コード</h3>
+            <p>以下のコードをコピーして、各フォームファイルに適用してください：</p>
+            <pre id="generatedCode" style="background: #f8f9fa; padding: 1rem; border-radius: 8px; overflow-x: auto;"></pre>
+            
+            <div class="step">
+                <h4>適用方法:</h4>
+                <ol>
+                    <li>general-contact-form.htmlを開く</li>
+                    <li>テストモードのコメントアウトを解除</li>
+                    <li>YOUR_XXX部分を上記の値に置き換え</li>
+                    <li>同様に他のフォームも更新</li>
+                    <li>GitHubにプッシュ</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.getElementById('configForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const publicKey = document.getElementById('publicKey').value;
+            const serviceId = document.getElementById('serviceId').value;
+            const adminTemplateId = document.getElementById('adminTemplateId').value;
+            const userTemplateId = document.getElementById('userTemplateId').value;
+            
+            const code = `// EmailJS設定値
+emailjs.init("${publicKey}");
+
+// 管理者宛メール送信
+emailjs.send('${serviceId}', '${adminTemplateId}', formData)
+    .then(function(response) {
+        console.log('Admin email sent successfully');
+        // ユーザー宛自動返信送信
+        return emailjs.send('${serviceId}', '${userTemplateId}', {
+            to_email: formData.email,
+            to_name: formData.name,
+            form_type: formData.form_type
+        });
+    })
+    .then(function(response) {
+        responseMessage.innerHTML = '<div class="success-message">お問い合わせありがとうございます。確認メールをお送りしました。24時間以内にご連絡いたします。</div>';
+        document.getElementById('contactForm').reset();
+        // Reset checkboxes
+        document.querySelectorAll('.checkbox-item').forEach(item => {
+            item.classList.remove('selected');
+        });
+    })
+    .catch(function(error) {
+        console.log('Email send failed:', error);
+        responseMessage.innerHTML = '<div class="error-message">送信に失敗しました。お手数ですが、直接お電話でお問い合わせください。<br>TEL: 090-6738-1465</div>';
+    });`;
+            
+            document.getElementById('generatedCode').textContent = code;
+            document.getElementById('result').style.display = 'block';
+            document.getElementById('result').className = 'result success';
+        });
+    </script>
+</body>
+</html>
