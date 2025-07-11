@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>スマホ教室 お問い合わせフォーム - TERACO.LABO</title>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -362,13 +363,13 @@
         </div>
     </main>
 
-    <!-- EmailJS SDK -->
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-    
     <script>
         // EmailJS初期化
-        (function(){
-            emailjs.init("YOUR_PUBLIC_KEY"); // This will be replaced with actual key
+        (function() {
+            emailjs.init({
+                publicKey: "zcA2Cp6c3OstOeY5o"
+            });
+            console.log("EmailJS初期化完了");
         })();
 
         // プラン選択の視覚的フィードバック
@@ -424,16 +425,13 @@
                     form_type: 'スマホ教室お問い合わせ'
                 };
                 
-                // Send to admin
-                await emailjs.send('YOUR_SERVICE_ID', 'YOUR_ADMIN_TEMPLATE_ID', formData);
-                console.log('Admin email sent successfully');
+                // 1. 管理者宛メール送信
+                await emailjs.send('TERACO_Gmail', 'template_6838gcg', formData);
+                console.log('管理者メール送信成功');
                 
-                // Send auto-reply to user
-                await emailjs.send('YOUR_SERVICE_ID', 'YOUR_USER_TEMPLATE_ID', {
-                    to_email: formData.email,
-                    to_name: formData.name,
-                    form_type: formData.form_type
-                });
+                // 2. ユーザー自動返信メール送信
+                await emailjs.send('TERACO_Gmail', 'template_ww2xoao', formData);
+                console.log('ユーザー自動返信メール送信成功');
                 
                 // 成功メッセージを表示
                 responseMessage.innerHTML = `
