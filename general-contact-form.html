@@ -471,8 +471,9 @@
                     });
                 })
                 .catch(function(error) {
-                    console.log('メール送信失敗:', error);
-                    responseMessage.innerHTML = '<div class="error-message">送信に失敗しました。お手数ですが、直接お電話でお問い合わせください。<br>TEL: 090-6738-1469</div>';
+                    console.error('メール送信失敗:', error);
+                    console.error('エラー詳細:', JSON.stringify(error));
+                    responseMessage.innerHTML = '<div class="error-message">送信に失敗しました。お手数ですが、直接お電話でお問い合わせください。<br>TEL: 090-6738-1469<br><small>エラー: ' + error.text + '</small></div>';
                 });
             
             // Always restore button state
