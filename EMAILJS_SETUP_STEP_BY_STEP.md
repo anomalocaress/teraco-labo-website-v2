@@ -73,7 +73,7 @@ TERACO.LABO 自動通知システム
 
 お急ぎの場合は、以下までお気軽にご連絡ください。
 
-TEL: 090-6738-1465
+TEL: 090-6738-1469
 Email: smart.teraco@gmail.com
 LINE: https://lin.ee/tkYJ7Cw
 
@@ -81,7 +81,7 @@ LINE: https://lin.ee/tkYJ7Cw
 
 TERACO.LABO
 〒881-0037 宮崎県西都市大字三宅9437-9
-TEL: 090-6738-1465
+TEL: 090-6738-1469
 Web: https://anomalocaress.github.io/teraco-labo-website-v2/
 ```
 
