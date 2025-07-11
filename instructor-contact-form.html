@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>外部講師 お問い合わせフォーム - TERACO.LABO</title>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -379,7 +380,7 @@
     <script>
         // EmailJS初期化
         (function(){
-            emailjs.init("YOUR_PUBLIC_KEY"); // This will be replaced with actual key
+            emailjs.init({publicKey: "zcA2Cp6c3OstOeY5o"}); // This will be replaced with actual key
         })();
 
         // サービス選択の視覚的フィードバック
