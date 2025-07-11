@@ -400,8 +400,8 @@
             submitBtn.textContent = '送信中...';
             
             // フォームデータを収集
-            const formData = new FormData(this);
-            const data = Object.fromEntries(formData.entries());
+            const formElement = new FormData(this);
+            const data = Object.fromEntries(formElement.entries());
             
             try {
                 // Loading state
@@ -419,7 +419,7 @@
                 console.log('取得したフォームデータ:', data);
                 console.log('希望日程:', data['preferred-date']);
                 
-                const formData = {
+                const emailData = {
                     name: data.name,
                     email: data.email,
                     phone: data.phone || '未記入',
@@ -439,14 +439,14 @@
                 };
                 
                 // デバッグ用ログ
-                console.log('送信するformData:', formData);
+                console.log('送信するemailData:', emailData);
                 
                 // 1. 管理者宛メール送信
-                await emailjs.send('TERACO_Gmail', 'template_6838gcg', formData);
+                await emailjs.send('TERACO_Gmail', 'template_6838gcg', emailData);
                 console.log('管理者メール送信成功');
                 
                 // 2. ユーザー自動返信メール送信
-                await emailjs.send('TERACO_Gmail', 'template_ww2xoao', formData);
+                await emailjs.send('TERACO_Gmail', 'template_ww2xoao', emailData);
                 console.log('ユーザー自動返信メール送信成功');
                 
                 // 成功メッセージを表示
