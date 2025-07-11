@@ -377,10 +377,9 @@
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     
     <script>
-        // EmailJS初期化（実際の本番環境では有効なキーを設定）
+        // EmailJS初期化
         (function(){
-            // 実際の実装時には有効なPublic Keyを設定してください
-            // emailjs.init("YOUR_PUBLIC_KEY");
+            emailjs.init("YOUR_PUBLIC_KEY"); // This will be replaced with actual key
         })();
 
         // サービス選択の視覚的フィードバック
@@ -426,15 +425,50 @@
             data.services = services;
             
             try {
-                // メール送信処理
-                await sendContactEmail(data);
+                // Loading state
+                responseMessage.innerHTML = '<div style="text-align: center; color: #667eea;">送信中...</div>';
+                
+                // Collect form data for emails
+                const serviceNames = {
+                    'corporate-training': '企業研修（DX推進・AI活用研修）',
+                    'government-seminar': '行政向け講座（職員研修・住民向け講座）',
+                    'ai-consulting': 'AI活用支援（導入コンサルティング）',
+                    'ict-support': 'ICT推進支援（デジタル化サポート）'
+                };
+                
+                const selectedServiceNames = data.services.map(service => serviceNames[service]).join('、');
+                
+                const formData = {
+                    name: data.name,
+                    email: data.email,
+                    phone: data.phone,
+                    organization: data.organization,
+                    position: data.position || 'なし',
+                    services: selectedServiceNames,
+                    participants: data.participants || 'なし',
+                    duration: data.duration || 'なし',
+                    preferred_date: data['preferred-date'] || 'なし',
+                    location: data.location || 'なし',
+                    budget: data.budget || 'なし',
+                    message: data.message,
+                    form_type: '外部講師お問い合わせ'
+                };
+                
+                // Send to admin
+                await emailjs.send('YOUR_SERVICE_ID', 'YOUR_ADMIN_TEMPLATE_ID', formData);
+                console.log('Admin email sent successfully');
+                
+                // Send auto-reply to user
+                await emailjs.send('YOUR_SERVICE_ID', 'YOUR_USER_TEMPLATE_ID', {
+                    to_email: formData.email,
+                    to_name: formData.name,
+                    form_type: formData.form_type
+                });
                 
                 // 成功メッセージを表示
                 responseMessage.innerHTML = `
                     <div class="success-message">
-                        お問い合わせを受け付けました！<br>
-                        確認メールをお送りしましたので、ご確認ください。<br>
-                        2営業日以内にお見積もりとともにご連絡いたします。
+                        お問い合わせありがとうございます。確認メールをお送りしました。24時間以内にご連絡いたします。
                     </div>
                 `;
                 
@@ -449,91 +483,18 @@
                 // エラーメッセージを表示
                 responseMessage.innerHTML = `
                     <div class="error-message">
-                        送信に失敗しました。お手数ですが、直接お電話（090-6738-1465）にてお問い合わせください。
+                        送信に失敗しました。お手数ですが、直接お電話でお問い合わせください。<br>TEL: 090-6738-1465
                     </div>
                 `;
             } finally {
-                // ボタンを再有効化
-                submitBtn.disabled = false;
-                submitBtn.textContent = 'お問い合わせを送信';
+                // Always restore button state
+                setTimeout(() => {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'お問い合わせを送信';
+                }, 2000);
             }
         });
         
-        // メール送信関数
-        async function sendContactEmail(data) {
-            // サービス名の変換
-            const serviceNames = {
-                'corporate-training': '企業研修（DX推進・AI活用研修）',
-                'government-seminar': '行政向け講座（職員研修・住民向け講座）',
-                'ai-consulting': 'AI活用支援（導入コンサルティング）',
-                'ict-support': 'ICT推進支援（デジタル化サポート）'
-            };
-            
-            const selectedServiceNames = data.services.map(service => serviceNames[service]).join('、');
-            const currentDate = new Date().toLocaleString('ja-JP');
-            
-            // 管理者宛メールの内容
-            const adminEmailParams = {
-                to_email: 'smart.teraco@gmail.com',
-                subject: '【外部講師】新しいお問い合わせ',
-                organization_name: data.organization,
-                contact_name: data.name,
-                contact_position: data.position || 'なし',
-                contact_phone: data.phone,
-                contact_email: data.email,
-                selected_services: selectedServiceNames,
-                participants: data.participants || 'なし',
-                duration: data.duration || 'なし',
-                preferred_date: data['preferred-date'] || 'なし',
-                location: data.location || 'なし',
-                budget: data.budget || 'なし',
-                message: data.message,
-                send_date: currentDate
-            };
-            
-            // お客様宛サンキューメールの内容
-            const customerEmailParams = {
-                to_email: data.email,
-                to_name: data.name,
-                organization_name: data.organization,
-                subject: 'TERACO.LABO外部講師：お問い合わせ受付完了',
-                selected_services: selectedServiceNames,
-                send_date: currentDate
-            };
-            
-            // デモ用の処理（実際の送信はシミュレート）
-            console.log('=== 管理者宛メール ===');
-            console.log(`宛先: ${adminEmailParams.to_email}`);
-            console.log(`件名: ${adminEmailParams.subject}`);
-            console.log(`内容:`);
-            console.log(`組織名: ${adminEmailParams.organization_name}`);
-            console.log(`担当者: ${adminEmailParams.contact_name}`);
-            console.log(`役職・部署: ${adminEmailParams.contact_position}`);
-            console.log(`電話番号: ${adminEmailParams.contact_phone}`);
-            console.log(`メール: ${adminEmailParams.contact_email}`);
-            console.log(`希望サービス: ${adminEmailParams.selected_services}`);
-            console.log(`参加人数: ${adminEmailParams.participants}`);
-            console.log(`研修期間: ${adminEmailParams.duration}`);
-            console.log(`希望時期: ${adminEmailParams.preferred_date}`);
-            console.log(`実施場所: ${adminEmailParams.location}`);
-            console.log(`予算: ${adminEmailParams.budget}`);
-            console.log(`詳細: ${adminEmailParams.message}`);
-            console.log(`送信日時: ${adminEmailParams.send_date}`);
-            
-            console.log('\n=== お客様宛サンキューメール ===');
-            console.log(`宛先: ${customerEmailParams.to_email}`);
-            console.log(`件名: ${customerEmailParams.subject}`);
-            console.log(`組織名: ${customerEmailParams.organization_name}`);
-            console.log(`担当者: ${customerEmailParams.to_name} 様`);
-            console.log(`希望サービス: ${customerEmailParams.selected_services}`);
-            
-            console.log('\n=== SMS送信 ===');
-            console.log(`宛先: ${data.phone}`);
-            console.log(`内容: ${data.name}様、TERACO.LABO外部講師へのお問い合わせありがとうございます。お見積もりを含めた詳細をメールにてお送りいたします。`);
-            
-            // 送信処理のシミュレート（2秒待機）
-            await new Promise(resolve => setTimeout(resolve, 2000));
-        }
     </script>
 </body>
 </html>

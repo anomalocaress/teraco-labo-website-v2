@@ -439,7 +439,7 @@
     <script>
         // EmailJS初期化
         (function() {
-            emailjs.init("YOUR_EMAILJS_USER_ID"); // 実際のEmailJS User IDに変更してください
+            emailjs.init("YOUR_PUBLIC_KEY"); // This will be replaced with actual key
         })();
 
         // チェックボックスの視覚効果
@@ -492,22 +492,38 @@
                 form_type: '映像制作お問い合わせ'
             };
             
-            // EmailJSで送信
-            emailjs.send('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', formData)
+            // Loading state
+            responseMessage.innerHTML = '<div style="text-align: center; color: #667eea;">送信中...</div>';
+            
+            // Send to admin
+            emailjs.send('YOUR_SERVICE_ID', 'YOUR_ADMIN_TEMPLATE_ID', formData)
                 .then(function(response) {
-                    responseMessage.innerHTML = '<div class="success-message">お問い合わせありがとうございます。制作内容を確認後、2-3営業日以内にお見積もりをご連絡いたします。</div>';
+                    console.log('Admin email sent successfully');
+                    // Send auto-reply to user
+                    return emailjs.send('YOUR_SERVICE_ID', 'YOUR_USER_TEMPLATE_ID', {
+                        to_email: formData.email,
+                        to_name: formData.name,
+                        form_type: formData.form_type
+                    });
+                })
+                .then(function(response) {
+                    responseMessage.innerHTML = '<div class="success-message">お問い合わせありがとうございます。確認メールをお送りしました。24時間以内にご連絡いたします。</div>';
                     document.getElementById('contactForm').reset();
-                    // チェックボックスの選択状態をリセット
+                    // Reset any checkboxes if they exist
                     document.querySelectorAll('.checkbox-item').forEach(item => {
                         item.classList.remove('selected');
                     });
-                }, function(error) {
-                    responseMessage.innerHTML = '<div class="error-message">送信に失敗しました。お手数ですが、直接メールまたはお電話でお問い合わせください。</div>';
+                })
+                .catch(function(error) {
+                    console.log('Email send failed:', error);
+                    responseMessage.innerHTML = '<div class="error-message">送信に失敗しました。お手数ですが、直接お電話でお問い合わせください。<br>TEL: 090-6738-1465</div>';
                 });
             
-            // ボタンを復元
-            submitBtn.disabled = false;
-            submitBtn.textContent = 'お見積もりを依頼する';
+            // Always restore button state
+            setTimeout(() => {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'お見積もりを依頼する';
+            }, 2000);
         });
     </script>
 </body>
