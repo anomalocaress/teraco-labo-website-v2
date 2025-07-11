@@ -419,7 +419,8 @@
                     name: data.name,
                     email: data.email,
                     phone: data.phone || '未記入',
-                    organization: '', // スマホ教室では不要
+                    organization: '未記入', // スマホ教室では不要
+                    services: '', // 一般お問い合わせとの互換性のため
                     plan: planNames[data.plan],
                     preferred_date: data['preferred-date'],
                     message: data.message || '特になし',

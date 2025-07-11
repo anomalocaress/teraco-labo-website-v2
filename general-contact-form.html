@@ -439,14 +439,12 @@
             const formData = {
                 name: document.getElementById('name').value,
                 email: document.getElementById('email').value,
-                phone: document.getElementById('phone').value || '未入力',
-                organization: document.getElementById('organization').value || '未入力',
+                phone: document.getElementById('phone').value || '未記入',
+                organization: document.getElementById('organization').value || '未記入',
                 services: selectedServices.join(', '),
-                message: document.getElementById('message').value,
+                message: document.getElementById('message').value || '特になし',
                 form_type: '総合お問い合わせ',
-                // EmailJSテンプレート用の追加データ
-                to_name: document.getElementById('name').value,
-                to_email: document.getElementById('email').value
+                submission_date: new Date().toLocaleString('ja-JP')
             };
             
             // Loading state

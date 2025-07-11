@@ -439,7 +439,8 @@
                     name: data.name,
                     email: data.email,
                     phone: data.phone || '未記入',
-                    organization: '', // AIスクールでは不要
+                    organization: '未記入', // AIスクールでは不要
+                    services: '', // 一般お問い合わせとの互換性のため
                     course: planNames[data.plan], // planをcourseに変更（AIスクール用）
                     preferred_date: data['preferred-date'],
                     message: data.message || '特になし',

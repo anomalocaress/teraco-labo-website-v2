@@ -556,6 +556,7 @@
                 organization: document.getElementById('organization').value || '未記入',
                 email: document.getElementById('email').value,
                 phone: document.getElementById('phone').value || '未記入',
+                services: '', // 一般お問い合わせとの互換性のため
                 space_type: selectedUsages.join(', '), // usage_typesをspace_typeに変更
                 preferred_date: document.getElementById('date').value,
                 start_time: startTime,
