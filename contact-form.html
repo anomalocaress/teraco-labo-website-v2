@@ -418,11 +418,13 @@
                 const formData = {
                     name: data.name,
                     email: data.email,
-                    phone: data.phone,
+                    phone: data.phone || '未記入',
+                    organization: '', // スマホ教室では不要
                     plan: planNames[data.plan],
                     preferred_date: data['preferred-date'],
-                    message: data.message || 'なし',
-                    form_type: 'スマホ教室お問い合わせ'
+                    message: data.message || '特になし',
+                    form_type: 'スマホ教室',
+                    submission_date: new Date().toLocaleString('ja-JP')
                 };
                 
                 // 1. 管理者宛メール送信

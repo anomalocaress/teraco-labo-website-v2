@@ -495,6 +495,14 @@
             emailjs.init({publicKey: "zcA2Cp6c3OstOeY5o"}); // This will be replaced with actual key
         })();
 
+        // 時間差を計算する関数
+        function calculateDuration(startTime, endTime) {
+            const start = parseInt(startTime.split(':')[0]);
+            const end = parseInt(endTime.split(':')[0]);
+            const duration = end - start;
+            return duration + '時間';
+        }
+
         // チェックボックスの視覚効果
         document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
             checkbox.addEventListener('change', function() {
@@ -545,29 +553,30 @@
             // フォームデータを準備
             const formData = {
                 name: document.getElementById('name').value,
-                organization: document.getElementById('organization').value || '未入力',
+                organization: document.getElementById('organization').value || '未記入',
                 email: document.getElementById('email').value,
-                phone: document.getElementById('phone').value,
-                usage_types: selectedUsages.join(', '),
-                date: document.getElementById('date').value,
+                phone: document.getElementById('phone').value || '未記入',
+                space_type: selectedUsages.join(', '), // usage_typesをspace_typeに変更
+                preferred_date: document.getElementById('date').value,
                 start_time: startTime,
                 end_time: endTime,
-                time_range: startTime + ' - ' + endTime,
+                duration: startTime + ' ～ ' + endTime + ' (' + calculateDuration(startTime, endTime) + ')',
                 participants: document.getElementById('participants').value,
                 equipment: document.getElementById('equipment').value || '未選択',
-                message: document.getElementById('message').value,
-                form_type: 'レンタルスペース予約お問い合わせ'
+                message: document.getElementById('message').value || '特になし',
+                form_type: 'レンタルスペース',
+                submission_date: new Date().toLocaleString('ja-JP')
             };
             
             // Loading state
             responseMessage.innerHTML = '<div style="text-align: center; color: #667eea;">送信中...</div>';
             
             // Send to admin
-            emailjs.send('YOUR_SERVICE_ID', 'YOUR_ADMIN_TEMPLATE_ID', formData)
+            emailjs.send('TERACO_Gmail', 'template_6838gcg', formData)
                 .then(function(response) {
                     console.log('Admin email sent successfully');
                     // Send auto-reply to user
-                    return emailjs.send('YOUR_SERVICE_ID', 'YOUR_USER_TEMPLATE_ID', {
+                    return emailjs.send('TERACO_Gmail', 'template_ww2xoao', {
                         to_email: formData.email,
                         to_name: formData.name,
                         form_type: formData.form_type

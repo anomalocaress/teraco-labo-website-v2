@@ -442,29 +442,27 @@
                 const formData = {
                     name: data.name,
                     email: data.email,
-                    phone: data.phone,
-                    organization: data.organization,
-                    position: data.position || 'なし',
+                    phone: data.phone || '未記入',
+                    organization: data.organization || '未記入',
+                    position: data.position || '未記入',
                     services: selectedServiceNames,
-                    participants: data.participants || 'なし',
-                    duration: data.duration || 'なし',
-                    preferred_date: data['preferred-date'] || 'なし',
-                    location: data.location || 'なし',
-                    budget: data.budget || 'なし',
-                    message: data.message,
-                    form_type: '外部講師お問い合わせ'
+                    participants: data.participants || '未記入',
+                    duration: data.duration || '未記入',
+                    preferred_date: data['preferred-date'] || '未記入',
+                    location: data.location || '未記入',
+                    budget: data.budget || '未記入',
+                    message: data.message || '特になし',
+                    form_type: '外部講師',
+                    submission_date: new Date().toLocaleString('ja-JP')
                 };
                 
-                // Send to admin
-                await emailjs.send('YOUR_SERVICE_ID', 'YOUR_ADMIN_TEMPLATE_ID', formData);
+                // 1. 管理者宛メール送信
+                await emailjs.send('TERACO_Gmail', 'template_6838gcg', formData);
                 console.log('Admin email sent successfully');
                 
-                // Send auto-reply to user
-                await emailjs.send('YOUR_SERVICE_ID', 'YOUR_USER_TEMPLATE_ID', {
-                    to_email: formData.email,
-                    to_name: formData.name,
-                    form_type: formData.form_type
-                });
+                // 2. ユーザー自動返信メール送信
+                await emailjs.send('TERACO_Gmail', 'template_ww2xoao', formData);
+                console.log('ユーザー自動返信メール送信成功');
                 
                 // 成功メッセージを表示
                 responseMessage.innerHTML = `

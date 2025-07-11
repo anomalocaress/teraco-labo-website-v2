@@ -438,11 +438,13 @@
                 const formData = {
                     name: data.name,
                     email: data.email,
-                    phone: data.phone,
-                    plan: planNames[data.plan],
+                    phone: data.phone || '未記入',
+                    organization: '', // AIスクールでは不要
+                    course: planNames[data.plan], // planをcourseに変更（AIスクール用）
                     preferred_date: data['preferred-date'],
-                    message: data.message || 'なし',
-                    form_type: 'AIスクールお問い合わせ'
+                    message: data.message || '特になし',
+                    form_type: 'AIスクール',
+                    submission_date: new Date().toLocaleString('ja-JP')
                 };
                 
                 // 1. 管理者宛メール送信
