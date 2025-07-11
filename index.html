@@ -173,6 +173,12 @@ nav .container {
     margin-top: 2rem;
 }
 
+.service-grid-single {
+    display: flex;
+    justify-content: center;
+    margin-top: 2rem;
+}
+
 .service-card-large {
     background: rgba(255, 255, 255, 0.95);
     border-radius: 24px;
@@ -705,6 +711,10 @@ footer {
         gap: 1.5rem;
     }
     
+    .service-grid-single {
+        justify-content: center;
+    }
+    
     .service-card-large {
         padding: 2rem;
     }
@@ -774,7 +784,8 @@ footer {
                 </div>
                 <ul class="nav-menu">
                     <li><a href="#home">ホーム</a></li>
-                    <li><a href="#digital">デジタル学習</a></li>
+                    <li><a href="#smartphone">スマホ教室</a></li>
+                    <li><a href="#ai">AIスクール</a></li>
                     <li><a href="#instructor">外部講師</a></li>
                     <li><a href="#video">映像制作</a></li>
                     <li><a href="#space">レンタルスペース</a></li>
@@ -798,15 +809,15 @@ footer {
             </div>
         </section>
 
-        <!-- セクション1: デジタル学習 -->
-        <section id="digital" class="section-digital">
+        <!-- セクション1: スマホ教室 -->
+        <section id="smartphone" class="section-digital">
             <div class="container">
-                <h2 class="section-title">デジタル学習サービス</h2>
+                <h2 class="section-title">スマホ教室</h2>
                 
-                <div class="service-grid-large">
+                <div class="service-grid-single">
                     <div class="service-card-large smartphone-card" onclick="window.location.href='smartphone.html'">
                         <div style="display: flex; flex-direction: column; height: 100%; justify-content: space-between;">
-                            <h3>スマホ教室</h3>
+                            <h3>スマホ・タブレット教室</h3>
                             <p>初めてでも安心。スマホ・タブレットの基本から、LINE・写真・キャッシュレスまで幅広くサポート。</p>
                             <div class="card-footer">
                                 <span class="feature-tag">初心者歓迎</span>
@@ -815,10 +826,19 @@ footer {
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
+        </section>
 
+        <!-- セクション2: AIスクール -->
+        <section id="ai" class="section-digital">
+            <div class="container">
+                <h2 class="section-title">AIスクール</h2>
+                
+                <div class="service-grid-single">
                     <div class="service-card-large ai-card" onclick="window.location.href='ai.html'">
                         <div style="display: flex; flex-direction: column; height: 100%; justify-content: space-between; position: relative;">
-                            <h3>AIスクール</h3>
+                            <h3>AI活用・生成AI講座</h3>
                             <p>話題のChatGPTやAIツールを、生活や仕事に活かす使い方を丁寧にレクチャー。</p>
                             <div class="card-footer">
                                 <span class="feature-tag">生成AI</span>
@@ -832,7 +852,7 @@ footer {
             </div>
         </section>
 
-        <!-- セクション2: 外部講師 -->
+        <!-- セクション3: 外部講師 -->
         <section id="instructor" class="section-instructor">
             <div class="container">
                 <h2 class="section-title">専門講座・研修サービス</h2>
@@ -853,7 +873,7 @@ footer {
             </div>
         </section>
 
-        <!-- セクション3: 映像制作 -->
+        <!-- セクション4: 映像制作 -->
         <section id="video" class="section-video">
             <div class="container">
                 <h2 class="section-title">映像制作・クリエイティブサービス</h2>
@@ -874,7 +894,7 @@ footer {
             </div>
         </section>
 
-        <!-- セクション4: スペースレンタル -->
+        <!-- セクション5: スペースレンタル -->
         <section id="space" class="section-space">
             <div class="container">
                 <h2 class="section-title">レンタルスペース・会議室</h2>
