@@ -452,14 +452,19 @@
             // Loading state
             responseMessage.innerHTML = '<div style="text-align: center; color: #667eea;">送信中...</div>';
             
-            // EmailJS送信実行
+            // EmailJS送信実行 - 管理者宛とユーザー自動返信の両方を送信
             console.log('フォームデータ:', formData);
             
-            // まず管理者宛メールのみでテスト
-            console.log('送信データ:', formData);
+            // 1. 管理者宛メール送信
             emailjs.send('TERACO_Gmail', 'template_6838gcg', formData)
                 .then(function(response) {
                     console.log('管理者メール送信成功:', response);
+                    
+                    // 2. ユーザー自動返信メール送信
+                    return emailjs.send('TERACO_Gmail', 'template_uu6dh3k', formData);
+                })
+                .then(function(response) {
+                    console.log('ユーザー自動返信メール送信成功:', response);
                     responseMessage.innerHTML = '<div class="success-message">お問い合わせありがとうございます。内容を確認いたします。24時間以内にご連絡いたします。</div>';
                     document.getElementById('contactForm').reset();
                     // Reset any checkboxes if they exist
