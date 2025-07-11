@@ -423,10 +423,16 @@
                     name: data.name,
                     email: data.email,
                     phone: data.phone || '未記入',
-                    organization: '未記入', // スマホ教室では不要
-                    services: '', // 一般お問い合わせとの互換性のため
-                    plan: planNames[data.plan],
+                    organization: '未記入',
+                    services: '',
+                    plan: planNames[data.plan],  // スマホ教室用
+                    course: '',  // AIスクール用（空で送信）
+                    video_types: '',  // 映像制作用（空で送信）
+                    space_type: '',  // レンタルスペース用（空で送信）
                     preferred_date: data['preferred-date'] || '未記入',
+                    start_time: '',  // レンタルスペース用（空で送信）
+                    end_time: '',  // レンタルスペース用（空で送信）
+                    duration: '',  // レンタルスペース用（空で送信）
                     message: data.message || '特になし',
                     form_type: 'スマホ教室',
                     submission_date: new Date().toLocaleString('ja-JP')

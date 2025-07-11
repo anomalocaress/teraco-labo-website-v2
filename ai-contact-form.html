@@ -443,10 +443,16 @@
                     name: data.name,
                     email: data.email,
                     phone: data.phone || '未記入',
-                    organization: '未記入', // AIスクールでは不要
-                    services: '', // 一般お問い合わせとの互換性のため
-                    course: planNames[data.plan], // planをcourseに変更（AIスクール用）
+                    organization: '未記入',
+                    services: '',
+                    plan: '',  // スマホ教室用（空で送信）
+                    course: planNames[data.plan],  // AIスクール用
+                    video_types: '',  // 映像制作用（空で送信）
+                    space_type: '',  // レンタルスペース用（空で送信）
                     preferred_date: data['preferred-date'] || '未記入',
+                    start_time: '',  // レンタルスペース用（空で送信）
+                    end_time: '',  // レンタルスペース用（空で送信）
+                    duration: '',  // レンタルスペース用（空で送信）
                     message: data.message || '特になし',
                     form_type: 'AIスクール',
                     submission_date: new Date().toLocaleString('ja-JP')
