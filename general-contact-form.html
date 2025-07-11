@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>お問い合わせ - TERACO.LABO</title>
-    <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -393,7 +393,9 @@
     <script>
         // EmailJS初期化
         (function() {
-            emailjs.init("zcA2Cp6c3OstOeY5o");
+            emailjs.init({
+                publicKey: "zcA2Cp6c3OstOeY5o"
+            });
             console.log("EmailJS初期化完了");
         })();
 
