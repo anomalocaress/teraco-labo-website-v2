@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>外部講師 お問い合わせフォーム - TERACO.LABO</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Hiragino Sans', 'Yu Gothic', 'Meiryo', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        nav {
+            padding: 1rem 0;
+        }
+
+        nav .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo h1 {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .back-link {
+            background: #667eea;
+            color: white;
+            padding: 0.5rem 1.5rem;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .back-link:hover {
+            background: #5a6fd8;
+            transform: translateY(-2px);
+        }
+
+        main {
+            padding: 120px 0 80px;
+        }
+
+        .form-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 24px;
+            padding: 3rem;
+            margin: 2rem 0;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-title {
+            font-size: 2.2rem;
+            margin-bottom: 1rem;
+            color: #667eea;
+            text-align: center;
+        }
+
+        .form-subtitle {
+            font-size: 1.1rem;
+            color: #666;
+            text-align: center;
+            margin-bottom: 3rem;
+            line-height: 1.8;
+        }
+
+        .form-group {
+            margin-bottom: 2rem;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .required {
+            color: #e74c3c;
+            margin-left: 0.3rem;
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .submit-button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 3rem;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: block;
+            margin: 3rem auto 0;
+            min-width: 200px;
+        }
+
+        .submit-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .submit-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .success-message,
+        .error-message {
+            padding: 1rem;
+            border-radius: 12px;
+            margin: 1rem 0;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .service-type-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        .service-option {
+            padding: 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .service-option:hover {
+            border-color: #667eea;
+        }
+
+        .service-option.selected {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        .service-option input[type="checkbox"] {
+            display: none;
+        }
+
+        .service-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0.3rem;
+        }
+
+        .service-description {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        @media (max-width: 768px) {
+            .form-container {
+                padding: 2rem;
+                margin: 1rem 0;
+            }
+            
+            .form-title {
+                font-size: 1.8rem;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .service-type-options {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="container">
+                <div class="logo">
+                    <a href="index.html" style="text-decoration: none; color: inherit;">
+                        <h1>TERACO.LABO</h1>
+                    </a>
+                </div>
+                <a href="instructor.html" class="back-link">← 外部講師に戻る</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <div class="container">
+            <div class="form-container">
+                <h1 class="form-title">外部講師 お問い合わせフォーム</h1>
+                <p class="form-subtitle">
+                    研修・講座のご依頼やお見積もりについて、お気軽にお問い合わせください。<br>
+                    ご要望に応じて最適なプランをご提案いたします。
+                </p>
+
+                <form id="contactForm">
+                    <div class="form-group">
+                        <label for="organization" class="form-label">組織・団体名<span class="required">*</span></label>
+                        <input type="text" id="organization" name="organization" class="form-input" required>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="name" class="form-label">担当者名<span class="required">*</span></label>
+                            <input type="text" id="name" name="name" class="form-input" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="position" class="form-label">役職・部署</label>
+                            <input type="text" id="position" name="position" class="form-input">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="phone" class="form-label">電話番号<span class="required">*</span></label>
+                            <input type="tel" id="phone" name="phone" class="form-input" placeholder="090-1234-5678" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email" class="form-label">メールアドレス<span class="required">*</span></label>
+                            <input type="email" id="email" name="email" class="form-input" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">ご希望のサービス<span class="required">*</span>（複数選択可）</label>
+                        <div class="service-type-options">
+                            <label class="service-option">
+                                <input type="checkbox" name="services" value="corporate-training">
+                                <div class="service-name">企業研修</div>
+                                <div class="service-description">DX推進・AI活用研修</div>
+                            </label>
+                            <label class="service-option">
+                                <input type="checkbox" name="services" value="government-seminar">
+                                <div class="service-name">行政向け講座</div>
+                                <div class="service-description">職員研修・住民向け講座</div>
+                            </label>
+                            <label class="service-option">
+                                <input type="checkbox" name="services" value="ai-consulting">
+                                <div class="service-name">AI活用支援</div>
+                                <div class="service-description">導入コンサルティング</div>
+                            </label>
+                            <label class="service-option">
+                                <input type="checkbox" name="services" value="ict-support">
+                                <div class="service-name">ICT推進支援</div>
+                                <div class="service-description">デジタル化サポート</div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="participants" class="form-label">参加予定人数</label>
+                            <input type="number" id="participants" name="participants" class="form-input" placeholder="例：20" min="1">
+                        </div>
+                        <div class="form-group">
+                            <label for="duration" class="form-label">研修期間・時間</label>
+                            <input type="text" id="duration" name="duration" class="form-input" placeholder="例：90分×3回">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="preferred-date" class="form-label">ご希望実施時期</label>
+                        <input type="text" id="preferred-date" name="preferred-date" class="form-input" placeholder="例：2024年4月頃">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="location" class="form-label">実施予定地・会場</label>
+                        <input type="text" id="location" name="location" class="form-input" placeholder="例：宮崎県西都市">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="budget" class="form-label">ご予算</label>
+                        <input type="text" id="budget" name="budget" class="form-input" placeholder="例：要相談・50万円程度">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="message" class="form-label">ご要望・詳細内容<span class="required">*</span></label>
+                        <textarea id="message" name="message" class="form-textarea" placeholder="研修の目的、期待する効果、特別なご要望などをお聞かせください。" required></textarea>
+                    </div>
+
+                    <button type="submit" class="submit-button" id="submitBtn">
+                        お問い合わせを送信
+                    </button>
+                    
+                    <p style="text-align: center; margin-top: 1rem; color: #e74c3c; font-size: 0.9rem; line-height: 1.4;">
+                        数時間経っても確認メールが届かない場合は、再度お申し込みいただくか直接お電話ください。
+                    </p>
+                </form>
+
+                <div id="responseMessage"></div>
+            </div>
+        </div>
+    </main>
+
+    <!-- EmailJS SDK -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    
+    <script>
+        // EmailJS初期化（実際の本番環境では有効なキーを設定）
+        (function(){
+            // 実際の実装時には有効なPublic Keyを設定してください
+            // emailjs.init("YOUR_PUBLIC_KEY");
+        })();
+
+        // サービス選択の視覚的フィードバック
+        document.querySelectorAll('.service-option input[type="checkbox"]').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const option = this.closest('.service-option');
+                if (this.checked) {
+                    option.classList.add('selected');
+                } else {
+                    option.classList.remove('selected');
+                }
+            });
+        });
+
+        // フォーム送信処理
+        document.getElementById('contactForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('submitBtn');
+            const responseMessage = document.getElementById('responseMessage');
+            
+            // サービス選択チェック
+            const selectedServices = document.querySelectorAll('input[name="services"]:checked');
+            if (selectedServices.length === 0) {
+                responseMessage.innerHTML = `
+                    <div class="error-message">
+                        ご希望のサービスを一つ以上選択してください。
+                    </div>
+                `;
+                return;
+            }
+            
+            // ボタンを無効化
+            submitBtn.disabled = true;
+            submitBtn.textContent = '送信中...';
+            
+            // フォームデータを収集
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData.entries());
+            
+            // 選択されたサービスを配列として取得
+            const services = Array.from(selectedServices).map(cb => cb.value);
+            data.services = services;
+            
+            try {
+                // メール送信処理
+                await sendContactEmail(data);
+                
+                // 成功メッセージを表示
+                responseMessage.innerHTML = `
+                    <div class="success-message">
+                        お問い合わせを受け付けました！<br>
+                        確認メールをお送りしましたので、ご確認ください。<br>
+                        2営業日以内にお見積もりとともにご連絡いたします。
+                    </div>
+                `;
+                
+                // フォームをリセット
+                this.reset();
+                document.querySelectorAll('.service-option').forEach(option => {
+                    option.classList.remove('selected');
+                });
+                
+            } catch (error) {
+                console.error('送信エラー:', error);
+                // エラーメッセージを表示
+                responseMessage.innerHTML = `
+                    <div class="error-message">
+                        送信に失敗しました。お手数ですが、直接お電話（090-6738-1465）にてお問い合わせください。
+                    </div>
+                `;
+            } finally {
+                // ボタンを再有効化
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'お問い合わせを送信';
+            }
+        });
+        
+        // メール送信関数
+        async function sendContactEmail(data) {
+            // サービス名の変換
+            const serviceNames = {
+                'corporate-training': '企業研修（DX推進・AI活用研修）',
+                'government-seminar': '行政向け講座（職員研修・住民向け講座）',
+                'ai-consulting': 'AI活用支援（導入コンサルティング）',
+                'ict-support': 'ICT推進支援（デジタル化サポート）'
+            };
+            
+            const selectedServiceNames = data.services.map(service => serviceNames[service]).join('、');
+            const currentDate = new Date().toLocaleString('ja-JP');
+            
+            // 管理者宛メールの内容
+            const adminEmailParams = {
+                to_email: 'smart.teraco@gmail.com',
+                subject: '【外部講師】新しいお問い合わせ',
+                organization_name: data.organization,
+                contact_name: data.name,
+                contact_position: data.position || 'なし',
+                contact_phone: data.phone,
+                contact_email: data.email,
+                selected_services: selectedServiceNames,
+                participants: data.participants || 'なし',
+                duration: data.duration || 'なし',
+                preferred_date: data['preferred-date'] || 'なし',
+                location: data.location || 'なし',
+                budget: data.budget || 'なし',
+                message: data.message,
+                send_date: currentDate
+            };
+            
+            // お客様宛サンキューメールの内容
+            const customerEmailParams = {
+                to_email: data.email,
+                to_name: data.name,
+                organization_name: data.organization,
+                subject: 'TERACO.LABO外部講師：お問い合わせ受付完了',
+                selected_services: selectedServiceNames,
+                send_date: currentDate
+            };
+            
+            // デモ用の処理（実際の送信はシミュレート）
+            console.log('=== 管理者宛メール ===');
+            console.log(`宛先: ${adminEmailParams.to_email}`);
+            console.log(`件名: ${adminEmailParams.subject}`);
+            console.log(`内容:`);
+            console.log(`組織名: ${adminEmailParams.organization_name}`);
+            console.log(`担当者: ${adminEmailParams.contact_name}`);
+            console.log(`役職・部署: ${adminEmailParams.contact_position}`);
+            console.log(`電話番号: ${adminEmailParams.contact_phone}`);
+            console.log(`メール: ${adminEmailParams.contact_email}`);
+            console.log(`希望サービス: ${adminEmailParams.selected_services}`);
+            console.log(`参加人数: ${adminEmailParams.participants}`);
+            console.log(`研修期間: ${adminEmailParams.duration}`);
+            console.log(`希望時期: ${adminEmailParams.preferred_date}`);
+            console.log(`実施場所: ${adminEmailParams.location}`);
+            console.log(`予算: ${adminEmailParams.budget}`);
+            console.log(`詳細: ${adminEmailParams.message}`);
+            console.log(`送信日時: ${adminEmailParams.send_date}`);
+            
+            console.log('\n=== お客様宛サンキューメール ===');
+            console.log(`宛先: ${customerEmailParams.to_email}`);
+            console.log(`件名: ${customerEmailParams.subject}`);
+            console.log(`組織名: ${customerEmailParams.organization_name}`);
+            console.log(`担当者: ${customerEmailParams.to_name} 様`);
+            console.log(`希望サービス: ${customerEmailParams.selected_services}`);
+            
+            console.log('\n=== SMS送信 ===');
+            console.log(`宛先: ${data.phone}`);
+            console.log(`内容: ${data.name}様、TERACO.LABO外部講師へのお問い合わせありがとうございます。お見積もりを含めた詳細をメールにてお送りいたします。`);
+            
+            // 送信処理のシミュレート（2秒待機）
+            await new Promise(resolve => setTimeout(resolve, 2000));
+        }
+    </script>
+</body>
+</html>

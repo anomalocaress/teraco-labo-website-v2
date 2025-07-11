@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>レンタルスペース予約お問い合わせ - TERACO.LABO</title>
+    <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Hiragino Sans', 'Yu Gothic', 'Meiryo', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        nav {
+            padding: 1rem 0;
+        }
+
+        nav .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo h1 {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .back-link {
+            background: #667eea;
+            color: white;
+            padding: 0.5rem 1.5rem;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .back-link:hover {
+            background: #5a6fd8;
+            transform: translateY(-2px);
+        }
+
+        main {
+            padding: 120px 0 40px;
+        }
+
+        .form-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 24px;
+            padding: 3rem;
+            margin: 2rem 0;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-title {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: #667eea;
+            text-align: center;
+        }
+
+        .form-subtitle {
+            font-size: 1.1rem;
+            color: #666;
+            text-align: center;
+            margin-bottom: 3rem;
+            line-height: 1.6;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .required {
+            color: #e74c3c;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            padding: 0.8rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .checkbox-item:hover {
+            background: #e9ecef;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: auto;
+            margin-right: 0.5rem;
+            transform: scale(1.2);
+        }
+
+        .checkbox-item.selected {
+            background: rgba(102, 126, 234, 0.1);
+            border: 2px solid #667eea;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 3rem;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 2rem;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .success-message,
+        .error-message {
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            text-align: center;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .contact-alternatives {
+            background: #f8f9fa;
+            padding: 2rem;
+            border-radius: 16px;
+            margin-top: 3rem;
+            text-align: center;
+        }
+
+        .contact-alternatives h3 {
+            color: #667eea;
+            margin-bottom: 1rem;
+        }
+
+        .contact-methods {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .contact-method {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1rem;
+            background: white;
+            border-radius: 12px;
+            text-decoration: none;
+            color: #667eea;
+            transition: all 0.3s ease;
+            min-width: 120px;
+        }
+
+        .contact-method:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .contact-method span {
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        .info-box {
+            background: #e8f4fd;
+            border: 1px solid #b8daff;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+
+        .info-box h4 {
+            color: #0c5460;
+            margin-bottom: 0.5rem;
+        }
+
+        .info-box ul {
+            margin: 0;
+            padding-left: 1rem;
+            color: #0c5460;
+        }
+
+        @media (max-width: 768px) {
+            .form-container {
+                padding: 2rem;
+            }
+            
+            .form-title {
+                font-size: 2rem;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .checkbox-group {
+                grid-template-columns: 1fr;
+            }
+            
+            .contact-methods {
+                flex-direction: column;
+                align-items: center;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="container">
+                <div class="logo">
+                    <a href="index.html" style="text-decoration: none; color: inherit;">
+                        <h1>TERACO.LABO</h1>
+                    </a>
+                </div>
+                <a href="rental.html" class="back-link">← レンタルスペースに戻る</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <div class="container">
+            <div class="form-container">
+                <h1 class="form-title">レンタルスペース予約お問い合わせ</h1>
+                <p class="form-subtitle">
+                    スペースのご利用についてお気軽にお問い合わせください。<br>
+                    空き状況を確認してご連絡いたします。
+                </p>
+
+                <div class="info-box">
+                    <h4>ご利用料金・条件</h4>
+                    <ul>
+                        <li>基本料金：600円/1時間（1人）</li>
+                        <li>最低利用：5名様以上、3,000円から</li>
+                        <li>ご予約：前日17:00まで</li>
+                        <li>利用時間：10:00〜18:00（平日・土日祝）</li>
+                    </ul>
+                </div>
+
+                <form id="contactForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="name">お名前 <span class="required">*</span></label>
+                            <input type="text" id="name" name="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="organization">団体・組織名</label>
+                            <input type="text" id="organization" name="organization">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="email">メールアドレス <span class="required">*</span></label>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">電話番号 <span class="required">*</span></label>
+                            <input type="tel" id="phone" name="phone" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>利用用途 <span class="required">*</span></label>
+                        <div class="checkbox-group">
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="seminar" name="usage_types" value="セミナー・勉強会">
+                                <label for="seminar">セミナー・勉強会</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="workshop" name="usage_types" value="ワークショップ">
+                                <label for="workshop">ワークショップ</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="meeting" name="usage_types" value="会議・打ち合わせ">
+                                <label for="meeting">会議・打ち合わせ</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="lesson" name="usage_types" value="個人指導・講座">
+                                <label for="lesson">個人指導・講座</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="shooting" name="usage_types" value="撮影・配信">
+                                <label for="shooting">撮影・配信</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="other" name="usage_types" value="その他">
+                                <label for="other">その他</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="date">希望利用日 <span class="required">*</span></label>
+                        <input type="date" id="date" name="date" required>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="start_time">開始時間 <span class="required">*</span></label>
+                            <select id="start_time" name="start_time" required>
+                                <option value="">選択してください</option>
+                                <option value="10:00">10:00</option>
+                                <option value="11:00">11:00</option>
+                                <option value="12:00">12:00</option>
+                                <option value="13:00">13:00</option>
+                                <option value="14:00">14:00</option>
+                                <option value="15:00">15:00</option>
+                                <option value="16:00">16:00</option>
+                                <option value="17:00">17:00</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="end_time">終了時間 <span class="required">*</span></label>
+                            <select id="end_time" name="end_time" required>
+                                <option value="">選択してください</option>
+                                <option value="11:00">11:00</option>
+                                <option value="12:00">12:00</option>
+                                <option value="13:00">13:00</option>
+                                <option value="14:00">14:00</option>
+                                <option value="15:00">15:00</option>
+                                <option value="16:00">16:00</option>
+                                <option value="17:00">17:00</option>
+                                <option value="18:00">18:00</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="participants">参加予定人数 <span class="required">*</span></label>
+                            <select id="participants" name="participants" required>
+                                <option value="">選択してください</option>
+                                <option value="5名（3,000円）">5名（3,000円）</option>
+                                <option value="6名（3,600円）">6名（3,600円）</option>
+                                <option value="7名（4,200円）">7名（4,200円）</option>
+                                <option value="8名（4,800円）（定員）">8名（4,800円）（定員）</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="equipment">必要機材</label>
+                            <select id="equipment" name="equipment">
+                                <option value="">選択してください</option>
+                                <option value="大型モニター（HDMI）">大型モニター（HDMI）</option>
+                                <option value="大型モニター（AirPlay2）">大型モニター（AirPlay2）</option>
+                                <option value="モニター不要">モニター不要</option>
+                                <option value="その他相談">その他相談</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="message">詳細・ご要望 <span class="required">*</span></label>
+                        <textarea id="message" name="message" placeholder="利用目的の詳細、当日の流れ、特別な要望などがあればお書きください" required></textarea>
+                    </div>
+
+                    <button type="submit" class="submit-btn" id="submitBtn">
+                        予約お問い合わせを送信
+                    </button>
+                    
+                    <p style="text-align: center; margin-top: 1rem; color: #e74c3c; font-size: 0.9rem; line-height: 1.4;">
+                        数時間経っても確認メールが届かない場合は、再度お申し込みいただくか直接お電話ください。
+                    </p>
+                </form>
+
+                <div id="responseMessage"></div>
+
+                <div class="contact-alternatives">
+                    <h3>その他のお問い合わせ方法</h3>
+                    <p>お急ぎの場合やご不明点がございましたら、お気軽にご連絡ください。</p>
+                    <div class="contact-methods">
+                        <a href="tel:090-6738-1465" class="contact-method">
+                            <strong>📞</strong>
+                            <span>電話予約</span>
+                        </a>
+                        <a href="mailto:smart.teraco@gmail.com" class="contact-method">
+                            <strong>✉️</strong>
+                            <span>メール</span>
+                        </a>
+                        <a href="https://lin.ee/tkYJ7Cw" target="_blank" class="contact-method">
+                            <strong>💬</strong>
+                            <span>LINE</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // EmailJS初期化
+        (function() {
+            emailjs.init("YOUR_EMAILJS_USER_ID"); // 実際のEmailJS User IDに変更してください
+        })();
+
+        // チェックボックスの視覚効果
+        document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const item = this.closest('.checkbox-item');
+                if (this.checked) {
+                    item.classList.add('selected');
+                } else {
+                    item.classList.remove('selected');
+                }
+            });
+        });
+
+        // フォーム送信処理
+        document.getElementById('contactForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('submitBtn');
+            const responseMessage = document.getElementById('responseMessage');
+            
+            // ボタンを無効化
+            submitBtn.disabled = true;
+            submitBtn.textContent = '送信中...';
+            
+            // 選択された利用用途を取得
+            const selectedUsages = [];
+            document.querySelectorAll('input[name="usage_types"]:checked').forEach(usage => {
+                selectedUsages.push(usage.value);
+            });
+            
+            if (selectedUsages.length === 0) {
+                responseMessage.innerHTML = '<div class="error-message">利用用途を少なくとも1つ選択してください。</div>';
+                submitBtn.disabled = false;
+                submitBtn.textContent = '予約お問い合わせを送信';
+                return;
+            }
+            
+            // 時間の整合性チェック
+            const startTime = document.getElementById('start_time').value;
+            const endTime = document.getElementById('end_time').value;
+            
+            if (startTime && endTime && startTime >= endTime) {
+                responseMessage.innerHTML = '<div class="error-message">終了時間は開始時間より後に設定してください。</div>';
+                submitBtn.disabled = false;
+                submitBtn.textContent = '予約お問い合わせを送信';
+                return;
+            }
+            
+            // フォームデータを準備
+            const formData = {
+                name: document.getElementById('name').value,
+                organization: document.getElementById('organization').value || '未入力',
+                email: document.getElementById('email').value,
+                phone: document.getElementById('phone').value,
+                usage_types: selectedUsages.join(', '),
+                date: document.getElementById('date').value,
+                start_time: startTime,
+                end_time: endTime,
+                time_range: startTime + ' - ' + endTime,
+                participants: document.getElementById('participants').value,
+                equipment: document.getElementById('equipment').value || '未選択',
+                message: document.getElementById('message').value,
+                form_type: 'レンタルスペース予約お問い合わせ'
+            };
+            
+            // EmailJSで送信
+            emailjs.send('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', formData)
+                .then(function(response) {
+                    responseMessage.innerHTML = '<div class="success-message">予約お問い合わせありがとうございます。空き状況を確認後、24時間以内にご連絡いたします。</div>';
+                    document.getElementById('contactForm').reset();
+                    // チェックボックスの選択状態をリセット
+                    document.querySelectorAll('.checkbox-item').forEach(item => {
+                        item.classList.remove('selected');
+                    });
+                }, function(error) {
+                    responseMessage.innerHTML = '<div class="error-message">送信に失敗しました。お手数ですが、直接お電話でお問い合わせください。</div>';
+                });
+            
+            // ボタンを復元
+            submitBtn.disabled = false;
+            submitBtn.textContent = '予約お問い合わせを送信';
+        });
+    </script>
+</body>
+</html>

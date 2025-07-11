@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>外部講師 - TERACO.LABO</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Hiragino Sans', 'Yu Gothic', 'Meiryo', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* ヘッダー */
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        nav {
+            padding: 1rem 0;
+        }
+
+        nav .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo h1 {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 0.2rem;
+        }
+
+        .back-link {
+            background: #667eea;
+            color: white;
+            padding: 0.5rem 1.5rem;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .back-link:hover {
+            background: #5a6fd8;
+            transform: translateY(-2px);
+        }
+
+        /* メインコンテンツ */
+        main {
+            padding: 120px 0 80px;
+        }
+
+        .service-detail {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 24px;
+            padding: 3rem;
+            margin: 2rem 0;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.1);
+        }
+
+        .service-title {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: #667eea;
+            text-align: center;
+        }
+
+        .service-subtitle {
+            font-size: 1.2rem;
+            color: #666;
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .service-categories {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .category-card {
+            background: #f8f9fa;
+            border-radius: 16px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+            border-left: 4px solid #667eea;
+        }
+
+        .category-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .category-card h4 {
+            color: #667eea;
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+        }
+
+        .category-card ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .category-card li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .category-card li:last-child {
+            border-bottom: none;
+        }
+
+        .category-card li:before {
+            content: "✓ ";
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .feature-item {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 2rem;
+            border-radius: 16px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .feature-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+
+        .feature-item h4 {
+            color: #667eea;
+            margin-bottom: 1rem;
+        }
+
+        .pricing-info {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 3rem;
+            border-radius: 20px;
+            text-align: center;
+            margin: 3rem 0;
+        }
+
+        .contact-section {
+            background: #f8f9fa;
+            padding: 3rem;
+            border-radius: 20px;
+            text-align: center;
+            margin: 3rem 0;
+        }
+
+        .contact-btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 2rem;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin: 0.5rem;
+        }
+
+        .contact-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        @media (max-width: 768px) {
+            .service-title {
+                font-size: 2rem;
+            }
+            
+            .service-detail {
+                padding: 2rem;
+            }
+            
+            .service-categories {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            
+            .line-contact-section {
+                flex-direction: column !important;
+                text-align: center;
+            }
+            
+            .line-contact-content {
+                min-width: auto !important;
+            }
+            
+            .line-qr-code img {
+                margin: 1rem auto 0 !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="container">
+                <div class="logo">
+                    <h1>TERACO.LABO</h1>
+                </div>
+                <a href="index.html" class="back-link">← ホームに戻る</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <div class="container">
+            <div class="service-detail">
+                <div class="hero-image" style="width: 100%; height: 300px; background-image: url('images/instructor.png'); background-size: contain; background-position: center; background-repeat: no-repeat; border-radius: 16px; margin-bottom: 3rem; background-color: #f8f9fa;"></div>
+                
+                <h1 class="service-title">外部講師</h1>
+                <p class="service-subtitle">行政/企業向け講座受託、AI活用支援、ICT推進支援など、ご要望によりカスタマイズ可能です</p>
+
+                <div class="features-grid">
+                    <div class="feature-item">
+                        <h4>企業研修</h4>
+                        <p>DX推進、AI活用、デジタルスキル向上など企業のニーズに合わせた研修</p>
+                    </div>
+                    <div class="feature-item">
+                        <h4>行政向け講座</h4>
+                        <p>自治体職員向けICT研修、住民向けデジタル講座の企画・実施</p>
+                    </div>
+                    <div class="feature-item">
+                        <h4>AI活用支援</h4>
+                        <p>ChatGPT等のAIツール導入支援、業務効率化コンサルティング</p>
+                    </div>
+                    <div class="feature-item">
+                        <h4>ICT推進支援</h4>
+                        <p>デジタル化、業務効率化、ICT活用を一貫してサポート</p>
+                    </div>
+                </div>
+
+                <div class="service-categories">
+                    <div class="category-card">
+                        <h4>研修・講座内容</h4>
+                        <ul>
+                            <li>デジタルリテラシー向上</li>
+                            <li>AI・ChatGPT活用研修</li>
+                            <li>スマートフォン・タブレット操作</li>
+                            <li>動画編集・配信技術</li>
+                            <li>SNS活用・情報発信</li>
+                            <li>セキュリティ対策</li>
+                        </ul>
+                    </div>
+                    <div class="category-card">
+                        <h4>対象組織</h4>
+                        <ul>
+                            <li>地方自治体・行政機関</li>
+                            <li>中小企業・ベンチャー企業</li>
+                            <li>NPO・市民団体</li>
+                            <li>教育機関・学校</li>
+                            <li>商工会・経済団体</li>
+                            <li>医療・福祉施設</li>
+                        </ul>
+                    </div>
+                    <div class="category-card">
+                        <h4>実施形式</h4>
+                        <ul>
+                            <li>対面講座・セミナー</li>
+                            <li>オンライン研修</li>
+                            <li>ハイブリッド形式</li>
+                            <li>個別コンサルティング</li>
+                            <li>継続サポート</li>
+                            <li>カスタマイズ対応</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="pricing-info">
+                    <h3>料金体系</h3>
+                    <div style="margin-top: 2rem;">
+                        <strong>基本料金の目安</strong><br>
+                        講座１コマ（90分）：50,000円〜<br>
+                        資料作成・教材費など別途相談<br>
+                        お見積もりにて承ります<br>
+                        <small>※内容・人数・開催地により変動いたします</small>
+                    </div>
+                </div>
+
+                <div class="contact-section">
+                    <h3>お問い合わせ・お見積もりのご依頼</h3>
+                    <p>組織の課題やご要望をお聞かせいただき、<br>
+                    最適な研修・支援プランをご提案いたします。</p>
+                    
+                    <div style="margin-top: 2rem;">
+                        <a href="instructor-contact-form.html" class="contact-btn">
+                            メールでお問い合わせ
+                        </a>
+                        <a href="tel:090-6738-1465" class="contact-btn">
+                            電話でお問い合わせ
+                        </a>
+                    </div>
+                    
+                    <div class="line-contact-section" style="margin-top: 2rem; padding: 2rem; background: #f8f9fa; border-radius: 16px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1.5rem;">
+                        <div class="line-contact-content" style="flex: 1; min-width: 250px;">
+                            <h4 style="color: #00B900; margin-bottom: 1rem; font-size: 1.3rem;">LINEでお気軽にお問い合わせ</h4>
+                            <p style="color: #666; margin-bottom: 1.5rem; line-height: 1.6;">
+                                公式LINEアカウントから、いつでもお気軽にご質問・ご相談いただけます。<br>
+                                研修内容や日程についてお答えします。
+                            </p>
+                            <a href="https://lin.ee/tkYJ7Cw" target="_blank" class="line-btn" style="display: inline-block; background: #00B900; color: white; padding: 0.8rem 1.5rem; text-decoration: none; border-radius: 50px; font-weight: 600; transition: all 0.3s ease;">
+                                📱 LINEで友達追加
+                            </a>
+                        </div>
+                        <div class="line-qr-code" style="flex-shrink: 0;">
+                            <div style="text-align: center;">
+                                <p style="font-size: 0.9rem; color: #666; margin-bottom: 0.5rem;">QRコードでも追加できます</p>
+                                <div style="width: 120px; height: 120px; margin: 0 auto; border: 2px solid #ddd; border-radius: 8px; background: white; overflow: hidden;">
+                                    <img src="images/line-qr.png" alt="LINE友達追加QRコード" style="width: 100%; height: 100%; object-fit: cover;">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 2rem; font-size: 0.9rem; color: #666;">
+                        <strong>連絡先</strong><br>
+                        smart.teraco@gmail.com<br>
+                        090-6738-1465<br>
+                        宮崎県西都市大字三宅9437-9
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <script>
+        // LINEボタンのホバーエフェクトを追加
+        document.addEventListener('DOMContentLoaded', function() {
+            const lineBtn = document.querySelector('.line-btn');
+            if (lineBtn) {
+                lineBtn.addEventListener('mouseenter', function() {
+                    this.style.background = '#009A00';
+                    this.style.transform = 'translateY(-2px)';
+                    this.style.boxShadow = '0 8px 20px rgba(0, 185, 0, 0.3)';
+                });
+                
+                lineBtn.addEventListener('mouseleave', function() {
+                    this.style.background = '#00B900';
+                    this.style.transform = 'translateY(0)';
+                    this.style.boxShadow = 'none';
+                });
+            }
+        });
+    </script>
+</body>
+</html>

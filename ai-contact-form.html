@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIスクール お問い合わせフォーム - TERACO.LABO</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Hiragino Sans', 'Yu Gothic', 'Meiryo', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        nav {
+            padding: 1rem 0;
+        }
+
+        nav .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo h1 {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .back-link {
+            background: #667eea;
+            color: white;
+            padding: 0.5rem 1.5rem;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .back-link:hover {
+            background: #5a6fd8;
+            transform: translateY(-2px);
+        }
+
+        main {
+            padding: 120px 0 80px;
+        }
+
+        .form-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 24px;
+            padding: 3rem;
+            margin: 2rem 0;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-title {
+            font-size: 2.2rem;
+            margin-bottom: 1rem;
+            color: #667eea;
+            text-align: center;
+        }
+
+        .form-subtitle {
+            font-size: 1.1rem;
+            color: #666;
+            text-align: center;
+            margin-bottom: 3rem;
+            line-height: 1.8;
+        }
+
+        .form-group {
+            margin-bottom: 2rem;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .required {
+            color: #e74c3c;
+            margin-left: 0.3rem;
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .calendar-container {
+            position: relative;
+        }
+
+        .calendar-input {
+            cursor: pointer;
+        }
+
+        .submit-button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 3rem;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: block;
+            margin: 3rem auto 0;
+            min-width: 200px;
+        }
+
+        .submit-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .submit-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .success-message,
+        .error-message {
+            padding: 1rem;
+            border-radius: 12px;
+            margin: 1rem 0;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .plan-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        .plan-option {
+            padding: 1.5rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .plan-option:hover {
+            border-color: #667eea;
+        }
+
+        .plan-option.selected {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        .plan-option input[type="radio"] {
+            display: none;
+        }
+
+        .plan-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .plan-price {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 0.5rem;
+        }
+
+        .plan-details {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+
+        .plan-description {
+            font-size: 0.85rem;
+            color: #888;
+            line-height: 1.4;
+        }
+
+        .plan-status {
+            font-size: 0.9rem;
+            color: #f39c12;
+            font-weight: 600;
+            margin-top: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .form-container {
+                padding: 2rem;
+                margin: 1rem 0;
+            }
+            
+            .form-title {
+                font-size: 1.8rem;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .plan-options {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="container">
+                <div class="logo">
+                    <a href="index.html" style="text-decoration: none; color: inherit;">
+                        <h1>TERACO.LABO</h1>
+                    </a>
+                </div>
+                <a href="ai.html" class="back-link">← AIスクールに戻る</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <div class="container">
+            <div class="form-container">
+                <h1 class="form-title">AIスクール お問い合わせフォーム</h1>
+                <p class="form-subtitle">
+                    AIの世界への第一歩を踏み出しませんか？<br>
+                    以下のフォームにご記入いただければ、詳細なご案内をお送りいたします。
+                </p>
+
+                <form id="contactForm">
+                    <div class="form-group">
+                        <label for="name" class="form-label">お名前<span class="required">*</span></label>
+                        <input type="text" id="name" name="name" class="form-input" required>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="phone" class="form-label">電話番号<span class="required">*</span></label>
+                            <input type="tel" id="phone" name="phone" class="form-input" placeholder="090-1234-5678" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email" class="form-label">メールアドレス<span class="required">*</span></label>
+                            <input type="email" id="email" name="email" class="form-input" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">ご希望のコース<span class="required">*</span></label>
+                        <div class="plan-options">
+                            <label class="plan-option">
+                                <input type="radio" name="plan" value="ai-life" required>
+                                <div class="plan-name">AIライフコース</div>
+                                <div class="plan-price">12,000円</div>
+                                <div class="plan-details">60分 × 月4回</div>
+                                <div class="plan-description">AIってなに？から日常で使えるAI活用まで</div>
+                            </label>
+                            <label class="plan-option">
+                                <input type="radio" name="plan" value="ai-work" required>
+                                <div class="plan-name">AIワークコース</div>
+                                <div class="plan-price">16,000円</div>
+                                <div class="plan-details">60分 × 月4回</div>
+                                <div class="plan-description">仕事で使えるツールやWebページなどの開発</div>
+                            </label>
+                            <label class="plan-option">
+                                <input type="radio" name="plan" value="trial" required>
+                                <div class="plan-name">おためしレッスン</div>
+                                <div class="plan-price">3,000円</div>
+                                <div class="plan-details">60分 × 1回</div>
+                                <div class="plan-description">まずは触ってみよう　1回限りのお試し料金</div>
+                            </label>
+                            <label class="plan-option">
+                                <input type="radio" name="plan" value="community" required>
+                                <div class="plan-name">TERACO.LABOオンラインコミュニティ</div>
+                                <div class="plan-price">-</div>
+                                <div class="plan-details">準備中</div>
+                                <div class="plan-description">チームとなってTERACO.LABOと共に学ぶ</div>
+                                <div class="plan-status">準備中</div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="preferred-date" class="form-label">ご希望日程<span class="required">*</span></label>
+                        <div class="calendar-container">
+                            <input type="date" id="preferred-date" name="preferred-date" class="form-input calendar-input" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="message" class="form-label">ご質問・ご要望</label>
+                        <textarea id="message" name="message" class="form-textarea" placeholder="ご質問やご要望がございましたら、お気軽にお書きください。"></textarea>
+                    </div>
+
+                    <button type="submit" class="submit-button" id="submitBtn">
+                        お問い合わせを送信
+                    </button>
+                    
+                    <p style="text-align: center; margin-top: 1rem; color: #e74c3c; font-size: 0.9rem; line-height: 1.4;">
+                        数時間経っても確認メールが届かない場合は、再度お申し込みいただくか直接お電話ください。
+                    </p>
+                </form>
+
+                <div id="responseMessage"></div>
+            </div>
+        </div>
+    </main>
+
+    <!-- EmailJS SDK -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    
+    <script>
+        // EmailJS初期化（実際の本番環境では有効なキーを設定）
+        (function(){
+            // 実際の実装時には有効なPublic Keyを設定してください
+            // emailjs.init("YOUR_PUBLIC_KEY");
+        })();
+
+        // プラン選択の視覚的フィードバック
+        document.querySelectorAll('.plan-option input[type="radio"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                // 全ての選択肢から selected クラスを削除
+                document.querySelectorAll('.plan-option').forEach(option => {
+                    option.classList.remove('selected');
+                });
+                // 選択された選択肢に selected クラスを追加
+                this.closest('.plan-option').classList.add('selected');
+            });
+        });
+
+        // 今日の日付を最小値として設定
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('preferred-date').setAttribute('min', today);
+
+        // フォーム送信処理
+        document.getElementById('contactForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('submitBtn');
+            const responseMessage = document.getElementById('responseMessage');
+            
+            // ボタンを無効化
+            submitBtn.disabled = true;
+            submitBtn.textContent = '送信中...';
+            
+            // フォームデータを収集
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData.entries());
+            
+            try {
+                // メール送信処理
+                await sendContactEmail(data);
+                
+                // 成功メッセージを表示
+                responseMessage.innerHTML = `
+                    <div class="success-message">
+                        お問い合わせを受け付けました！<br>
+                        確認メールをお送りしましたので、ご確認ください。<br>
+                        2営業日以内にご連絡いたします。
+                    </div>
+                `;
+                
+                // フォームをリセット
+                this.reset();
+                document.querySelectorAll('.plan-option').forEach(option => {
+                    option.classList.remove('selected');
+                });
+                
+            } catch (error) {
+                console.error('送信エラー:', error);
+                // エラーメッセージを表示
+                responseMessage.innerHTML = `
+                    <div class="error-message">
+                        送信に失敗しました。お手数ですが、直接お電話（090-6738-1465）にてお問い合わせください。
+                    </div>
+                `;
+            } finally {
+                // ボタンを再有効化
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'お問い合わせを送信';
+            }
+        });
+        
+        // メール送信関数
+        async function sendContactEmail(data) {
+            // プラン名の変換
+            const planNames = {
+                'ai-life': 'AIライフコース（12,000円/月）',
+                'ai-work': 'AIワークコース（16,000円/月）',
+                'trial': 'おためしレッスン（3,000円）',
+                'community': 'TERACO.LABOオンラインコミュニティ（準備中）'
+            };
+            
+            const planName = planNames[data.plan];
+            const currentDate = new Date().toLocaleString('ja-JP');
+            
+            // 管理者宛メールの内容
+            const adminEmailParams = {
+                to_email: 'smart.teraco@gmail.com',
+                subject: '【AIスクール】新しいお問い合わせ',
+                from_name: data.name,
+                customer_name: data.name,
+                customer_phone: data.phone,
+                customer_email: data.email,
+                selected_plan: planName,
+                preferred_date: data['preferred-date'],
+                message: data.message || 'なし',
+                send_date: currentDate
+            };
+            
+            // お客様宛サンキューメールの内容
+            const customerEmailParams = {
+                to_email: data.email,
+                to_name: data.name,
+                subject: 'TERACO.LABO AIスクール：お問い合わせ受付完了',
+                selected_plan: planName,
+                preferred_date: data['preferred-date'],
+                send_date: currentDate
+            };
+            
+            // デモ用の処理（実際の送信はシミュレート）
+            console.log('=== 管理者宛メール ===');
+            console.log(`宛先: ${adminEmailParams.to_email}`);
+            console.log(`件名: ${adminEmailParams.subject}`);
+            console.log(`内容:`);
+            console.log(`お名前: ${adminEmailParams.customer_name}`);
+            console.log(`電話番号: ${adminEmailParams.customer_phone}`);
+            console.log(`メールアドレス: ${adminEmailParams.customer_email}`);
+            console.log(`希望コース: ${adminEmailParams.selected_plan}`);
+            console.log(`希望日程: ${adminEmailParams.preferred_date}`);
+            console.log(`メッセージ: ${adminEmailParams.message}`);
+            console.log(`送信日時: ${adminEmailParams.send_date}`);
+            
+            console.log('\n=== お客様宛サンキューメール ===');
+            console.log(`宛先: ${customerEmailParams.to_email}`);
+            console.log(`件名: ${customerEmailParams.subject}`);
+            console.log(`お名前: ${customerEmailParams.to_name} 様`);
+            console.log(`希望コース: ${customerEmailParams.selected_plan}`);
+            console.log(`希望日程: ${customerEmailParams.preferred_date}`);
+            
+            console.log('\n=== SMS送信 ===');
+            console.log(`宛先: ${data.phone}`);
+            console.log(`内容: ${data.name}様、TERACO.LABO AIスクールへのお問い合わせありがとうございます。詳細は確認メールをご確認ください。`);
+            
+            // 送信処理のシミュレート（2秒待機）
+            await new Promise(resolve => setTimeout(resolve, 2000));
+        }
+    </script>
+</body>
+</html>

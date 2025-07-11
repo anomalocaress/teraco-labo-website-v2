@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>スマホ教室 - TERACO.LABO</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Hiragino Sans', 'Yu Gothic', 'Meiryo', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        nav {
+            padding: 1rem 0;
+        }
+
+        nav .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo h1 {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .back-link {
+            background: #667eea;
+            color: white;
+            padding: 0.5rem 1.5rem;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .back-link:hover {
+            background: #5a6fd8;
+            transform: translateY(-2px);
+        }
+
+        main {
+            padding: 120px 0 80px;
+        }
+
+        .service-detail {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 24px;
+            padding: 3rem;
+            margin: 2rem 0;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.1);
+        }
+
+        .service-title {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: #667eea;
+            text-align: center;
+        }
+
+        .service-subtitle {
+            font-size: 1.2rem;
+            color: #666;
+            text-align: center;
+            margin-bottom: 3rem;
+            line-height: 1.8;
+        }
+
+        .features-section {
+            margin: 3rem 0;
+        }
+
+        .features-title {
+            font-size: 1.8rem;
+            color: #667eea;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .feature-card {
+            background: #f8f9fa;
+            padding: 2rem;
+            border-radius: 16px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .feature-card h4 {
+            color: #667eea;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .feature-card p {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .service-content {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 3rem;
+            border-radius: 20px;
+            margin: 3rem 0;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .content-item {
+            background: white;
+            padding: 2rem;
+            border-radius: 16px;
+            border-left: 4px solid #667eea;
+        }
+
+        .content-item h4 {
+            color: #667eea;
+            margin-bottom: 1rem;
+        }
+
+        .content-item ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .content-item li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .content-item li:last-child {
+            border-bottom: none;
+        }
+
+        .content-item li:before {
+            content: "✓ ";
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .pricing-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 3rem;
+            border-radius: 20px;
+            margin: 3rem 0;
+        }
+
+        .pricing-title {
+            font-size: 2rem;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .pricing-card {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 2rem;
+            border-radius: 16px;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .pricing-card h4 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .price {
+            font-size: 2rem;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .pricing-details {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .contact-section {
+            background: #f8f9fa;
+            padding: 3rem;
+            border-radius: 20px;
+            text-align: center;
+            margin: 3rem 0;
+        }
+
+        .contact-btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 2rem;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin: 0.5rem;
+        }
+
+        .contact-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        @media (max-width: 768px) {
+            .service-title {
+                font-size: 2rem;
+            }
+            
+            .service-detail {
+                padding: 2rem;
+            }
+            
+            .pricing-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .line-contact-section {
+                flex-direction: column !important;
+                text-align: center;
+            }
+            
+            .line-contact-content {
+                min-width: auto !important;
+            }
+            
+            .line-qr-code img {
+                margin: 1rem auto 0 !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="container">
+                <div class="logo">
+                    <a href="index.html" style="text-decoration: none; color: inherit;">
+                        <h1>TERACO.LABO</h1>
+                    </a>
+                </div>
+                <a href="index.html" class="back-link">← ホームに戻る</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <div class="container">
+            <div class="service-detail">
+                <div class="hero-image" style="width: 100%; height: 300px; background-image: url('images/smartphone-class.png'); background-size: contain; background-position: center; background-repeat: no-repeat; border-radius: 16px; margin-bottom: 3rem; background-color: #f8f9fa;"></div>
+                
+                <h1 class="service-title">スマホ教室</h1>
+                <p class="service-subtitle">100回聞いても大丈夫♪<br>「分からない」が「できる！楽しい！」に変わる<br>カフェ感覚でゆったり学べる雰囲気</p>
+
+                <div class="features-section">
+                    <h3 class="features-title">教室の特徴</h3>
+                    <div class="features-grid">
+                        <div class="feature-card">
+                            <h4>少人数による個別指導</h4>
+                            <p>一人ひとりのペースに合わせて、きめ細やかなサポートを行います。</p>
+                        </div>
+                        <div class="feature-card">
+                            <h4>親切丁寧な指導</h4>
+                            <p>何度でも質問OK。理解できるまで優しく丁寧にお教えします。</p>
+                        </div>
+                        <div class="feature-card">
+                            <h4>手を動かして学ぶ</h4>
+                            <p>実際にスマホを操作しながら体験的に学習。身につきやすい方法で進めます。</p>
+                        </div>
+                        <div class="feature-card">
+                            <h4>実用的な操作方法</h4>
+                            <p>日常生活で本当に使える機能を中心に、すぐに役立つ内容をお教えします。</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="service-content">
+                    <h3 style="text-align: center; margin-bottom: 2rem; color: #667eea;">サービス内容</h3>
+                    <div class="content-grid">
+                        <div class="content-item">
+                            <h4>基本操作</h4>
+                            <ul>
+                                <li>電源の入れ方・切り方</li>
+                                <li>画面の見方・操作方法</li>
+                                <li>文字入力の基本</li>
+                                <li>電話のかけ方・受け方</li>
+                                <li>連絡先の登録・管理</li>
+                            </ul>
+                        </div>
+                        <div class="content-item">
+                            <h4>コミュニケーション</h4>
+                            <ul>
+                                <li>LINEの使い方</li>
+                                <li>メッセージの送受信</li>
+                                <li>写真・動画の共有</li>
+                                <li>ビデオ通話の方法</li>
+                                <li>グループの作り方</li>
+                            </ul>
+                        </div>
+                        <div class="content-item">
+                            <h4>写真・カメラ</h4>
+                            <ul>
+                                <li>写真の撮り方</li>
+                                <li>動画の撮影方法</li>
+                                <li>写真の保存・整理</li>
+                                <li>家族との写真共有</li>
+                                <li>プリント方法</li>
+                            </ul>
+                        </div>
+                        <div class="content-item">
+                            <h4>便利機能</h4>
+                            <ul>
+                                <li>インターネット検索</li>
+                                <li>地図・ナビゲーション</li>
+                                <li>天気予報の確認</li>
+                                <li>キャッシュレス決済</li>
+                                <li>アプリのダウンロード</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pricing-section">
+                    <h3 class="pricing-title">料金プラン</h3>
+                    <div class="pricing-grid">
+                        <div class="pricing-card">
+                            <h4>グループレッスン</h4>
+                            <div class="price">9,900円</div>
+                            <div class="pricing-details">
+                                90分 × 月4回<br>
+                                少人数制でしっかり学習<br>
+                                質問し放題
+                            </div>
+                        </div>
+                        <div class="pricing-card">
+                            <h4>グループライト</h4>
+                            <div class="price">6,000円</div>
+                            <div class="pricing-details">
+                                90分 × 月2回<br>
+                                気軽に始められるプラン<br>
+                                基本操作を中心に
+                            </div>
+                        </div>
+                        <div class="pricing-card">
+                            <h4>個人レッスン</h4>
+                            <div class="price">カスタマイズ</div>
+                            <div class="pricing-details">
+                                マンツーマン指導<br>
+                                個別のペースで学習<br>
+                                ご要望に応じて対応
+                            </div>
+                        </div>
+                        <div class="pricing-card">
+                            <h4>おためしレッスン</h4>
+                            <div class="price">2,200円</div>
+                            <div class="pricing-details">
+                                90分 × 1回<br>
+                                好きな講座を選んで<br>
+                                1回限りのお試し料金
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 2rem; padding: 1rem; background: rgba(255, 255, 255, 0.7); border-radius: 8px; font-size: 0.9rem; color: #666; text-align: left;">
+                        ※入会金5,500円が別途必要です。<br>
+                        ※料金は全て税込です。
+                    </div>
+                </div>
+
+                <div class="contact-section">
+                    <h3>お問い合わせ・体験会のお申し込み</h3>
+                    <p>スマホ教室の詳細や体験会についてお気軽にお問い合わせください。<br>
+                    あなたに合ったプランをご提案いたします。</p>
+                    
+                    <div style="margin-top: 2rem;">
+                        <a href="contact-form.html" class="contact-btn">
+                            メールでお問い合わせ
+                        </a>
+                        <a href="tel:090-6738-1465" class="contact-btn">
+                            電話でお問い合わせ
+                        </a>
+                    </div>
+                    
+                    <div class="line-contact-section" style="margin-top: 2rem; padding: 2rem; background: #f8f9fa; border-radius: 16px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1.5rem;">
+                        <div class="line-contact-content" style="flex: 1; min-width: 250px;">
+                            <h4 style="color: #00B900; margin-bottom: 1rem; font-size: 1.3rem;">LINEでお気軽にお問い合わせ</h4>
+                            <p style="color: #666; margin-bottom: 1.5rem; line-height: 1.6;">
+                                公式LINEアカウントから、いつでもお気軽にご質問・ご相談いただけます。<br>
+                                レッスン内容や日程についてお答えします。
+                            </p>
+                            <a href="https://lin.ee/tkYJ7Cw" target="_blank" class="line-btn" style="display: inline-block; background: #00B900; color: white; padding: 0.8rem 1.5rem; text-decoration: none; border-radius: 50px; font-weight: 600; transition: all 0.3s ease;">
+                                📱 LINEで友達追加
+                            </a>
+                        </div>
+                        <div class="line-qr-code" style="flex-shrink: 0;">
+                            <div style="text-align: center;">
+                                <p style="font-size: 0.9rem; color: #666; margin-bottom: 0.5rem;">QRコードでも追加できます</p>
+                                <div style="width: 120px; height: 120px; margin: 0 auto; border: 2px solid #ddd; border-radius: 8px; background: white; overflow: hidden;">
+                                    <img src="images/line-qr.png" alt="LINE友達追加QRコード" style="width: 100%; height: 100%; object-fit: cover;">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 2rem; font-size: 0.9rem; color: #666;">
+                        <strong>連絡先</strong><br>
+                        smart.teraco@gmail.com<br>
+                        090-6738-1465<br>
+                        宮崎県西都市大字三宅9437-9
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <script>
+        // LINEボタンのホバーエフェクトを追加
+        document.addEventListener('DOMContentLoaded', function() {
+            const lineBtn = document.querySelector('.line-btn');
+            if (lineBtn) {
+                lineBtn.addEventListener('mouseenter', function() {
+                    this.style.background = '#009A00';
+                    this.style.transform = 'translateY(-2px)';
+                    this.style.boxShadow = '0 8px 20px rgba(0, 185, 0, 0.3)';
+                });
+                
+                lineBtn.addEventListener('mouseleave', function() {
+                    this.style.background = '#00B900';
+                    this.style.transform = 'translateY(0)';
+                    this.style.boxShadow = 'none';
+                });
+            }
+        });
+    </script>
+</body>
+</html>

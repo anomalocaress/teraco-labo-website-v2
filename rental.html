@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>レンタルスペース - TERACO.LABO</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Hiragino Sans', 'Yu Gothic', 'Meiryo', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        nav {
+            padding: 1rem 0;
+        }
+
+        nav .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo h1 {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .back-link {
+            background: #667eea;
+            color: white;
+            padding: 0.5rem 1.5rem;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .back-link:hover {
+            background: #5a6fd8;
+            transform: translateY(-2px);
+        }
+
+        main {
+            padding: 120px 0 80px;
+        }
+
+        .service-detail {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 24px;
+            padding: 3rem;
+            margin: 2rem 0;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.1);
+        }
+
+        .service-title {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: #667eea;
+            text-align: center;
+        }
+
+        .service-subtitle {
+            font-size: 1.2rem;
+            color: #666;
+            text-align: center;
+            margin-bottom: 3rem;
+            line-height: 1.8;
+        }
+
+        .features-section {
+            margin: 3rem 0;
+        }
+
+        .features-title {
+            font-size: 1.8rem;
+            color: #667eea;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .feature-card {
+            background: #f8f9fa;
+            padding: 2rem;
+            border-radius: 16px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .feature-card h4 {
+            color: #667eea;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .feature-card p {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .space-info {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 3rem;
+            border-radius: 20px;
+            margin: 3rem 0;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .info-item {
+            background: white;
+            padding: 2rem;
+            border-radius: 16px;
+            border-left: 4px solid #667eea;
+        }
+
+        .info-item h4 {
+            color: #667eea;
+            margin-bottom: 1rem;
+        }
+
+        .info-item ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .info-item li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .info-item li:last-child {
+            border-bottom: none;
+        }
+
+        .info-item li:before {
+            content: "・ ";
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .pricing-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 3rem;
+            border-radius: 20px;
+            margin: 3rem 0;
+        }
+
+        .pricing-title {
+            font-size: 2rem;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .pricing-table {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 2rem;
+            border-radius: 16px;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .pricing-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .pricing-row:last-child {
+            border-bottom: none;
+        }
+
+        .contact-section {
+            background: #f8f9fa;
+            padding: 3rem;
+            border-radius: 20px;
+            text-align: center;
+            margin: 3rem 0;
+        }
+
+        .contact-btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 2rem;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin: 0.5rem;
+        }
+
+        .contact-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        @media (max-width: 768px) {
+            .service-title {
+                font-size: 2rem;
+            }
+            
+            .service-detail {
+                padding: 2rem;
+            }
+            
+            .pricing-row {
+                flex-direction: column;
+                text-align: center;
+                gap: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="container">
+                <div class="logo">
+                    <a href="index.html" style="text-decoration: none; color: inherit;">
+                        <h1>TERACO.LABO</h1>
+                    </a>
+                </div>
+                <a href="index.html" class="back-link">← ホームに戻る</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <div class="container">
+            <div class="service-detail">
+                <div class="hero-image" style="width: 100%; height: 300px; background-image: url('images/rental-space.png'); background-size: contain; background-position: center; background-repeat: no-repeat; border-radius: 16px; margin-bottom: 3rem; background-color: #f8f9fa;"></div>
+                
+                <h1 class="service-title">レンタルスペース</h1>
+                <p class="service-subtitle">少人数の教室・勉強会・ワークショップに最適な落ち着いた空間、講師や先生の営利利用も可能です。</p>
+
+                <div class="features-section">
+                    <h3 class="features-title">スペースの特徴</h3>
+                    <div class="features-grid">
+                        <div class="feature-card">
+                            <h4>定員8名</h4>
+                            <p>少人数での密度の濃い学習や会議に最適なサイズです。</p>
+                        </div>
+                        <div class="feature-card">
+                            <h4>駐車場無料</h4>
+                            <p>お車でお越しの際も安心。無料駐車場をご利用いただけます。</p>
+                        </div>
+                        <div class="feature-card">
+                            <h4>大型モニター完備</h4>
+                            <p>プレゼンテーションや映像視聴に便利な大型モニターを設置。</p>
+                        </div>
+                        <div class="feature-card">
+                            <h4>落ち着いた環境</h4>
+                            <p>集中して学習や作業ができる静かで快適な空間です。</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-info">
+                    <h3 style="text-align: center; margin-bottom: 2rem; color: #667eea;">スペース詳細</h3>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <h4>設備・備品</h4>
+                            <ul>
+                                <li>大型モニター（HDMI・AirPlay2接続可能）</li>
+                                <li>テーブル・椅子（8名分）</li>
+                                <li>Wi-Fi完備</li>
+                                <li>エアコン</li>
+                                <li>延長コード・電源タップ</li>
+                            </ul>
+                        </div>
+                        <div class="info-item">
+                            <h4>利用用途例</h4>
+                            <ul>
+                                <li>少人数セミナー・勉強会</li>
+                                <li>ワークショップ・講座</li>
+                                <li>会議・打ち合わせ</li>
+                                <li>読書会・サークル活動</li>
+                                <li>個人指導・コーチング</li>
+                                <li>撮影・配信</li>
+                            </ul>
+                        </div>
+                        <div class="info-item">
+                            <h4>アクセス</h4>
+                            <ul>
+                                <li>宮崎県西都市大字三宅9437-9</li>
+                                <li>西都ICから車で約10分</li>
+                                <li>無料駐車場完備</li>
+                                <li>公共交通機関でのアクセス可</li>
+                                <li>静かな住宅地に立地</li>
+                            </ul>
+                        </div>
+                        <div class="info-item">
+                            <h4>利用時間</h4>
+                            <ul>
+                                <li>平日：10:00〜18:00</li>
+                                <li>土日祝：10:00〜18:00</li>
+                                <li>1時間単位での利用可能</li>
+                                <li>事前予約制</li>
+                                <li>当日予約も相談可</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pricing-section">
+                    <h3 class="pricing-title">利用料金</h3>
+                    <div class="pricing-table" style="text-align: center;">
+                        <div class="pricing-row" style="justify-content: center; gap: 3rem;">
+                            <span><strong>1時間</strong></span>
+                            <span><strong>3,000円〜（1人600円）</strong></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin: 3rem 0; padding: 2rem; background: #f8f9fa; border-radius: 12px; border-left: 4px solid #ffc107;">
+                    <h4 style="color: #856404; margin-bottom: 1rem;">【ご利用にあたっての注意事項】</h4>
+                    <ul style="list-style: none; padding: 0; color: #333; line-height: 1.8;">
+                        <li>・ご利用は5名様以上、料金は3,000円から承っております。</li>
+                        <li>・ご予約は、前日の17:00までにお願いいたします。</li>
+                        <li>・トイレは徒歩圏内のコンビニエンスストアをご利用ください。オーナー不在時は、施設内のトイレはご利用いただけません。</li>
+                        <li>・敷地内での飲食・喫煙はご遠慮ください。また、ゴミは各自でお持ち帰りをお願いします。</li>
+                        <li>・防犯のため、セキュリティカメラにて録画をさせていただいております。</li>
+                        <li>・万が一家屋や機材に著しい破損があった場合、修理・交換にかかる費用をご請求させていただくことがございます。</li>
+                    </ul>
+                </div>
+
+                <div class="contact-section">
+                    <h3>スペース予約・お問い合わせ</h3>
+                    <p>ご利用希望日時をお知らせください。<br>
+                    空き状況を確認してご連絡いたします。</p>
+                    
+                    <div style="margin-top: 2rem;">
+                        <a href="rental-contact-form.html" class="contact-btn">
+                            予約お問合せ
+                        </a>
+                        <a href="tel:090-6738-1465" class="contact-btn">
+                            電話で予約
+                        </a>
+                    </div>
+                    
+                    <div style="margin-top: 2rem; font-size: 0.9rem; color: #666;">
+                        <strong>連絡先</strong><br>
+                        smart.teraco@gmail.com<br>
+                        090-6738-1465<br>
+                        宮崎県西都市大字三宅9437-9
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

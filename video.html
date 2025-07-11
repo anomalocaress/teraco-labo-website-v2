@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>映像制作 - TERACO.LABO</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Hiragino Sans', 'Yu Gothic', 'Meiryo', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* ヘッダー */
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        nav {
+            padding: 1rem 0;
+        }
+
+        nav .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo h1 {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 0.2rem;
+        }
+
+        .back-link {
+            background: #667eea;
+            color: white;
+            padding: 0.5rem 1.5rem;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .back-link:hover {
+            background: #5a6fd8;
+            transform: translateY(-2px);
+        }
+
+        /* メインコンテンツ */
+        main {
+            padding: 120px 0 80px;
+        }
+
+        .service-detail {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 24px;
+            padding: 3rem;
+            margin: 2rem 0;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.1);
+        }
+
+        .service-title {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: #667eea;
+            text-align: center;
+        }
+
+        .service-subtitle {
+            font-size: 1.2rem;
+            color: #666;
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .video-item {
+            background: #f8f9fa;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .video-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .video-embed {
+            width: 100%;
+            height: 200px;
+            border: none;
+        }
+
+        .video-info {
+            padding: 1.5rem;
+            display: none;
+        }
+
+        .video-info h4 {
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .video-info p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .all-videos-link {
+            text-align: center;
+            margin: 3rem 0;
+        }
+
+        .all-videos-btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 2rem;
+            text-decoration: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .all-videos-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .service-features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .feature-card {
+            background: #f8f9fa;
+            padding: 2rem;
+            border-radius: 16px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+
+        .feature-card h4 {
+            color: #667eea;
+            margin-bottom: 1rem;
+        }
+
+        .contact-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 3rem;
+            border-radius: 20px;
+            text-align: center;
+            margin: 3rem 0;
+        }
+
+        .contact-btn {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 1rem 2rem;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+        }
+
+        .contact-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            .service-title {
+                font-size: 2rem;
+            }
+            
+            .service-detail {
+                padding: 2rem;
+            }
+            
+            .video-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="container">
+                <div class="logo">
+                    <a href="index.html" style="text-decoration: none; color: inherit;">
+                        <h1>TERACO.LABO</h1>
+                    </a>
+                </div>
+                <a href="index.html" class="back-link">← ホームに戻る</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <div class="container">
+            <div class="service-detail">
+                <div class="hero-image" style="width: 100%; height: 300px; background-image: url('images/video-production.png'); background-size: contain; background-position: center; background-repeat: no-repeat; border-radius: 16px; margin-bottom: 3rem; background-color: #f8f9fa;"></div>
+                
+                <h1 class="service-title">映像制作</h1>
+                <p class="service-subtitle">地域PR動画、事業紹介ムービー、ドローン撮影など「伝わる」クリエイティブをご提供いたします</p>
+
+                <div class="service-features">
+                    <div class="feature-card">
+                        <h4>企業PR動画</h4>
+                        <p>事業内容や企業理念を分かりやすく伝える動画制作</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>地域PR動画</h4>
+                        <p>観光地や地域の魅力を効果的にアピールする映像</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>ドローン撮影</h4>
+                        <p>空撮による迫力ある映像で印象的な作品を制作</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>ポートレート</h4>
+                        <p>モデルや被写体を最高の映像美と演出で表現</p>
+                    </div>
+                </div>
+
+                <h3 style="text-align: center; margin: 3rem 0 2rem; color: #667eea;">制作実績</h3>
+                <div class="video-grid">
+                    <div class="video-item">
+                        <iframe class="video-embed" 
+                                src="https://www.youtube.com/embed/B8Z27VNIxF4"
+                                title="映像制作実績1" 
+                                allowfullscreen>
+                        </iframe>
+                    </div>
+                    <div class="video-item">
+                        <iframe class="video-embed" 
+                                src="https://www.youtube.com/embed/sNmmN-McRzk"
+                                title="映像制作実績2" 
+                                allowfullscreen>
+                        </iframe>
+                    </div>
+                    <div class="video-item">
+                        <iframe class="video-embed" 
+                                src="https://www.youtube.com/embed/nSOKp7Kkrho"
+                                title="映像制作実績3" 
+                                allowfullscreen>
+                        </iframe>
+                    </div>
+                    <div class="video-item">
+                        <iframe class="video-embed" 
+                                src="https://www.youtube.com/embed/XdaCF5QqoBA"
+                                title="映像制作実績4" 
+                                allowfullscreen>
+                        </iframe>
+                    </div>
+                </div>
+
+                <div class="all-videos-link">
+                    <a href="https://www.youtube.com/@fujisaki_eizo_design" class="all-videos-btn" target="_blank">
+                        すべての作品を見る →
+                    </a>
+                </div>
+
+                <div class="contact-section">
+                    <h3>映像制作のご依頼・お見積もり</h3>
+                    <p>企業・行政向けの映像制作を承っております。<br>
+                    ご要望に応じてカスタマイズいたしますので、お気軽にお問い合わせください。</p>
+                    <a href="video-contact-form.html" class="contact-btn">お見積もりを依頼する</a>
+                    
+                    <div style="margin-top: 2rem; display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
+                        <a href="tel:090-6738-1465" style="color: white; text-decoration: none; padding: 0.8rem 1.5rem; background: rgba(255,255,255,0.2); border-radius: 25px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.3); transition: all 0.3s ease;">📞 電話で相談</a>
+                        <a href="https://lin.ee/tkYJ7Cw" target="_blank" style="color: white; text-decoration: none; padding: 0.8rem 1.5rem; background: rgba(255,255,255,0.2); border-radius: 25px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.3); transition: all 0.3s ease;">💬 LINEで相談</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

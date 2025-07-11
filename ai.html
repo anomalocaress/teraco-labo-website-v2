@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIスクール - TERACO.LABO</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Hiragino Sans', 'Yu Gothic', 'Meiryo', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        nav {
+            padding: 1rem 0;
+        }
+
+        nav .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo h1 {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .back-link {
+            background: #667eea;
+            color: white;
+            padding: 0.5rem 1.5rem;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .back-link:hover {
+            background: #5a6fd8;
+            transform: translateY(-2px);
+        }
+
+        main {
+            padding: 120px 0 80px;
+        }
+
+        .service-detail {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 24px;
+            padding: 3rem;
+            margin: 2rem 0;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.1);
+        }
+
+        .service-title {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: #667eea;
+            text-align: center;
+        }
+
+        .service-subtitle {
+            font-size: 1.2rem;
+            color: #666;
+            text-align: center;
+            margin-bottom: 3rem;
+            line-height: 1.8;
+        }
+
+        .status-banner {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 16px;
+            text-align: center;
+            margin: 2rem 0;
+        }
+
+        .status-banner h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .preview-section {
+            margin: 3rem 0;
+        }
+
+        .preview-title {
+            font-size: 1.8rem;
+            color: #667eea;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .preview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .preview-card {
+            background: #f8f9fa;
+            padding: 2rem;
+            border-radius: 16px;
+            border-left: 4px solid #667eea;
+        }
+
+        .preview-card h4 {
+            color: #667eea;
+            margin-bottom: 1rem;
+        }
+
+        .preview-card ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .preview-card li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .preview-card li:last-child {
+            border-bottom: none;
+        }
+
+        .preview-card li:before {
+            content: "・ ";
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .contact-section {
+            background: #f8f9fa;
+            padding: 3rem;
+            border-radius: 20px;
+            text-align: center;
+            margin: 3rem 0;
+        }
+
+        .contact-btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 2rem;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin: 0.5rem;
+        }
+
+        .contact-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .pricing-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 3rem;
+            border-radius: 20px;
+            margin: 3rem 0;
+        }
+
+        .pricing-title {
+            font-size: 2rem;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .pricing-card {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 2rem;
+            border-radius: 16px;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            text-align: center;
+        }
+
+        .pricing-card h4 {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+        }
+
+        .price {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+
+        .pricing-details {
+            line-height: 1.6;
+            opacity: 0.9;
+        }
+
+        @media (max-width: 768px) {
+            .service-title {
+                font-size: 2rem;
+            }
+            
+            .service-detail {
+                padding: 2rem;
+            }
+            
+            .preview-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .pricing-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .line-contact-section {
+                flex-direction: column !important;
+                text-align: center;
+            }
+            
+            .line-contact-content {
+                min-width: auto !important;
+            }
+            
+            .line-qr-code img {
+                margin: 1rem auto 0 !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="container">
+                <div class="logo">
+                    <a href="index.html" style="text-decoration: none; color: inherit;">
+                        <h1>TERACO.LABO</h1>
+                    </a>
+                </div>
+                <a href="index.html" class="back-link">← ホームに戻る</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <div class="container">
+            <div class="service-detail">
+                <div class="hero-image" style="width: 100%; height: 300px; background-image: url('images/ai-school.png'); background-size: contain; background-position: center; background-repeat: no-repeat; border-radius: 16px; margin-bottom: 3rem; background-color: #f8f9fa;"></div>
+                
+                <h1 class="service-title">AIスクール</h1>
+                <p class="service-subtitle">話題のChatGPTやAIツールを、生活や仕事に活かす使い方を丁寧にレクチャー</p>
+
+
+                <div class="preview-section">
+                    <h3 class="preview-title">講座内容</h3>
+                    <div class="preview-grid">
+                        <div class="preview-card">
+                            <h4>ChatGPT基礎講座</h4>
+                            <ul>
+                                <li>ChatGPTの基本的な使い方</li>
+                                <li>効果的な質問の仕方</li>
+                                <li>日常生活での活用法</li>
+                                <li>文章作成のサポート</li>
+                                <li>情報収集のテクニック</li>
+                            </ul>
+                        </div>
+                        <div class="preview-card">
+                            <h4>ビジネス活用講座</h4>
+                            <ul>
+                                <li>業務効率化への応用</li>
+                                <li>メール・文書作成支援</li>
+                                <li>アイデア発想のサポート</li>
+                                <li>データ分析の補助</li>
+                                <li>プレゼン資料作成</li>
+                            </ul>
+                        </div>
+                        <div class="preview-card">
+                            <h4>画像・動画AI活用</h4>
+                            <ul>
+                                <li>画像生成AIの使い方</li>
+                                <li>写真編集AIツール</li>
+                                <li>動画編集AI活用</li>
+                                <li>デザイン制作支援</li>
+                                <li>創作活動への応用</li>
+                            </ul>
+                        </div>
+                        <div class="preview-card">
+                            <h4>安全・倫理的利用</h4>
+                            <ul>
+                                <li>AI利用時の注意点</li>
+                                <li>情報の信頼性確認</li>
+                                <li>プライバシー保護</li>
+                                <li>著作権への配慮</li>
+                                <li>適切な利用ガイドライン</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pricing-section">
+                    <h3 class="pricing-title">料金プラン</h3>
+                    <div class="pricing-grid">
+                        <div class="pricing-card">
+                            <h4>AIライフコース</h4>
+                            <div class="price">12,000円</div>
+                            <div class="pricing-details">
+                                60分 × 月4回<br>
+                                AIってなに？から日常で使えるAI活用まで<br>
+                                初心者大歓迎
+                            </div>
+                        </div>
+                        <div class="pricing-card">
+                            <h4>AIワークコース</h4>
+                            <div class="price">16,000円</div>
+                            <div class="pricing-details">
+                                60分 × 月4回<br>
+                                仕事で使えるツールやWebページなどの開発<br>
+                                実践的スキル習得
+                            </div>
+                        </div>
+                        <div class="pricing-card">
+                            <h4>おためしレッスン</h4>
+                            <div class="price">3,000円</div>
+                            <div class="pricing-details">
+                                60分 × 1回<br>
+                                まずは触ってみよう<br>
+                                1回限りのお試し料金
+                            </div>
+                        </div>
+                        <div class="pricing-card">
+                            <h4>TERACO.LABOオンラインコミュニティ</h4>
+                            <div class="price">準備中</div>
+                            <div class="pricing-details">
+                                チームとなってTERACO.LABOと共に学ぶ<br>
+                                詳細は後日発表
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 2rem; padding: 1rem; background: rgba(255, 255, 255, 0.7); border-radius: 8px; font-size: 0.9rem; color: #666; text-align: left;">
+                        ※入会金5,500円が別途必要です。<br>
+                        ※料金は全て税込です。
+                    </div>
+                </div>
+
+                <div class="contact-section">
+                    <h3>お問い合わせ・体験レッスンのお申し込み</h3>
+                    <p>AIスクールの詳細や受講についてお気軽にお問い合わせください。<br>
+                    あなたに合ったコースをご提案いたします。</p>
+                    
+                    <div style="margin-top: 2rem;">
+                        <a href="ai-contact-form.html" class="contact-btn">
+                            メールでお問い合わせ
+                        </a>
+                        <a href="tel:090-6738-1465" class="contact-btn">
+                            電話でお問い合わせ
+                        </a>
+                    </div>
+                    
+                    <div class="line-contact-section" style="margin-top: 2rem; padding: 2rem; background: #f8f9fa; border-radius: 16px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1.5rem;">
+                        <div class="line-contact-content" style="flex: 1; min-width: 250px;">
+                            <h4 style="color: #00B900; margin-bottom: 1rem; font-size: 1.3rem;">LINEでお気軽にお問い合わせ</h4>
+                            <p style="color: #666; margin-bottom: 1.5rem; line-height: 1.6;">
+                                公式LINEアカウントから、いつでもお気軽にご質問・ご相談いただけます。<br>
+                                AIコースの内容や日程についてお答えします。
+                            </p>
+                            <a href="https://lin.ee/tkYJ7Cw" target="_blank" class="line-btn" style="display: inline-block; background: #00B900; color: white; padding: 0.8rem 1.5rem; text-decoration: none; border-radius: 50px; font-weight: 600; transition: all 0.3s ease;">
+                                📱 LINEで友達追加
+                            </a>
+                        </div>
+                        <div class="line-qr-code" style="flex-shrink: 0;">
+                            <div style="text-align: center;">
+                                <p style="font-size: 0.9rem; color: #666; margin-bottom: 0.5rem;">QRコードでも追加できます</p>
+                                <div style="width: 120px; height: 120px; margin: 0 auto; border: 2px solid #ddd; border-radius: 8px; background: white; overflow: hidden;">
+                                    <img src="images/line-qr.png" alt="LINE友達追加QRコード" style="width: 100%; height: 100%; object-fit: cover;">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 2rem; font-size: 0.9rem; color: #666;">
+                        <strong>連絡先</strong><br>
+                        smart.teraco@gmail.com<br>
+                        090-6738-1465<br>
+                        宮崎県西都市大字三宅9437-9
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <script>
+        // LINEボタンのホバーエフェクトを追加
+        document.addEventListener('DOMContentLoaded', function() {
+            const lineBtn = document.querySelector('.line-btn');
+            if (lineBtn) {
+                lineBtn.addEventListener('mouseenter', function() {
+                    this.style.background = '#009A00';
+                    this.style.transform = 'translateY(-2px)';
+                    this.style.boxShadow = '0 8px 20px rgba(0, 185, 0, 0.3)';
+                });
+                
+                lineBtn.addEventListener('mouseleave', function() {
+                    this.style.background = '#00B900';
+                    this.style.transform = 'translateY(0)';
+                    this.style.boxShadow = 'none';
+                });
+            }
+        });
+    </script>
+</body>
+</html>
