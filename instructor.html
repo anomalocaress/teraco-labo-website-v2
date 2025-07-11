@@ -54,6 +54,35 @@
             margin-bottom: 0.2rem;
         }
 
+        .logo p {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 1.2rem;
+        }
+
+        .nav-menu a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            transition: color 0.3s ease;
+            padding: 0.5rem 0.8rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            white-space: nowrap;
+        }
+
+        .nav-menu a:hover,
+        .nav-menu a.active {
+            color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+        }
+
         .back-link {
             background: #667eea;
             color: white;
@@ -239,9 +268,18 @@
                 <div class="logo">
                     <a href="index.html" style="text-decoration: none; color: inherit;">
                         <h1>TERACO.LABO</h1>
+                        <p>未来を学ぶ つながる空間</p>
                     </a>
                 </div>
-                <a href="index.html" class="back-link">← ホームに戻る</a>
+                <ul class="nav-menu">
+                    <li><a href="index.html">ホーム</a></li>
+                    <li><a href="smartphone.html">スマホ教室</a></li>
+                    <li><a href="ai.html">AIスクール</a></li>
+                    <li><a href="instructor.html" class="active">外部講師</a></li>
+                    <li><a href="video.html">映像制作</a></li>
+                    <li><a href="rental.html">レンタルスペース</a></li>
+                    <li><a href="general-contact-form.html">お問い合わせ</a></li>
+                </ul>
             </div>
         </nav>
     </header>
