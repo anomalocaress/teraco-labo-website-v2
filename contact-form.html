@@ -415,6 +415,10 @@
                     'trial': 'おためしレッスン（2,200円）'
                 };
                 
+                // デバッグ用ログ
+                console.log('取得したフォームデータ:', data);
+                console.log('希望日程:', data['preferred-date']);
+                
                 const formData = {
                     name: data.name,
                     email: data.email,
@@ -422,11 +426,14 @@
                     organization: '未記入', // スマホ教室では不要
                     services: '', // 一般お問い合わせとの互換性のため
                     plan: planNames[data.plan],
-                    preferred_date: data['preferred-date'],
+                    preferred_date: data['preferred-date'] || '未記入',
                     message: data.message || '特になし',
                     form_type: 'スマホ教室',
                     submission_date: new Date().toLocaleString('ja-JP')
                 };
+                
+                // デバッグ用ログ
+                console.log('送信するformData:', formData);
                 
                 // 1. 管理者宛メール送信
                 await emailjs.send('TERACO_Gmail', 'template_6838gcg', formData);
