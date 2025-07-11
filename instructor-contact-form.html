@@ -418,8 +418,8 @@
             submitBtn.textContent = '送信中...';
             
             // フォームデータを収集
-            const formData = new FormData(this);
-            const data = Object.fromEntries(formData.entries());
+            const formElement = new FormData(this);
+            const data = Object.fromEntries(formElement.entries());
             
             // 選択されたサービスを配列として取得
             const services = Array.from(selectedServices).map(cb => cb.value);
@@ -439,7 +439,7 @@
                 
                 const selectedServiceNames = data.services.map(service => serviceNames[service]).join('、');
                 
-                const formData = {
+                const emailData = {
                     name: data.name,
                     email: data.email,
                     phone: data.phone || '未記入',
@@ -457,11 +457,11 @@
                 };
                 
                 // 1. 管理者宛メール送信
-                await emailjs.send('TERACO_Gmail', 'template_6838gcg', formData);
+                await emailjs.send('TERACO_Gmail', 'template_6838gcg', emailData);
                 console.log('Admin email sent successfully');
                 
                 // 2. ユーザー自動返信メール送信
-                await emailjs.send('TERACO_Gmail', 'template_ww2xoao', formData);
+                await emailjs.send('TERACO_Gmail', 'template_ww2xoao', emailData);
                 console.log('ユーザー自動返信メール送信成功');
                 
                 // 成功メッセージを表示
