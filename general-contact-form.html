@@ -391,9 +391,11 @@
     </main>
 
     <script>
-        // EmailJS初期化
+        // EmailJS初期化 - テスト用設定
         (function() {
-            emailjs.init("YOUR_PUBLIC_KEY"); // This will be replaced with actual key
+            // 実際のEmailJS設定が必要
+            // emailjs.init("YOUR_PUBLIC_KEY"); // This will be replaced with actual key
+            console.log("EmailJS初期化（テストモード）");
         })();
 
         // チェックボックスの視覚効果
@@ -446,6 +448,11 @@
             // Loading state
             responseMessage.innerHTML = '<div style="text-align: center; color: #667eea;">送信中...</div>';
             
+            // テスト用：EmailJS設定完了まで一時的な成功レスポンス
+            console.log('フォームデータ:', formData);
+            
+            // 実際のEmailJS送信は設定後に有効化
+            /*
             // Send to admin
             emailjs.send('YOUR_SERVICE_ID', 'YOUR_ADMIN_TEMPLATE_ID', formData)
                 .then(function(response) {
@@ -469,6 +476,17 @@
                     console.log('Email send failed:', error);
                     responseMessage.innerHTML = '<div class="error-message">送信に失敗しました。お手数ですが、直接お電話でお問い合わせください。<br>TEL: 090-6738-1465</div>';
                 });
+            */
+            
+            // テスト用成功レスポンス
+            setTimeout(() => {
+                responseMessage.innerHTML = '<div class="success-message">お問い合わせありがとうございます。内容を確認いたします。24時間以内にご連絡いたします。<br><small>※現在テストモードで動作しています</small></div>';
+                document.getElementById('contactForm').reset();
+                // Reset any checkboxes if they exist
+                document.querySelectorAll('.checkbox-item').forEach(item => {
+                    item.classList.remove('selected');
+                });
+            }, 1000);
             
             // Always restore button state
             setTimeout(() => {
