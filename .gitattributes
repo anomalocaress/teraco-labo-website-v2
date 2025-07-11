@@ -1,0 +1,17 @@
+# Ensure consistent line endings
+* text=auto
+
+# HTML files should not be cached aggressively
+*.html text eol=lf
+*.css text eol=lf
+*.js text eol=lf
+
+# Images should be treated as binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.svg text
+
+# Force fresh deployment
+*.html -linguist-generated

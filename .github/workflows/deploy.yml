@@ -3,8 +3,6 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: [ main ]
-  pull_request:
-    branches: [ main ]
 
 permissions:
   contents: read
@@ -13,7 +11,7 @@ permissions:
 
 concurrency:
   group: "pages"
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   deploy:
@@ -24,15 +22,27 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
         
       - name: Setup Pages
         uses: actions/configure-pages@v4
+        
+      - name: Prepare deployment
+        run: |
+          echo "Deploying fresh copy of all files..."
+          echo "Deployment timestamp: $(date)" > deployment_info.txt
+          echo "Commit SHA: ${{ github.sha }}" >> deployment_info.txt
+          ls -la
         
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: '.'
+          retention-days: 1
           
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+        with:
+          timeout: 600000
