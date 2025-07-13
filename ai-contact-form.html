@@ -483,24 +483,34 @@
                 console.log('取得したフォームデータ:', data);
                 console.log('希望日程:', data['preferred-date']);
                 
+                // 統一テンプレート用のデータ構造
                 const emailData = {
+                    // 基本情報
                     name: data.name,
                     email: data.email,
                     phone: data.phone || '未記入',
                     organization: '未記入',
-                    services: 'AIスクール',  // サービス名を明確に設定
-                    plan: '',  // スマホ教室用（空で送信）
-                    course: planNames[data.plan],  // AIスクール用
-                    video_types: '',  // 映像制作用（空で送信）
-                    space_type: '',  // レンタルスペース用（空で送信）
-                    preferred_date: data['preferred-date'] || '未記入',
-                    date: data['preferred-date'] || '未記入',  // 別名でも送信
-                    start_time: '',  // レンタルスペース用（空で送信）
-                    end_time: '',  // レンタルスペース用（空で送信）
-                    duration: '',  // レンタルスペース用（空で送信）
+                    
+                    // サービス情報
+                    service_name: 'AIスクール',  // 統一フィールド名
+                    service_type: planNames[data.plan],  // サービス詳細
+                    
+                    // 日程情報（統一）
+                    request_date: data['preferred-date'] || '未記入',  // 統一フィールド名
+                    
+                    // 詳細情報
+                    details: planNames[data.plan] + (data['preferred-date'] ? '\nご希望日程: ' + data['preferred-date'] : ''),
                     message: data.message || '特になし',
+                    
+                    // システム情報
                     form_type: 'AIスクール',
-                    submission_date: new Date().toLocaleString('ja-JP')
+                    submission_date: new Date().toLocaleString('ja-JP'),
+                    
+                    // 後方互換性のため
+                    services: 'AIスクール',
+                    preferred_date: data['preferred-date'] || '未記入',
+                    date: data['preferred-date'] || '未記入',
+                    course: planNames[data.plan]
                 };
                 
                 // デバッグ用ログ

@@ -483,22 +483,38 @@
                 
                 const selectedServiceNames = data.services.map(service => serviceNames[service]).join('、');
                 
+                // 統一テンプレート用のデータ構造
                 const emailData = {
+                    // 基本情報
                     name: data.name,
                     email: data.email,
                     phone: data.phone || '未記入',
                     organization: data.organization || '未記入',
-                    position: data.position || '未記入',
-                    services: selectedServiceNames,
-                    participants: data.participants || '未記入',
-                    duration: data.duration || '未記入',
-                    preferred_date: data['preferred-date'] || '未記入',
-                    date: data['preferred-date'] || '未記入',  // 別名でも送信
-                    location: data.location || '未記入',
-                    budget: data.budget || '未記入',
+                    
+                    // サービス情報
+                    service_name: '外部講師',  // 統一フィールド名
+                    service_type: selectedServiceNames,  // サービス詳細
+                    
+                    // 日程情報（統一）
+                    request_date: data['preferred-date'] || '未記入',  // 統一フィールド名
+                    
+                    // 詳細情報
+                    details: '役職: ' + (data.position || '未記入') + 
+                            '\n参加予定人数: ' + (data.participants || '未記入') + 
+                            '\n研修期間: ' + (data.duration || '未記入') + 
+                            '\n実施地: ' + (data.location || '未記入') + 
+                            '\n予算: ' + (data.budget || '未記入') + 
+                            (data['preferred-date'] ? '\nご希望時期: ' + data['preferred-date'] : ''),
                     message: data.message || '特になし',
+                    
+                    // システム情報
                     form_type: '外部講師',
-                    submission_date: new Date().toLocaleString('ja-JP')
+                    submission_date: new Date().toLocaleString('ja-JP'),
+                    
+                    // 後方互換性のため
+                    services: selectedServiceNames,
+                    preferred_date: data['preferred-date'] || '未記入',
+                    date: data['preferred-date'] || '未記入'
                 };
                 
                 // 1. 管理者宛メール送信

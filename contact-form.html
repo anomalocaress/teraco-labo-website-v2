@@ -527,28 +527,45 @@
                 console.log('取得したフォームデータ:', data);
                 console.log('希望日程:', data['preferred-date']);
                 
+                // 統一テンプレート用のデータ構造
                 const emailData = {
+                    // 基本情報
                     name: data.name,
                     email: data.email,
                     phone: data.phone || '未記入',
                     organization: '未記入',
-                    services: 'スマホ教室',  // サービス名を明確に設定
-                    plan: planNames[data.plan],  // スマホ教室用
-                    course: '',  // AIスクール用（空で送信）
-                    video_types: '',  // 映像制作用（空で送信）
-                    space_type: '',  // レンタルスペース用（空で送信）
-                    preferred_date: data['preferred-date'] || '未記入',
-                    date: data['preferred-date'] || '未記入',  // 別名でも送信
-                    start_time: '',  // レンタルスペース用（空で送信）
-                    end_time: '',  // レンタルスペース用（空で送信）
-                    duration: '',  // レンタルスペース用（空で送信）
+                    
+                    // サービス情報
+                    service_name: 'スマホ教室',  // 統一フィールド名
+                    service_type: planNames[data.plan],  // サービス詳細
+                    
+                    // 日程情報（統一）
+                    request_date: data['preferred-date'] || '未記入',  // 統一フィールド名
+                    
+                    // 詳細情報
+                    details: planNames[data.plan] + (data['preferred-date'] ? '\nご希望日程: ' + data['preferred-date'] : ''),
                     message: data.message || '特になし',
+                    
+                    // システム情報
                     form_type: 'スマホ教室',
-                    submission_date: new Date().toLocaleString('ja-JP')
+                    submission_date: new Date().toLocaleString('ja-JP'),
+                    
+                    // 後方互換性のため
+                    services: 'スマホ教室',
+                    preferred_date: data['preferred-date'] || '未記入',
+                    date: data['preferred-date'] || '未記入',
+                    plan: planNames[data.plan]
                 };
                 
                 // デバッグ用ログ
                 console.log('送信するemailData:', emailData);
+                
+                // デバッグ: 送信データをアラート表示（一時的）
+                alert('統一テンプレート送信データ確認:\n' + 
+                      'service_name: ' + emailData.service_name + '\n' + 
+                      'service_type: ' + emailData.service_type + '\n' + 
+                      'request_date: ' + emailData.request_date + '\n' + 
+                      'details: ' + emailData.details);
                 
                 // 1. 管理者宛メール送信
                 await emailjs.send('TERACO_Gmail', 'template_6838gcg', emailData);
