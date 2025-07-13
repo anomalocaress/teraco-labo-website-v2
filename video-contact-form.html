@@ -592,10 +592,11 @@
                 organization: document.getElementById('organization').value || '未記入',
                 email: document.getElementById('email').value,
                 phone: document.getElementById('phone').value || '未記入',
-                services: '', // 一般お問い合わせとの互換性のため
+                services: '映像制作',  // サービス名を明確に設定
                 video_types: selectedTypes.join(', '),
                 budget: document.getElementById('budget').value || '未選択',
                 deadline: document.getElementById('deadline').value || '未選択',
+                date: document.getElementById('deadline').value || '未選択',  // 別名でも送信
                 usage: document.getElementById('usage').value || '未記入',
                 message: document.getElementById('message').value || '特になし',
                 form_type: '映像制作',
