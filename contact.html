@@ -420,26 +420,15 @@
                         <!-- サービス別詳細項目 -->
                         <div id="service-details-smartphone" class="service-details">
                             <h4>📱 スマホ教室 詳細設定</h4>
-                            <div class="detail-row">
-                                <div class="detail-group">
-                                    <label class="detail-label">コース</label>
-                                    <select name="smartphone-course" class="form-select">
-                                        <option value="">選択してください</option>
-                                        <option value="group-regular">グループレッスン（9,900円/月）</option>
-                                        <option value="group-light">グループライト（6,000円/月）</option>
-                                        <option value="private">個人レッスン（カスタマイズ）</option>
-                                        <option value="trial">おためしレッスン（2,200円）</option>
-                                    </select>
-                                </div>
-                                <div class="detail-group">
-                                    <label class="detail-label">受講形式</label>
-                                    <select name="smartphone-format" class="form-select">
-                                        <option value="">選択してください</option>
-                                        <option value="in-person">対面受講</option>
-                                        <option value="online">オンライン受講</option>
-                                        <option value="hybrid">両方希望</option>
-                                    </select>
-                                </div>
+                            <div class="detail-group">
+                                <label class="detail-label">コース</label>
+                                <select name="smartphone-course" class="form-select">
+                                    <option value="">選択してください</option>
+                                    <option value="group-regular">グループレッスン（9,900円/月）</option>
+                                    <option value="group-light">グループライト（6,000円/月）</option>
+                                    <option value="private">個人レッスン（カスタマイズ）</option>
+                                    <option value="trial">おためしレッスン（2,200円）</option>
+                                </select>
                             </div>
                             <div class="detail-group">
                                 <label class="detail-label">学びたい内容（複数選択可）</label>
@@ -604,35 +593,26 @@
                                     <label class="detail-label">利用人数</label>
                                     <select name="rental-capacity" class="form-select">
                                         <option value="">選択してください</option>
-                                        <option value="small">1-5名</option>
-                                        <option value="medium">6-15名</option>
-                                        <option value="large">16-30名</option>
-                                        <option value="xlarge">31名以上</option>
+                                        <option value="5">5名</option>
+                                        <option value="6">6名</option>
+                                        <option value="7">7名</option>
+                                        <option value="8">8名</option>
                                     </select>
                                 </div>
                             </div>
-                            <div class="detail-row">
-                                <div class="detail-group">
-                                    <label class="detail-label">利用時間</label>
-                                    <select name="rental-duration" class="form-select">
-                                        <option value="">選択してください</option>
-                                        <option value="1-2h">1-2時間</option>
-                                        <option value="half-day">半日（4時間）</option>
-                                        <option value="full-day">1日（8時間）</option>
-                                        <option value="multiple">複数日</option>
-                                    </select>
-                                </div>
-                                <div class="detail-group">
-                                    <label class="detail-label">必要設備</label>
-                                    <select name="rental-equipment" class="form-select">
-                                        <option value="">選択してください</option>
-                                        <option value="basic">基本設備のみ</option>
-                                        <option value="projector">プロジェクター</option>
-                                        <option value="monitor">大型モニター</option>
-                                        <option value="recording">録画・配信設備</option>
-                                        <option value="full">全設備</option>
-                                    </select>
-                                </div>
+                            <div class="detail-group">
+                                <label class="detail-label">利用時間</label>
+                                <select name="rental-duration" class="form-select">
+                                    <option value="">選択してください</option>
+                                    <option value="1h">1時間</option>
+                                    <option value="2h">2時間</option>
+                                    <option value="3h">3時間</option>
+                                    <option value="4h">4時間</option>
+                                    <option value="5h">5時間</option>
+                                    <option value="6h">6時間</option>
+                                    <option value="7h">7時間</option>
+                                    <option value="8h">8時間</option>
+                                </select>
                             </div>
                         </div>
 
@@ -740,11 +720,9 @@
             switch(serviceType) {
                 case 'smartphone':
                     const course = getSelectValue('smartphone-course');
-                    const format = getSelectValue('smartphone-format');
                     const topics = getCheckboxValues('smartphone-topics');
                     
                     if (course) details += `コース: ${course}\n`;
-                    if (format) details += `受講形式: ${format}\n`;
                     if (topics.length > 0) details += `学びたい内容: ${topics.join(', ')}\n`;
                     break;
                     
@@ -786,12 +764,10 @@
                     const rentalPurpose = getSelectValue('rental-purpose');
                     const capacity = getSelectValue('rental-capacity');
                     const rentalDuration = getSelectValue('rental-duration');
-                    const equipment = getSelectValue('rental-equipment');
                     
                     if (rentalPurpose) details += `利用目的: ${rentalPurpose}\n`;
-                    if (capacity) details += `利用人数: ${capacity}\n`;
+                    if (capacity) details += `利用人数: ${capacity}名\n`;
                     if (rentalDuration) details += `利用時間: ${rentalDuration}\n`;
-                    if (equipment) details += `必要設備: ${equipment}\n`;
                     break;
                     
                 case 'other':
