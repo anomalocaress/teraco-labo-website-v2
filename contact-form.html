@@ -560,9 +560,6 @@
                 // デバッグアラート（一時的）
                 alert('デバッグ\nサービス名: ' + emailData.service_name + '\nプラン: ' + emailData.plan + '\n日程: ' + emailData.preferred_date);
                 
-                // フォーム送信を一時停止してデバッグ
-                return;
-                
                 
                 // 1. 管理者宛メール送信
                 await emailjs.send('TERACO_Gmail', 'template_6838gcg', emailData);
