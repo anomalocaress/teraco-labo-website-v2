@@ -527,7 +527,7 @@
                 console.log('取得したフォームデータ:', data);
                 console.log('希望日程:', data['preferred-date']);
                 
-                // 統一テンプレート用のデータ構造
+                // EmailJSテンプレート用 - 全ての可能な変数名でテスト
                 const emailData = {
                     // 基本情報
                     name: data.name,
@@ -535,26 +535,39 @@
                     phone: data.phone || '未記入',
                     organization: '未記入',
                     
-                    // サービス情報
-                    service_name: 'スマホ教室',  // 統一フィールド名
-                    service_type: planNames[data.plan],  // サービス詳細
-                    
-                    // 日程情報（統一）
-                    request_date: data['preferred-date'] || '未記入',  // 統一フィールド名
-                    
-                    // 詳細情報
-                    details: planNames[data.plan] + (data['preferred-date'] ? '\nご希望日程: ' + data['preferred-date'] : ''),
-                    message: data.message || '特になし',
-                    
-                    // システム情報
-                    form_type: 'スマホ教室',
-                    submission_date: new Date().toLocaleString('ja-JP'),
-                    
-                    // 後方互換性のため
+                    // サービス情報（複数パターンでテスト）
+                    service_name: 'スマホ教室',
                     services: 'スマホ教室',
+                    service: 'スマホ教室',
+                    form_type: 'スマホ教室',
+                    type: 'スマホ教室',
+                    
+                    // プラン情報（複数パターンでテスト）
+                    service_type: planNames[data.plan],
+                    plan: planNames[data.plan],
+                    course: planNames[data.plan],
+                    plan_name: planNames[data.plan],
+                    
+                    // 日程情報（複数パターンでテスト）
+                    request_date: data['preferred-date'] || '未記入',
                     preferred_date: data['preferred-date'] || '未記入',
                     date: data['preferred-date'] || '未記入',
-                    plan: planNames[data.plan]
+                    希望日程: data['preferred-date'] || '未記入',
+                    preferred_time: data['preferred-date'] || '未記入',
+                    time: data['preferred-date'] || '未記入',
+                    
+                    // レンタルスペース用フィールドも追加（統一テンプレート対応）
+                    start_time: '',
+                    end_time: '',
+                    duration: '',
+                    開始時間: '',
+                    終了時間: '',
+                    利用時間: '',
+                    
+                    // その他
+                    message: data.message || '特になし',
+                    details: planNames[data.plan] + (data['preferred-date'] ? '\nご希望日程: ' + data['preferred-date'] : ''),
+                    submission_date: new Date().toLocaleString('ja-JP')
                 };
                 
                 // デバッグ用ログ
