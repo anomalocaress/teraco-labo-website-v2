@@ -473,15 +473,16 @@
                     submission_date: new Date().toLocaleString('ja-JP')
                 };
                 
-                console.log('送信データ:', emailData);
+                console.log('送信データ詳細:', emailData);
                 
-                // 1. 管理者宛メール送信
-                await emailjs.send('TERACO_Gmail', 'template_6838gcg', emailData);
+                // 新しいテンプレートで送信
+                console.log('管理者メール送信開始...');
+                await emailjs.send('TERACO_Gmail', 'template_5p9czck', emailData);
                 console.log('管理者メール送信成功');
                 
-                // 2. ユーザー自動返信メール送信
-                await emailjs.send('TERACO_Gmail', 'template_ww2xoao', emailData);
-                console.log('ユーザー自動返信メール送信成功');
+                console.log('ユーザーメール送信開始...');
+                await emailjs.send('TERACO_Gmail', 'template_xmm6v7c', emailData);
+                console.log('ユーザーメール送信成功');
                 
                 // 成功メッセージを表示
                 responseMessage.innerHTML = `
