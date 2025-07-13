@@ -658,23 +658,18 @@
                 return;
             }
             
-            // フォームデータを準備
-            const formData = {
+            // Simplified EmailJS data structure
+            const emailData = {
                 name: document.getElementById('name').value,
-                organization: document.getElementById('organization').value || '未記入',
                 email: document.getElementById('email').value,
                 phone: document.getElementById('phone').value || '未記入',
-                services: 'レンタルスペース',  // サービス名を明確に設定
-                space_type: selectedUsages.join(', '), // usage_typesをspace_typeに変更
-                preferred_date: document.getElementById('date').value,
-                date: document.getElementById('date').value,  // 別名でも送信
-                start_time: startTime,
-                end_time: endTime,
-                duration: startTime + ' ～ ' + endTime + ' (' + calculateDuration(startTime, endTime) + ')',
-                participants: document.getElementById('participants').value,
-                equipment: document.getElementById('equipment').value || '未選択',
-                message: document.getElementById('message').value || '特になし',
-                form_type: 'レンタルスペース',
+                service_name: 'レンタルスペース',
+                plan: selectedUsages.join('、'),
+                preferred_date: document.getElementById('date').value + ' ' + startTime + '〜' + endTime + ' (' + calculateDuration(startTime, endTime) + ')',
+                message: '組織: ' + (document.getElementById('organization').value || '未記入') + 
+                        '\n参加人数: ' + document.getElementById('participants').value + 
+                        '\n必要機材: ' + (document.getElementById('equipment').value || '未選択') + 
+                        '\n詳細: ' + (document.getElementById('message').value || '特になし'),
                 submission_date: new Date().toLocaleString('ja-JP')
             };
             
@@ -682,15 +677,11 @@
             responseMessage.innerHTML = '<div style="text-align: center; color: #667eea;">送信中...</div>';
             
             // Send to admin
-            emailjs.send('TERACO_Gmail', 'template_6838gcg', formData)
+            emailjs.send('TERACO_Gmail', 'template_6838gcg', emailData)
                 .then(function(response) {
                     console.log('Admin email sent successfully');
                     // Send auto-reply to user
-                    return emailjs.send('TERACO_Gmail', 'template_ww2xoao', {
-                        to_email: formData.email,
-                        to_name: formData.name,
-                        form_type: formData.form_type
-                    });
+                    return emailjs.send('TERACO_Gmail', 'template_ww2xoao', emailData);
                 })
                 .then(function(response) {
                     responseMessage.innerHTML = '<div class="success-message">お問い合わせありがとうございます。確認メールをお送りしました。24時間以内にご連絡いたします。</div>';

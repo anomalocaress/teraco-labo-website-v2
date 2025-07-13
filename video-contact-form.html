@@ -586,20 +586,19 @@
                 return;
             }
             
-            // フォームデータを準備
-            const formData = {
+            // Simplified EmailJS data structure
+            const emailData = {
                 name: document.getElementById('name').value,
-                organization: document.getElementById('organization').value || '未記入',
                 email: document.getElementById('email').value,
                 phone: document.getElementById('phone').value || '未記入',
-                services: '映像制作',  // サービス名を明確に設定
-                video_types: selectedTypes.join(', '),
-                budget: document.getElementById('budget').value || '未選択',
-                deadline: document.getElementById('deadline').value || '未選択',
-                date: document.getElementById('deadline').value || '未選択',  // 別名でも送信
-                usage: document.getElementById('usage').value || '未記入',
-                message: document.getElementById('message').value || '特になし',
-                form_type: '映像制作',
+                service_name: '映像制作',
+                plan: selectedTypes.join('、'),
+                preferred_date: document.getElementById('deadline').value || '未選択',
+                message: '組織: ' + (document.getElementById('organization').value || '未記入') + 
+                        '\n映像タイプ: ' + selectedTypes.join('、') + 
+                        '\n予算: ' + (document.getElementById('budget').value || '未選択') + 
+                        '\n使用目的: ' + (document.getElementById('usage').value || '未記入') + 
+                        '\n詳細: ' + (document.getElementById('message').value || '特になし'),
                 submission_date: new Date().toLocaleString('ja-JP')
             };
             
@@ -607,15 +606,11 @@
             responseMessage.innerHTML = '<div style="text-align: center; color: #667eea;">送信中...</div>';
             
             // Send to admin
-            emailjs.send('TERACO_Gmail', 'template_6838gcg', formData)
+            emailjs.send('TERACO_Gmail', 'template_6838gcg', emailData)
                 .then(function(response) {
                     console.log('Admin email sent successfully');
                     // Send auto-reply to user
-                    return emailjs.send('TERACO_Gmail', 'template_ww2xoao', {
-                        to_email: formData.email,
-                        to_name: formData.name,
-                        form_type: formData.form_type
-                    });
+                    return emailjs.send('TERACO_Gmail', 'template_ww2xoao', emailData);
                 })
                 .then(function(response) {
                     responseMessage.innerHTML = '<div class="success-message">お問い合わせありがとうございます。確認メールをお送りしました。24時間以内にご連絡いたします。</div>';

@@ -483,38 +483,27 @@
                 console.log('取得したフォームデータ:', data);
                 console.log('希望日程:', data['preferred-date']);
                 
-                // 統一テンプレート用のデータ構造
+                // EmailJSテンプレート用データ（シンプル化）
                 const emailData = {
                     // 基本情報
                     name: data.name,
                     email: data.email,
                     phone: data.phone || '未記入',
-                    organization: '未記入',
                     
                     // サービス情報
-                    service_name: 'AIスクール',  // 統一フィールド名
-                    service_type: planNames[data.plan],  // サービス詳細
+                    service_name: 'AIスクール',
+                    plan: planNames[data.plan],
                     
-                    // 日程情報（統一）
-                    request_date: data['preferred-date'] || '未記入',  // 統一フィールド名
-                    
-                    // 詳細情報
-                    details: planNames[data.plan] + (data['preferred-date'] ? '\nご希望日程: ' + data['preferred-date'] : ''),
-                    message: data.message || '特になし',
-                    
-                    // システム情報
-                    form_type: 'AIスクール',
-                    submission_date: new Date().toLocaleString('ja-JP'),
-                    
-                    // 後方互換性のため
-                    services: 'AIスクール',
+                    // 日程情報
                     preferred_date: data['preferred-date'] || '未記入',
-                    date: data['preferred-date'] || '未記入',
-                    course: planNames[data.plan]
+                    
+                    // その他
+                    message: data.message || '特になし',
+                    submission_date: new Date().toLocaleString('ja-JP')
                 };
                 
                 // デバッグ用ログ
-                console.log('送信するformData:', formData);
+                console.log('送信するemailData:', emailData);
                 
                 // 1. 管理者宛メール送信
                 await emailjs.send('TERACO_Gmail', 'template_6838gcg', emailData);

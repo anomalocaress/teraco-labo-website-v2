@@ -542,15 +542,17 @@
                 return;
             }
             
-            // フォームデータを準備
-            const formData = {
+            // Simplified EmailJS data structure
+            const emailData = {
                 name: document.getElementById('name').value,
                 email: document.getElementById('email').value,
                 phone: document.getElementById('phone').value || '未記入',
-                organization: document.getElementById('organization').value || '未記入',
-                services: selectedServices.join(', '),
-                message: document.getElementById('message').value || '特になし',
-                form_type: '総合お問い合わせ',
+                service_name: '総合お問い合わせ',
+                plan: selectedServices.join('、'),
+                preferred_date: '',
+                message: '組織: ' + (document.getElementById('organization').value || '未記入') + 
+                        '\n興味のあるサービス: ' + selectedServices.join('、') + 
+                        '\n詳細: ' + (document.getElementById('message').value || '特になし'),
                 submission_date: new Date().toLocaleString('ja-JP')
             };
             
@@ -558,15 +560,15 @@
             responseMessage.innerHTML = '<div style="text-align: center; color: #667eea;">送信中...</div>';
             
             // EmailJS送信実行 - 管理者宛とユーザー自動返信の両方を送信
-            console.log('フォームデータ:', formData);
+            console.log('フォームデータ:', emailData);
             
             // 1. 管理者宛メール送信
-            emailjs.send('TERACO_Gmail', 'template_6838gcg', formData)
+            emailjs.send('TERACO_Gmail', 'template_6838gcg', emailData)
                 .then(function(response) {
                     console.log('管理者メール送信成功:', response);
                     
                     // 2. ユーザー自動返信メール送信
-                    return emailjs.send('TERACO_Gmail', 'template_ww2xoao', formData);
+                    return emailjs.send('TERACO_Gmail', 'template_ww2xoao', emailData);
                 })
                 .then(function(response) {
                     console.log('ユーザー自動返信メール送信成功:', response);
