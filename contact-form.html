@@ -526,28 +526,42 @@
                 // デバッグ用ログ
                 console.log('取得したフォームデータ:', data);
                 console.log('希望日程:', data['preferred-date']);
+                console.log('選択プラン:', data.plan);
+                console.log('プラン名:', planNames[data.plan]);
                 
-                // EmailJSテンプレート用データ（シンプル化）
+                // EmailJSテンプレート用データ（デバッグ版）
                 const emailData = {
                     // 基本情報
                     name: data.name,
                     email: data.email,
                     phone: data.phone || '未記入',
                     
-                    // サービス情報
+                    // サービス情報 - テンプレート変数名を確認
                     service_name: 'スマホ教室',
-                    plan: planNames[data.plan],
+                    services: 'スマホ教室',  // 後方互換
+                    plan: planNames[data.plan] || '未選択',
                     
-                    // 日程情報
+                    // 日程情報 - テンプレート変数名を確認  
                     preferred_date: data['preferred-date'] || '未記入',
+                    request_date: data['preferred-date'] || '未記入',  // 後方互換
                     
                     // その他
                     message: data.message || '特になし',
                     submission_date: new Date().toLocaleString('ja-JP')
                 };
                 
-                // デバッグ用ログ
+                // デバッグ用ログ（詳細）
                 console.log('送信するemailData:', emailData);
+                console.log('テンプレート変数チェック:');
+                console.log('- service_name:', emailData.service_name);
+                console.log('- plan:', emailData.plan);
+                console.log('- preferred_date:', emailData.preferred_date);
+                
+                // デバッグアラート（一時的）
+                alert('デバッグ\nサービス名: ' + emailData.service_name + '\nプラン: ' + emailData.plan + '\n日程: ' + emailData.preferred_date);
+                
+                // フォーム送信を一時停止してデバッグ
+                return;
                 
                 
                 // 1. 管理者宛メール送信
