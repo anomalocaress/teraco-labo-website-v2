@@ -390,8 +390,12 @@
 
                     <!-- 詳細・要望 -->
                     <div class="form-group">
-                        <label for="message" class="form-label">詳細・ご質問・ご要望<span class="required">*</span></label>
-                        <textarea id="message" name="message" class="form-textarea" placeholder="ご質問やご要望、詳細についてお書きください。" required></textarea>
+                        <label for="message" class="form-label">お問い合わせ内容<span class="required">*</span></label>
+                        <textarea id="message" name="message" class="form-textarea" placeholder="上記で選択した内容が自動で入力されます。追加でご質問やご要望があればご記入ください。" required readonly style="background: #f9f9f9;"></textarea>
+                        <div style="margin-top: 0.5rem;">
+                            <label for="user-message" class="form-label" style="font-size: 0.9rem; margin-bottom: 0.3rem;">追加のご質問・ご要望</label>
+                            <textarea id="user-message" class="form-textarea" placeholder="追加でご質問やご要望がございましたら、こちらにお書きください。" style="min-height: 80px;"></textarea>
+                        </div>
                     </div>
 
                     <button type="submit" class="submit-button" id="submitBtn">
@@ -417,7 +421,40 @@
             console.log("EmailJS初期化完了");
         })();
 
-        // サービス選択の視覚的フィードバック
+        // フォーム入力の自動集約機能
+        function updateMessageField() {
+            const serviceRadios = document.querySelectorAll('input[name="service"]');
+            const preferredDate = document.getElementById('preferred-date');
+            const messageField = document.getElementById('message');
+            
+            let selectedService = '';
+            serviceRadios.forEach(radio => {
+                if (radio.checked) {
+                    const serviceName = radio.closest('.service-option').querySelector('.service-name').textContent;
+                    selectedService = serviceName;
+                }
+            });
+            
+            const dateValue = preferredDate.value;
+            const userMessageField = document.getElementById('user-message');
+            const userMessage = userMessageField ? userMessageField.value : '';
+            
+            // 自動集約メッセージ生成
+            let autoMessage = '';
+            if (selectedService) {
+                autoMessage += `■選択サービス: ${selectedService}\n`;
+            }
+            if (dateValue) {
+                autoMessage += `■希望日程: ${dateValue}\n`;
+            }
+            if (userMessage.trim()) {
+                autoMessage += `\n■追加のご質問・ご要望:\n${userMessage}`;
+            }
+            
+            messageField.value = autoMessage;
+        }
+        
+        // サービス選択の視覚的フィードバック＋自動集約
         document.querySelectorAll('.service-option input[type="radio"]').forEach(radio => {
             radio.addEventListener('change', function() {
                 // 全ての選択肢から selected クラスを削除
@@ -426,8 +463,17 @@
                 });
                 // 選択された選択肢に selected クラスを追加
                 this.closest('.service-option').classList.add('selected');
+                
+                // 自動集約実行
+                updateMessageField();
             });
         });
+        
+        // 日程変更時の自動集約
+        document.getElementById('preferred-date').addEventListener('change', updateMessageField);
+        
+        // ユーザーメッセージ変更時の自動集約
+        document.getElementById('user-message').addEventListener('input', updateMessageField);
 
         // 今日の日付を最小値として設定
         const today = new Date().toISOString().split('T')[0];
@@ -448,6 +494,12 @@
             const formElement = new FormData(this);
             const data = Object.fromEntries(formElement.entries());
             
+            // デバッグ：フォームデータの確認
+            console.log('フォームから取得したrawデータ:', data);
+            console.log('data.service:', data.service);
+            console.log('data.preferred-date:', data['preferred-date']);
+            console.log('data.message:', data.message);
+            
             try {
                 // Loading state
                 responseMessage.innerHTML = '<div style="text-align: center; color: #667eea;">送信中...</div>';
@@ -462,14 +514,12 @@
                     'other': 'その他お問い合わせ'
                 };
                 
-                // EmailJS用データ（統一形式）
+                // シンプルなEmailJS用データ（message欄にすべて集約済み）
                 const emailData = {
                     name: data.name,
                     email: data.email,
                     phone: data.phone,
-                    service_name: serviceNames[data.service],
-                    preferred_date: data['preferred-date'] || '指定なし',
-                    message: data.message,
+                    message: data.message, // すべての情報が集約済み
                     submission_date: new Date().toLocaleString('ja-JP')
                 };
                 
