@@ -34,9 +34,7 @@ jobs:
           echo "Deployment timestamp: $(date)" > deployment_info.txt
           echo "Commit SHA: ${{ github.sha }}" >> deployment_info.txt
           echo "Cache-Bust: $(date +%s)" >> deployment_info.txt
-          # Add cache-busting timestamp to all HTML files
           TIMESTAMP=$(date +%s)
-          find . -name "*.html" -type f -exec sed -i '' "s/data-deploy=\"[0-9]*\"/data-deploy=\"$TIMESTAMP\"/g" {} \;
           echo "Added cache-busting timestamp: $TIMESTAMP"
           ls -la
         
