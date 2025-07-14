@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-deploy="1752373145">ブログ管理システム - TERACO.LABO</title>
+    
+    <!-- Google Analytics 4 -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-3GCZQ39LS1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-3GCZQ39LS1');
+    </script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Hiragino Sans', 'Yu Gothic', 'Meiryo', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(to right, #5b52ff, #1fffa1);
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+            background-size: cover;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .admin-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 24px;
+            padding: 3rem;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.1);
+        }
+
+        .admin-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .admin-title {
+            font-size: 2.5rem;
+            color: #5b52ff;
+            margin-bottom: 1rem;
+        }
+
+        .admin-subtitle {
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        .tabs {
+            display: flex;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .tab-btn {
+            padding: 1rem 2rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn.active {
+            color: #5b52ff;
+            border-bottom-color: #5b52ff;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: #5b52ff;
+            box-shadow: 0 0 0 3px rgba(91, 82, 255, 0.1);
+        }
+
+        .form-textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .platform-settings {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+        }
+
+        .platform-title {
+            font-size: 1.2rem;
+            color: #333;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 60px;
+            height: 30px;
+            margin-left: auto;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 30px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #5b52ff;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(30px);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+
+        .btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #5b52ff, #1fffa1);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #333;
+            border: 2px solid #e0e0e0;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .preview-section {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .preview-title {
+            font-size: 1.3rem;
+            color: #333;
+            margin-bottom: 1rem;
+        }
+
+        .platform-preview {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            border-left: 4px solid #5b52ff;
+        }
+
+        .platform-preview h4 {
+            color: #5b52ff;
+            margin-bottom: 0.5rem;
+        }
+
+        .character-count {
+            text-align: right;
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 0.5rem;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+
+        @media (max-width: 768px) {
+            .admin-container {
+                padding: 2rem;
+            }
+
+            .admin-title {
+                font-size: 2rem;
+            }
+
+            .tabs {
+                flex-direction: column;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <div class="admin-header">
+            <h1 class="admin-title">🚀 ブログ管理システム</h1>
+            <p class="admin-subtitle">記事投稿とSNS連携を一元管理</p>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('compose')">新規投稿</button>
+            <button class="tab-btn" onclick="switchTab('settings')">連携設定</button>
+            <button class="tab-btn" onclick="switchTab('history')">投稿履歴</button>
+        </div>
+
+        <!-- 新規投稿タブ -->
+        <div id="compose" class="tab-content active">
+            <form id="blogForm">
+                <div class="form-group">
+                    <label for="title" class="form-label">記事タイトル *</label>
+                    <input type="text" id="title" name="title" class="form-input" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="category" class="form-label">カテゴリ *</label>
+                        <select id="category" name="category" class="form-select" required>
+                            <option value="">選択してください</option>
+                            <option value="ai">AI・DX</option>
+                            <option value="video">映像制作</option>
+                            <option value="smartphone">スマホ活用</option>
+                            <option value="business">ビジネス</option>
+                            <option value="education">教育・研修</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="readTime" class="form-label">読了時間（分）</label>
+                        <input type="number" id="readTime" name="readTime" class="form-input" min="1" value="5">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="excerpt" class="form-label">記事概要 *</label>
+                    <textarea id="excerpt" name="excerpt" class="form-textarea" placeholder="記事の要約を100文字程度で入力してください" required></textarea>
+                    <div class="character-count" id="excerptCount">0/120文字</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="content" class="form-label">記事本文 *</label>
+                    <textarea id="content" name="content" class="form-textarea" style="min-height: 300px;" placeholder="記事の本文をここに入力してください..." required></textarea>
+                </div>
+
+                <!-- プラットフォーム連携設定 -->
+                <div class="platform-settings">
+                    <div class="platform-title">
+                        🐦 X (Twitter) 連携
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="enableTwitter" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label for="twitterText" class="form-label">X投稿テキスト</label>
+                        <textarea id="twitterText" name="twitterText" class="form-textarea" placeholder="自動生成されます..."></textarea>
+                        <div class="character-count" id="twitterCount">0/280文字</div>
+                    </div>
+                </div>
+
+                <div class="platform-settings">
+                    <div class="platform-title">
+                        📝 note 連携
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="enableNote" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label for="noteIntro" class="form-label">note導入文</label>
+                        <textarea id="noteIntro" name="noteIntro" class="form-textarea" placeholder="noteの冒頭に表示される文章..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="noteOutro" class="form-label">note誘導文</label>
+                        <textarea id="noteOutro" name="noteOutro" class="form-textarea" placeholder="続きは TERACO.LABO ブログで..."></textarea>
+                    </div>
+                </div>
+
+                <div class="preview-section" id="previewSection" style="display: none;">
+                    <h3 class="preview-title">📱 SNS投稿プレビュー</h3>
+                    <div class="platform-preview" id="twitterPreview">
+                        <h4>X (Twitter)</h4>
+                        <div id="twitterPreviewText"></div>
+                    </div>
+                    <div class="platform-preview" id="notePreview">
+                        <h4>note</h4>
+                        <div id="notePreviewText"></div>
+                    </div>
+                </div>
+
+                <div class="action-buttons">
+                    <button type="button" class="btn btn-secondary" onclick="generatePreview()">プレビュー生成</button>
+                    <button type="submit" class="btn btn-primary">記事を投稿して連携実行</button>
+                </div>
+            </form>
+
+            <div id="responseMessage"></div>
+        </div>
+
+        <!-- 連携設定タブ -->
+        <div id="settings" class="tab-content">
+            <h3>🔐 API設定</h3>
+            <div class="form-group">
+                <label for="twitterApiKey" class="form-label">X API Key</label>
+                <input type="password" id="twitterApiKey" class="form-input" placeholder="X Developer Portalで取得">
+            </div>
+            <div class="form-group">
+                <label for="twitterApiSecret" class="form-label">X API Secret</label>
+                <input type="password" id="twitterApiSecret" class="form-input" placeholder="X API Secret Key">
+            </div>
+            <div class="form-group">
+                <label for="noteApiToken" class="form-label">note API Token</label>
+                <input type="password" id="noteApiToken" class="form-input" placeholder="note APIトークン">
+            </div>
+            
+            <h3 style="margin-top: 2rem;">⚙️ 投稿設定</h3>
+            <div class="form-group">
+                <label for="defaultHashtags" class="form-label">デフォルトハッシュタグ</label>
+                <input type="text" id="defaultHashtags" class="form-input" value="#TERACOLABO #AI #DX #映像制作" placeholder="#ハッシュタグ1 #ハッシュタグ2">
+            </div>
+            <div class="form-group">
+                <label for="websiteUrl" class="form-label">ウェブサイトURL</label>
+                <input type="url" id="websiteUrl" class="form-input" value="https://teraco-labo.com" placeholder="https://example.com">
+            </div>
+
+            <div class="action-buttons">
+                <button type="button" class="btn btn-primary" onclick="saveSettings()">設定を保存</button>
+            </div>
+        </div>
+
+        <!-- 投稿履歴タブ -->
+        <div id="history" class="tab-content">
+            <h3>📈 投稿履歴</h3>
+            <div id="postHistory">
+                <!-- JavaScriptで動的に生成 -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // タブ切り替え
+        function switchTab(tabName) {
+            // 全てのタブを非アクティブに
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            // 選択されたタブをアクティブに
+            event.target.classList.add('active');
+            document.getElementById(tabName).classList.add('active');
+        }
+
+        // 文字数カウント
+        document.getElementById('excerpt').addEventListener('input', function() {
+            const count = this.value.length;
+            document.getElementById('excerptCount').textContent = `${count}/120文字`;
+            if (count > 120) {
+                document.getElementById('excerptCount').style.color = '#e74c3c';
+            } else {
+                document.getElementById('excerptCount').style.color = '#666';
+            }
+        });
+
+        document.getElementById('twitterText').addEventListener('input', function() {
+            const count = this.value.length;
+            document.getElementById('twitterCount').textContent = `${count}/280文字`;
+            if (count > 280) {
+                document.getElementById('twitterCount').style.color = '#e74c3c';
+            } else {
+                document.getElementById('twitterCount').style.color = '#666';
+            }
+        });
+
+        // 自動テキスト生成
+        document.getElementById('title').addEventListener('input', generateSocialTexts);
+        document.getElementById('excerpt').addEventListener('input', generateSocialTexts);
+
+        function generateSocialTexts() {
+            const title = document.getElementById('title').value;
+            const excerpt = document.getElementById('excerpt').value;
+            const hashtags = document.getElementById('defaultHashtags')?.value || '#TERACOLABO #AI #DX';
+            const websiteUrl = document.getElementById('websiteUrl')?.value || 'https://teraco-labo.com';
+
+            if (title) {
+                // X用テキスト生成（280文字制限）
+                const twitterText = `📝 新記事公開！
+                
+${title}
+
+${excerpt ? excerpt.substring(0, 100) + '...' : ''}
+
+詳しくはブログで👇
+${websiteUrl}/blog/
+
+${hashtags}`;
+                
+                document.getElementById('twitterText').value = twitterText.trim();
+
+                // note用テキスト生成
+                const noteIntro = `TERACO.LABOブログからの転載記事です。
+
+${title}
+
+${excerpt}
+
+---`;
+                
+                const noteOutro = `---
+
+この記事の続きや関連記事は、TERACO.LABOブログでご覧いただけます。
+${websiteUrl}/blog/
+
+AIスクール、映像制作、スマホ教室など、最新のデジタルスキル情報を発信中！
+
+#TERACOLABO #ブログ #AI #DX`;
+
+                document.getElementById('noteIntro').value = noteIntro;
+                document.getElementById('noteOutro').value = noteOutro;
+            }
+        }
+
+        // プレビュー生成
+        function generatePreview() {
+            const twitterText = document.getElementById('twitterText').value;
+            const noteIntro = document.getElementById('noteIntro').value;
+            const noteOutro = document.getElementById('noteOutro').value;
+            const excerpt = document.getElementById('excerpt').value;
+
+            // Twitter プレビュー
+            document.getElementById('twitterPreviewText').innerHTML = twitterText.replace(/\n/g, '<br>');
+
+            // note プレビュー
+            const notePreviewContent = `
+                ${noteIntro.replace(/\n/g, '<br>')}
+                <br><br>
+                ${excerpt}
+                <br><br>
+                <em>（続きはTERACO.LABOブログで...）</em>
+                <br><br>
+                ${noteOutro.replace(/\n/g, '<br>')}
+            `;
+            document.getElementById('notePreviewText').innerHTML = notePreviewContent;
+
+            document.getElementById('previewSection').style.display = 'block';
+        }
+
+        // フォーム送信処理
+        document.getElementById('blogForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const blogData = Object.fromEntries(formData.entries());
+            
+            // 連携設定チェック
+            const enableTwitter = document.getElementById('enableTwitter').checked;
+            const enableNote = document.getElementById('enableNote').checked;
+
+            // 投稿処理のシミュレーション
+            document.getElementById('responseMessage').innerHTML = `
+                <div class="success-message">
+                    <h4>✅ 投稿完了！</h4>
+                    <p>記事「${blogData.title}」が正常に投稿されました。</p>
+                    ${enableTwitter ? '<p>🐦 Xに自動投稿しました</p>' : ''}
+                    ${enableNote ? '<p>📝 noteに自動転載しました</p>' : ''}
+                    <p><strong>次のステップ：</strong></p>
+                    <ul>
+                        <li>記事ファイルをGitHubにアップロード</li>
+                        <li>SNS投稿の確認</li>
+                        <li>アクセス解析の確認</li>
+                    </ul>
+                </div>
+            `;
+
+            // 実際の実装では以下の処理を行う
+            console.log('Blog Data:', blogData);
+            console.log('Twitter enabled:', enableTwitter);
+            console.log('Note enabled:', enableNote);
+
+            // 投稿履歴に追加
+            addToHistory(blogData, enableTwitter, enableNote);
+        });
+
+        // 投稿履歴追加
+        function addToHistory(blogData, twitterEnabled, noteEnabled) {
+            const history = JSON.parse(localStorage.getItem('blogHistory') || '[]');
+            const newPost = {
+                id: Date.now(),
+                title: blogData.title,
+                category: blogData.category,
+                publishedAt: new Date().toLocaleString('ja-JP'),
+                platforms: {
+                    twitter: twitterEnabled,
+                    note: noteEnabled
+                }
+            };
+            
+            history.unshift(newPost);
+            localStorage.setItem('blogHistory', JSON.stringify(history.slice(0, 10))); // 最新10件のみ保存
+            
+            updateHistoryDisplay();
+        }
+
+        // 履歴表示更新
+        function updateHistoryDisplay() {
+            const history = JSON.parse(localStorage.getItem('blogHistory') || '[]');
+            const historyContainer = document.getElementById('postHistory');
+            
+            if (history.length === 0) {
+                historyContainer.innerHTML = '<p>まだ投稿履歴がありません。</p>';
+                return;
+            }
+
+            const historyHtml = history.map(post => `
+                <div class="platform-preview">
+                    <h4>${post.title}</h4>
+                    <p>カテゴリ: ${post.category} | 投稿日時: ${post.publishedAt}</p>
+                    <p>連携: ${post.platforms.twitter ? '🐦 X' : ''} ${post.platforms.note ? '📝 note' : ''}</p>
+                </div>
+            `).join('');
+            
+            historyContainer.innerHTML = historyHtml;
+        }
+
+        // 設定保存
+        function saveSettings() {
+            const settings = {
+                twitterApiKey: document.getElementById('twitterApiKey').value,
+                twitterApiSecret: document.getElementById('twitterApiSecret').value,
+                noteApiToken: document.getElementById('noteApiToken').value,
+                defaultHashtags: document.getElementById('defaultHashtags').value,
+                websiteUrl: document.getElementById('websiteUrl').value
+            };
+
+            localStorage.setItem('blogSettings', JSON.stringify(settings));
+            
+            document.getElementById('responseMessage').innerHTML = `
+                <div class="success-message">
+                    設定が保存されました！
+                </div>
+            `;
+        }
+
+        // 初期化処理
+        document.addEventListener('DOMContentLoaded', function() {
+            // 保存された設定を読み込み
+            const savedSettings = JSON.parse(localStorage.getItem('blogSettings') || '{}');
+            
+            Object.keys(savedSettings).forEach(key => {
+                const element = document.getElementById(key);
+                if (element) {
+                    element.value = savedSettings[key];
+                }
+            });
+
+            // 履歴表示更新
+            updateHistoryDisplay();
+
+            // デフォルトテキスト生成
+            generateSocialTexts();
+        });
+
+        // 実際のAPI連携関数（実装例）
+        async function postToTwitter(text) {
+            // X API v2を使用した投稿
+            // 実際の実装では適切な認証とAPI呼び出しが必要
+            console.log('Twitter posting:', text);
+            
+            /*
+            const response = await fetch('/api/twitter/post', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ text: text })
+            });
+            
+            return response.json();
+            */
+        }
+
+        async function postToNote(title, content, intro, outro) {
+            // note API を使用した投稿
+            console.log('Note posting:', title, content);
+            
+            /*
+            const noteContent = `${intro}\n\n${content}\n\n${outro}`;
+            
+            const response = await fetch('/api/note/post', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ 
+                    title: title,
+                    content: noteContent 
+                })
+            });
+            
+            return response.json();
+            */
+        }
+    </script>
+</body>
+</html>
