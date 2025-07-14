@@ -14,11 +14,29 @@
     box-sizing: border-box;
 }
 
+/* グラデーション背景パターン集 */
+.gradient-diagonal {
+    background: linear-gradient(to bottom right, #1e293b 0%, #0ea5e9 50%, #ec4899 100%);
+}
+
+.gradient-vertical {
+    background: linear-gradient(to bottom, #1e293b 0%, #0ea5e9 50%, #ec4899 100%);
+}
+
+.gradient-horizontal {
+    background: linear-gradient(to right, #1e293b 0%, #0ea5e9 50%, #ec4899 100%);
+}
+
+.gradient-radial {
+    background: radial-gradient(circle at center, #1e293b 0%, #0ea5e9 50%, #ec4899 100%);
+}
+
 body {
     font-family: 'Hiragino Sans', 'Yu Gothic', 'Meiryo', sans-serif;
     line-height: 1.6;
     color: #333;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(to bottom right, #1e293b 0%, #0ea5e9 50%, #ec4899 100%);
+    background-attachment: fixed;
     min-height: 100vh;
 }
 
@@ -87,6 +105,98 @@ nav .container {
 .nav-menu a:hover {
     color: #667eea;
     background: rgba(102, 126, 234, 0.1);
+}
+
+/* グラデーション切り替えボタン */
+.gradient-selector {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 10000;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    padding: 1rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.gradient-selector h4 {
+    margin: 0 0 0.5rem 0;
+    font-size: 0.9rem;
+    color: #333;
+    text-align: center;
+}
+
+.gradient-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+}
+
+.gradient-btn {
+    width: 60px;
+    height: 40px;
+    border: 2px solid #fff;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.gradient-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.gradient-btn.active {
+    border-color: #0ea5e9;
+    box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.3);
+}
+
+.gradient-btn.diagonal {
+    background: linear-gradient(to bottom right, #1e293b 0%, #0ea5e9 50%, #ec4899 100%);
+}
+
+.gradient-btn.vertical {
+    background: linear-gradient(to bottom, #1e293b 0%, #0ea5e9 50%, #ec4899 100%);
+}
+
+.gradient-btn.horizontal {
+    background: linear-gradient(to right, #1e293b 0%, #0ea5e9 50%, #ec4899 100%);
+}
+
+.gradient-btn.radial {
+    background: radial-gradient(circle at center, #1e293b 0%, #0ea5e9 50%, #ec4899 100%);
+}
+
+.gradient-btn::after {
+    content: attr(data-name);
+    position: absolute;
+    bottom: 2px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.6rem;
+    color: white;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+    font-weight: 600;
+}
+
+@media (max-width: 768px) {
+    .gradient-selector {
+        top: 10px;
+        right: 10px;
+        padding: 0.5rem;
+    }
+    
+    .gradient-btn {
+        width: 45px;
+        height: 30px;
+    }
+    
+    .gradient-btn::after {
+        font-size: 0.5rem;
+    }
 }
 
 /* ハンバーガーメニューボタン */
@@ -843,6 +953,17 @@ footer {
     </style>
 </head>
 <body>
+    <!-- グラデーション選択UI -->
+    <div class="gradient-selector">
+        <h4>背景選択</h4>
+        <div class="gradient-buttons">
+            <div class="gradient-btn diagonal active" data-gradient="diagonal" data-name="斜め"></div>
+            <div class="gradient-btn vertical" data-gradient="vertical" data-name="縦"></div>
+            <div class="gradient-btn horizontal" data-gradient="horizontal" data-name="横"></div>
+            <div class="gradient-btn radial" data-gradient="radial" data-name="放射"></div>
+        </div>
+    </div>
+
     <header>
         <nav>
             <div class="container">
@@ -1064,6 +1185,74 @@ footer {
         </div>
     </footer>
     <script>
+        // ハンバーガーメニューの開閉
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
+            const navMenu = document.querySelector('.nav-menu');
+            
+            if (mobileMenuToggle && navMenu) {
+                mobileMenuToggle.addEventListener('click', function() {
+                    this.classList.toggle('active');
+                    navMenu.classList.toggle('active');
+                });
+                
+                // メニュー項目をクリックしたときにメニューを閉じる
+                const menuLinks = navMenu.querySelectorAll('a');
+                menuLinks.forEach(link => {
+                    link.addEventListener('click', function() {
+                        mobileMenuToggle.classList.remove('active');
+                        navMenu.classList.remove('active');
+                    });
+                });
+            }
+        });
+    </script>
+    <script>
+        // グラデーション切り替え機能
+        document.addEventListener('DOMContentLoaded', function() {
+            const gradientButtons = document.querySelectorAll('.gradient-btn');
+            const body = document.body;
+            
+            // 現在の設定を保存（ローカルストレージ）
+            const savedGradient = localStorage.getItem('gradientType') || 'diagonal';
+            applyGradient(savedGradient);
+            
+            gradientButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const gradientType = this.dataset.gradient;
+                    
+                    // アクティブ状態の切り替え
+                    gradientButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // グラデーション適用
+                    applyGradient(gradientType);
+                    
+                    // 設定を保存
+                    localStorage.setItem('gradientType', gradientType);
+                });
+            });
+            
+            function applyGradient(type) {
+                // 既存のグラデーションクラスを削除
+                body.className = body.className.replace(/gradient-\w+/g, '');
+                
+                // 新しいグラデーションクラスを追加
+                body.classList.add(`gradient-${type}`);
+                
+                // アクティブボタンを更新
+                gradientButtons.forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.gradient === type);
+                });
+                
+                // スムーズなトランジション効果
+                body.style.transition = 'background 0.8s ease-in-out';
+                setTimeout(() => {
+                    body.style.transition = '';
+                }, 800);
+            }
+        });
+        
         // ハンバーガーメニューの開閉
         document.addEventListener('DOMContentLoaded', function() {
             const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
