@@ -16,8 +16,9 @@
             font-family: 'Hiragino Sans', 'Yu Gothic', 'Meiryo', sans-serif;
             line-height: 1.6;
             color: #333;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(to bottom right, #1e293b 0%, #0ea5e9 50%, #ec4899 100%);
             min-height: 100vh;
+            background-attachment: fixed;
         }
 
         .container {
@@ -212,7 +213,7 @@
         }
 
         .submit-button {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(to bottom right, #1e293b 0%, #0ea5e9 50%, #ec4899 100%);
             color: white;
             padding: 1rem 3rem;
             border: none;
@@ -557,11 +558,6 @@
                 console.log('- plan:', emailData.plan);
                 console.log('- preferred_date:', emailData.preferred_date);
                 
-                // デバッグアラート（一時的）
-                alert('デバッグ\nサービス名: ' + emailData.service_name + '\nプラン: ' + emailData.plan + '\n日程: ' + emailData.preferred_date);
-                
-                // フォーム送信を一時停止してデバッグ
-                return;
                 
                 
                 // 1. 管理者宛メール送信
