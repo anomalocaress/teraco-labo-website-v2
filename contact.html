@@ -396,15 +396,15 @@
             }
         }
     </style>
+    <link rel="stylesheet" href="theme-white.css">
 </head>
 <body>
     <header>
         <nav>
             <div class="container">
                 <div class="logo">
-                    <a href="index.html" style="text-decoration: none; color: inherit;">
-                        <h1>TERACO.LABO</h1>
-                        <p>未来を学ぶ つながる空間</p>
+                    <a href="index.html" aria-label="TERACO.LABO ホーム" style="text-decoration: none; color: inherit; display:flex; align-items:center;">
+                        <img src="images/teraco-labo-logo.png" alt="TERACO.LABO ロゴ">
                     </a>
                 </div>
                 <ul class="nav-menu">
@@ -926,6 +926,42 @@
                 // 自動集約実行
                 updateMessageField();
             });
+        });
+
+        // 料金カードからのCTA遷移で事前選択（?service=ai&plan=work 等）
+        document.addEventListener('DOMContentLoaded', function() {
+            const params = new URLSearchParams(location.search);
+            const service = params.get('service');
+            const plan = params.get('plan');
+            if (service) {
+                const input = document.querySelector(`input[name="service"][value="${service}"]`);
+                if (input) {
+                    input.checked = true;
+                    const option = input.closest('.service-option');
+                    if (option) option.classList.add('selected');
+                    input.dispatchEvent(new Event('change', { bubbles: true }));
+                }
+            }
+            if (plan) {
+                const planMap = {
+                    group: 'グループレッスン',
+                    light: 'グループライト',
+                    personal: '個人レッスン',
+                    trial: 'おためしレッスン',
+                    life: 'AIライフコース',
+                    work: 'AIワークコース'
+                };
+                const planLabel = planMap[plan] || plan;
+                const userMsg = document.getElementById('user-message');
+                if (userMsg) {
+                    const prefix = '希望プラン: ';
+                    const line = `${prefix}${planLabel}`;
+                    if (!userMsg.value.includes(prefix)) {
+                        userMsg.value = line;
+                    }
+                }
+            }
+            updateMessageField();
         });
         
         // 日程変更時の自動集約

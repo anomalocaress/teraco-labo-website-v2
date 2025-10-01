@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>プレビュー機能テスト</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .container { display: flex; gap: 20px; }
+        .left, .right { flex: 1; }
+        input, textarea { width: 100%; padding: 10px; margin: 10px 0; }
+        textarea { height: 200px; }
+        .preview { border: 1px solid #ccc; padding: 20px; min-height: 200px; background: #f9f9f9; }
+    </style>
+    <link rel="stylesheet" href="theme-white.css">
+</head>
+<body>
+    <h1>プレビュー機能デバッグテスト</h1>
+    <div class="container">
+        <div class="left">
+            <h2>入力エリア</h2>
+            <input type="text" id="title" placeholder="タイトル">
+            <textarea id="content" placeholder="本文"></textarea>
+            <button onclick="testPreview()">手動プレビュー</button>
+        </div>
+        <div class="right">
+            <h2>プレビュー</h2>
+            <div id="previewContent" class="preview">
+                ここにプレビューが表示されます
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // デバッグ用の関数
+        function testPreview() {
+            console.log('testPreview called');
+            
+            const title = document.getElementById('title').value;
+            const content = document.getElementById('content').value;
+            
+            console.log('Title:', title);
+            console.log('Content:', content);
+            
+            const previewHTML = `
+                <h1>${title || 'タイトルなし'}</h1>
+                <p>${content || '内容なし'}</p>
+            `;
+            
+            document.getElementById('previewContent').innerHTML = previewHTML;
+            console.log('Preview updated');
+        }
+        
+        // リアルタイムプレビュー
+        document.getElementById('title').addEventListener('input', function() {
+            console.log('Title input changed:', this.value);
+            testPreview();
+        });
+        
+        document.getElementById('content').addEventListener('input', function() {
+            console.log('Content input changed:', this.value);
+            testPreview();
+        });
+        
+        // 初期表示
+        testPreview();
+    </script>
+</body>
+</html>

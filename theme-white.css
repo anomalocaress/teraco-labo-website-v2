@@ -1,0 +1,299 @@
+/*
+  TERACO.LABO White Theme Override
+  - Keep blue→green gradient as accent
+  - Shift overall base to white, reduce heavy glass/blur
+  - Do not alter content/structure; style-only overrides
+*/
+
+:root {
+  --primary-blue: #5b52ff;
+  --accent-green: #1fffa1;
+  --text: #1f2430;
+  --muted: #525a6a;
+  --bg: #ffffff;
+  --surface: #ffffff;
+  --border: #e9eef3;
+  --shadow: 0 8px 28px rgba(20,28,38,0.06);
+  --gradient: linear-gradient(135deg, var(--primary-blue), var(--accent-green));
+  --header-height: 72px;
+}
+
+/* Base */
+html, body {
+  background: var(--bg) !important;
+  /* subtle gradient spots to avoid flatness */
+  background:
+    radial-gradient(900px 600px at 100% -10%, rgba(91,82,255,0.06), transparent 60%),
+    radial-gradient(700px 500px at -10% 110%, rgba(31,255,161,0.08), transparent 60%),
+    var(--bg) !important;
+  color: var(--text) !important;
+}
+
+/* Subtle gradient accent bar at top to keep concept */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0; left: 0; right: 0; height: 4px;
+  background: var(--gradient);
+  z-index: 2000;
+}
+
+/* Header */
+header {
+  background: rgba(255,255,255,0.98) !important;
+  backdrop-filter: none !important;
+  border-bottom: 1px solid var(--border) !important;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.04) !important;
+  height: var(--header-height) !important;
+}
+
+/* Keep nav bar height thin regardless of logo size */
+nav { padding: 0 !important; height: var(--header-height) !important; }
+nav .container { height: 100%; display: flex; align-items: center; }
+
+.logo h1 {
+  background: var(--gradient) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  color: transparent !important;
+  -webkit-text-fill-color: transparent !important;
+}
+
+.logo p { color: var(--muted) !important; }
+
+.nav-menu a {
+  color: var(--text) !important;
+  position: relative;
+}
+
+.nav-menu a:hover,
+.nav-menu a.active {
+  color: var(--primary-blue) !important;
+  background: rgba(91, 82, 255, 0.08) !important;
+}
+
+.nav-menu a::after {
+  content: "";
+  position: absolute;
+  left: 16%;
+  right: 16%;
+  bottom: 4px;
+  height: 2px;
+  background: var(--gradient);
+  border-radius: 2px;
+  opacity: 0;
+  transform: translateY(2px);
+  transition: all .25s ease;
+}
+.nav-menu a:hover::after,
+.nav-menu a.active::after { opacity: 1; transform: translateY(0); }
+
+/* Hero */
+.hero { color: var(--text) !important; }
+.hero-title {
+  background: var(--gradient) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  color: transparent !important;
+  -webkit-text-fill-color: transparent !important;
+  text-shadow: none !important;
+}
+.hero-subtitle, .hero-description { color: var(--muted) !important; opacity: 1 !important; }
+
+/* Sections */
+.section-digital,
+.section-instructor,
+.section-video,
+.section-space {
+  background: var(--surface) !important;
+  backdrop-filter: none !important;
+  border: 1px solid var(--border) !important;
+  box-shadow: var(--shadow) !important;
+}
+
+/* Section titles get gradient text + underline accent */
+.section-title {
+  background: var(--gradient) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  color: transparent !important;
+  -webkit-text-fill-color: transparent !important;
+  text-shadow: none !important;
+}
+.section-title::after {
+  content: "";
+  display: block;
+  width: 80px;
+  height: 4px;
+  margin: 12px auto 0;
+  background: var(--gradient);
+  border-radius: 3px;
+}
+
+/* Cards */
+.service-card-large,
+.space-card {
+  background: linear-gradient(#fff, #fff) padding-box,
+              var(--gradient) border-box !important;
+  border: 1px solid transparent !important;
+  box-shadow: var(--shadow) !important;
+}
+
+.service-card-large:hover,
+.space-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 14px 40px rgba(20,28,38,0.10) !important;
+}
+
+/* Image overlay cards keep their white veil */
+.smartphone-card::before,
+.ai-card::before,
+.instructor-card::before,
+.video-card::before,
+.rental-card::before {
+  background: rgba(255,255,255,0.90) !important;
+}
+
+/* Headings inside cards use gradient text */
+.service-card-large h3,
+.space-card h3,
+.smartphone-card h3,
+.ai-card h3,
+.instructor-card h3,
+.video-card h3,
+.rental-card h3 {
+  background: var(--gradient) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  color: transparent !important;
+  -webkit-text-fill-color: transparent !important;
+}
+
+/* Buttons */
+.cta-button,
+.back-link {
+  background: var(--gradient) !important;
+  color: #fff !important;
+  border: none !important;
+}
+
+.cta-button:hover,
+.back-link:hover {
+  filter: brightness(1.05);
+  transform: translateY(-2px);
+}
+
+.feature-tag,
+.price-tag,
+.status-tag,
+.scope-tag,
+.type-tag {
+  background: var(--gradient) !important;
+  color: #fff !important;
+}
+
+.duration-tag,
+.description-tag,
+.contact-tag {
+  background: #f6f8fb !important;
+  color: var(--muted) !important;
+  border: 1px solid var(--border) !important;
+}
+
+/* Forms (where present) */
+input, textarea, select {
+  background: #fff !important;
+  border: 1px solid var(--border) !important;
+  color: var(--text) !important;
+}
+
+/* Content paragraphs keep solid readable color */
+p, li, label, small { color: var(--text) !important; }
+
+/* Optional: gradient links inside content areas for subtle accent */
+main a:not(.cta-button):not(.back-link),
+.content a {
+  color: var(--text) !important;
+  background-image: var(--gradient);
+  background-size: 100% 2px;
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  text-decoration: none !important;
+}
+main a:hover:not(.cta-button):not(.back-link),
+.content a:hover { filter: brightness(1.05); }
+
+/* Footer (if any appear inside pages) */
+footer {
+  background: #fff !important;
+  border-top: 1px solid var(--border) !important;
+}
+
+/* Logo image sizing */
+.logo { display: flex; align-items: center; }
+.logo a { display: inline-flex; align-items: center; gap: .5rem; text-decoration: none; }
+.logo img { height: calc(var(--header-height) - 8px); width: auto; display: block; object-fit: contain; }
+@media (max-width: 768px) { :root { --header-height: 64px; } }
+@media (max-width: 480px) { :root { --header-height: 56px; } }
+
+/* Pricing: unify to white cards with gradient accents */
+.pricing-section {
+  background: var(--surface) !important;
+  color: var(--text) !important;
+  border: 1px solid var(--border) !important;
+  box-shadow: var(--shadow) !important;
+}
+
+.pricing-title {
+  background: var(--gradient) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  color: transparent !important;
+  -webkit-text-fill-color: transparent !important;
+}
+
+.pricing-card,
+.pricing-table {
+  background: linear-gradient(#fff, #fff) padding-box,
+              var(--gradient) border-box !important;
+  border: 1px solid transparent !important;
+  box-shadow: var(--shadow) !important;
+  color: var(--text) !important;
+}
+
+.pricing-details { color: var(--muted) !important; }
+
+.price {
+  background: var(--gradient) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  color: transparent !important;
+  -webkit-text-fill-color: transparent !important;
+}
+
+.pricing-row { border-bottom: 1px solid var(--border) !important; }
+
+.plan-cta {
+  display: inline-block;
+  margin-top: 1rem;
+  padding: 0.6rem 1.2rem;
+  border-radius: 999px;
+  background: var(--gradient);
+  color: #fff;
+  text-decoration: none;
+  font-weight: 600;
+  transition: transform .2s ease, filter .2s ease;
+}
+
+.plan-cta:hover { transform: translateY(-2px); filter: brightness(1.05); }
+
+.plan-badge {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: .02em;
+  padding: .25rem .6rem;
+  border-radius: 999px;
+  background: var(--gradient);
+  color: #fff;
+}

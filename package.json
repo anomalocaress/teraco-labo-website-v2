@@ -4,10 +4,13 @@
   "description": "TERACO.LABO ブログシステム with SNS連携機能",
   "main": "api/social-integration.js",
   "scripts": {
-    "start": "node api/social-integration.js",
-    "dev": "nodemon api/social-integration.js",
+    "start": "node blog-server.js",
+    "dev": "nodemon blog-server.js",
+    "old:start": "node api/social-integration.js",
+    "old:dev": "nodemon api/social-integration.js",
     "blog:publish": "node scripts/publish-blog.js",
-    "blog:sync": "node scripts/sync-social.js"
+    "blog:sync": "node scripts/sync-social.js",
+    "test:system": "node scripts/test-system.js"
   },
   "dependencies": {
     "express": "^4.18.2",
