@@ -8,6 +8,8 @@
     "dev": "nodemon blog-server.js",
     "old:start": "node api/social-integration.js",
     "old:dev": "nodemon api/social-integration.js",
+    "api:start": "node api/social-integration.js",
+    "api:dev": "nodemon api/social-integration.js",
     "blog:publish": "node scripts/publish-blog.js",
     "blog:sync": "node scripts/sync-social.js",
     "test:system": "node scripts/test-system.js"
