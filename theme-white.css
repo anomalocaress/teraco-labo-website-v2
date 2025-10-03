@@ -40,11 +40,8 @@ nav { padding: 0 !important; height: var(--header-height) !important; }
 nav .container { height: 100%; display: flex; align-items: center; }
 
 .logo h1 {
-  background: var(--gradient) !important;
-  -webkit-background-clip: text !important;
-  background-clip: text !important;
-  color: transparent !important;
-  -webkit-text-fill-color: transparent !important;
+  color: var(--text) !important;
+  font-weight: 700 !important;
 }
 
 .logo p { color: var(--muted) !important; }
@@ -78,13 +75,14 @@ nav .container { height: 100%; display: flex; align-items: center; }
 
 /* Hero */
 .hero { color: var(--text) !important; }
-.hero-title {
-  background: var(--gradient) !important;
-  -webkit-background-clip: text !important;
-  background-clip: text !important;
-  color: transparent !important;
-  -webkit-text-fill-color: transparent !important;
-  text-shadow: none !important;
+.hero-logo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 2rem 0;
+}
+.hero-logo img {
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
 }
 .hero-subtitle, .hero-description { color: var(--muted) !important; opacity: 1 !important; }
 
@@ -99,7 +97,7 @@ nav .container { height: 100%; display: flex; align-items: center; }
   box-shadow: var(--shadow) !important;
 }
 
-/* Section titles get gradient text + underline accent */
+/* Section titles use gradient for emphasis */
 .section-title {
   background: var(--gradient) !important;
   -webkit-background-clip: text !important;
@@ -107,15 +105,17 @@ nav .container { height: 100%; display: flex; align-items: center; }
   color: transparent !important;
   -webkit-text-fill-color: transparent !important;
   text-shadow: none !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.02em !important;
 }
 .section-title::after {
   content: "";
   display: block;
-  width: 80px;
-  height: 4px;
-  margin: 12px auto 0;
+  width: 60px;
+  height: 3px;
+  margin: 16px auto 0;
   background: var(--gradient);
-  border-radius: 3px;
+  border-radius: 2px;
 }
 
 /* Cards */
@@ -141,7 +141,7 @@ nav .container { height: 100%; display: flex; align-items: center; }
   background: rgba(255,255,255,0.95) !important;
 }
 
-/* Headings inside cards use gradient text */
+/* Headings inside cards use clean black text */
 .service-card-large h3,
 .space-card h3,
 .smartphone-card h3,
@@ -149,25 +149,26 @@ nav .container { height: 100%; display: flex; align-items: center; }
 .instructor-card h3,
 .video-card h3,
 .rental-card h3 {
-  background: var(--gradient) !important;
-  -webkit-background-clip: text !important;
-  background-clip: text !important;
-  color: transparent !important;
-  -webkit-text-fill-color: transparent !important;
+  color: var(--text) !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.01em !important;
 }
 
-/* Buttons */
+/* Buttons use gradient for emphasis */
 .cta-button,
 .back-link {
   background: var(--gradient) !important;
   color: #fff !important;
   border: none !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.02em !important;
 }
 
 .cta-button:hover,
 .back-link:hover {
   filter: brightness(1.05);
   transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(91, 82, 255, 0.3) !important;
 }
 
 .feature-tag,
@@ -177,6 +178,7 @@ nav .container { height: 100%; display: flex; align-items: center; }
 .type-tag {
   background: var(--gradient) !important;
   color: #fff !important;
+  font-weight: 500 !important;
 }
 
 .duration-tag,
@@ -219,7 +221,7 @@ footer {
 /* Logo image sizing */
 .logo { display: flex; align-items: center; }
 .logo a { display: inline-flex; align-items: center; gap: .5rem; text-decoration: none; }
-.logo img { height: calc(var(--header-height) - 16px); width: auto; display: block; object-fit: contain; }
+.logo img { height: calc(var(--header-height) + 8px); width: auto; display: block; object-fit: contain; }
 @media (max-width: 768px) { :root { --header-height: 64px; } }
 @media (max-width: 480px) { :root { --header-height: 56px; } }
 
@@ -241,9 +243,8 @@ footer {
 
 .pricing-card,
 .pricing-table {
-  background: linear-gradient(#fff, #fff) padding-box,
-              var(--gradient) border-box !important;
-  border: 1px solid transparent !important;
+  background: #fff !important;
+  border: 1px solid var(--border) !important;
   box-shadow: var(--shadow) !important;
   color: var(--text) !important;
 }
