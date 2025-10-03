@@ -6,14 +6,14 @@
 */
 
 :root {
-  --primary-blue: #5b52ff;
-  --accent-green: #1fffa1;
-  --text: #1f2430;
-  --muted: #525a6a;
+  --primary-blue: #2563eb;
+  --accent-green: #059669;
+  --text: #1f2937;
+  --muted: #6b7280;
   --bg: #ffffff;
   --surface: #ffffff;
-  --border: #e9eef3;
-  --shadow: 0 8px 28px rgba(20,28,38,0.06);
+  --border: #e5e7eb;
+  --shadow: 0 4px 16px rgba(0,0,0,0.04);
   --gradient: linear-gradient(135deg, var(--primary-blue), var(--accent-green));
   --header-height: 72px;
 }
@@ -21,29 +21,17 @@
 /* Base */
 html, body {
   background: var(--bg) !important;
-  /* subtle gradient spots to avoid flatness */
-  background:
-    radial-gradient(900px 600px at 100% -10%, rgba(91,82,255,0.06), transparent 60%),
-    radial-gradient(700px 500px at -10% 110%, rgba(31,255,161,0.08), transparent 60%),
-    var(--bg) !important;
   color: var(--text) !important;
 }
 
-/* Subtle gradient accent bar at top to keep concept */
-body::before {
-  content: "";
-  position: fixed;
-  top: 0; left: 0; right: 0; height: 4px;
-  background: var(--gradient);
-  z-index: 2000;
-}
+/* Remove gradient accent bar for cleaner white design */
 
 /* Header */
 header {
-  background: rgba(255,255,255,0.98) !important;
+  background: rgba(255,255,255,1) !important;
   backdrop-filter: none !important;
   border-bottom: 1px solid var(--border) !important;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.04) !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.02) !important;
   height: var(--header-height) !important;
 }
 
@@ -133,9 +121,8 @@ nav .container { height: 100%; display: flex; align-items: center; }
 /* Cards */
 .service-card-large,
 .space-card {
-  background: linear-gradient(#fff, #fff) padding-box,
-              var(--gradient) border-box !important;
-  border: 1px solid transparent !important;
+  background: #fff !important;
+  border: 1px solid var(--border) !important;
   box-shadow: var(--shadow) !important;
 }
 
@@ -151,7 +138,7 @@ nav .container { height: 100%; display: flex; align-items: center; }
 .instructor-card::before,
 .video-card::before,
 .rental-card::before {
-  background: rgba(255,255,255,0.90) !important;
+  background: rgba(255,255,255,0.95) !important;
 }
 
 /* Headings inside cards use gradient text */
@@ -232,7 +219,7 @@ footer {
 /* Logo image sizing */
 .logo { display: flex; align-items: center; }
 .logo a { display: inline-flex; align-items: center; gap: .5rem; text-decoration: none; }
-.logo img { height: calc(var(--header-height) - 8px); width: auto; display: block; object-fit: contain; }
+.logo img { height: calc(var(--header-height) - 16px); width: auto; display: block; object-fit: contain; }
 @media (max-width: 768px) { :root { --header-height: 64px; } }
 @media (max-width: 480px) { :root { --header-height: 56px; } }
 
