@@ -78,13 +78,14 @@ nav .container { height: 100%; display: flex; align-items: center; }
 
 /* Hero */
 .hero { color: var(--text) !important; }
-.hero-title {
-  background: var(--gradient) !important;
-  -webkit-background-clip: text !important;
-  background-clip: text !important;
-  color: transparent !important;
-  -webkit-text-fill-color: transparent !important;
-  text-shadow: none !important;
+.hero-logo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 2rem 0;
+}
+.hero-logo img {
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
 }
 .hero-subtitle, .hero-description { color: var(--muted) !important; opacity: 1 !important; }
 
