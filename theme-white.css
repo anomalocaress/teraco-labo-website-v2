@@ -266,8 +266,8 @@ footer {
   color: var(--text) !important;
 }
 
-/* Hero logo sizing on small screens */
-.hero-logo img { max-width: 85%; height: auto; }
+/* Hero logo: keep full container width for better presence on mobile */
+.hero-logo img { max-width: 100%; height: auto; }
 
 /* Mobile adjustments */
 @media (max-width: 768px) {
@@ -282,8 +282,8 @@ footer {
 @media (max-width: 480px) {
   /* Keep absolutely-positioned credits inside cards */
   .ai-credit { right: 8px !important; bottom: 8px !important; }
-  /* Slightly smaller hero logo on very small screens */
-  .hero-logo img { max-width: 75%; }
+  /* Keep full width on very small screens as well */
+  .hero-logo img { max-width: 100%; }
 }
 
 /* Center single or narrow cards within their sections */
