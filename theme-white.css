@@ -238,8 +238,9 @@ footer {
   display: block;
   object-fit: contain;
 }
-@media (max-width: 768px) { :root { --header-height: 64px; } }
-@media (max-width: 480px) { :root { --header-height: 56px; } }
+/* Enlarge header baseline on mobile so the logo doesn't look cramped */
+@media (max-width: 768px) { :root { --header-height: 80px; } }
+@media (max-width: 480px) { :root { --header-height: 76px; } }
 
 /* Pricing: unify to white cards with gradient accents */
 .pricing-section {
