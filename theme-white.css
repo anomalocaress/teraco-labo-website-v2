@@ -283,6 +283,19 @@ footer {
   .hero-logo img { max-width: 75%; }
 }
 
+/* Center single or narrow cards within their sections */
+.service-grid-large,
+.service-grid-single,
+.space-card-container { justify-content: center !important; }
+
+/* Make individual cards center with automatic side margins */
+.service-card-large,
+.space-card { margin-left: auto !important; margin-right: auto !important; }
+
+/* When grids leave extra space, keep items centered */
+.service-grid-large { justify-items: center; }
+.service-grid-large > * { width: 100%; }
+
 .pricing-details { color: var(--muted) !important; }
 
 .price {
