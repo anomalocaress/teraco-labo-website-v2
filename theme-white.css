@@ -3,6 +3,7 @@
   - Keep blue→green gradient as accent
   - Shift overall base to white, reduce heavy glass/blur
   - Do not alter content/structure; style-only overrides
+  - Add mobile-friendly defaults shared across all pages
 */
 
 :root {
@@ -23,6 +24,12 @@ html, body {
   background: var(--bg) !important;
   color: var(--text) !important;
 }
+
+/* Prevent accidental horizontal scrolling on small screens */
+body { overflow-x: hidden; }
+
+/* Make media responsive by default */
+img, svg, video { max-width: 100%; height: auto; }
 
 /* Remove gradient accent bar for cleaner white design */
 
@@ -221,7 +228,14 @@ footer {
 /* Logo image sizing */
 .logo { display: flex; align-items: center; }
 .logo a { display: inline-flex; align-items: center; gap: .5rem; text-decoration: none; }
-.logo img { height: calc(var(--header-height) + 8px); width: auto; display: block; object-fit: contain; }
+/* Keep logo within header height on all devices */
+.logo img {
+  max-height: var(--header-height);
+  width: auto;
+  height: auto;
+  display: block;
+  object-fit: contain;
+}
 @media (max-width: 768px) { :root { --header-height: 64px; } }
 @media (max-width: 480px) { :root { --header-height: 56px; } }
 
@@ -247,6 +261,26 @@ footer {
   border: 1px solid var(--border) !important;
   box-shadow: var(--shadow) !important;
   color: var(--text) !important;
+}
+
+/* Hero logo sizing on small screens */
+.hero-logo img { max-width: 85%; height: auto; }
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  /* Reduce large headings a bit */
+  .section-title { font-size: 1.9rem !important; }
+  .service-card-large { padding: 2rem !important; }
+  .space-card { padding: 2rem !important; }
+  /* Ensure service grids stack safely */
+  .service-grid-large { grid-template-columns: 1fr !important; }
+}
+
+@media (max-width: 480px) {
+  /* Keep absolutely-positioned credits inside cards */
+  .ai-credit { right: 8px !important; bottom: 8px !important; }
+  /* Slightly smaller hero logo on very small screens */
+  .hero-logo img { max-width: 75%; }
 }
 
 .pricing-details { color: var(--muted) !important; }
