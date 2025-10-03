@@ -639,7 +639,9 @@
             };
 
             try {
-                const response = await fetch('http://localhost:3001/api/web-reservations', {
+                // Try hosted API first (Vercel /api/*), fall back to local dev
+                const targetUrl = '/api/web-reservations';
+                const response = await fetch(targetUrl, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
