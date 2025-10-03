@@ -39,11 +39,13 @@ header {
   backdrop-filter: none !important;
   border-bottom: 1px solid var(--border) !important;
   box-shadow: 0 2px 8px rgba(0,0,0,0.02) !important;
-  height: var(--header-height) !important;
+  /* Allow header to expand if logo is slightly taller */
+  min-height: var(--header-height) !important;
 }
 
 /* Keep nav bar height thin regardless of logo size */
-nav { padding: 0 !important; height: var(--header-height) !important; }
+/* Keep a baseline height but allow content to define actual height */
+nav { padding: 0 !important; min-height: var(--header-height) !important; }
 nav .container { height: 100%; display: flex; align-items: center; }
 
 .logo h1 {
@@ -230,9 +232,9 @@ footer {
 .logo a { display: inline-flex; align-items: center; gap: .5rem; text-decoration: none; }
 /* Keep logo within header height on all devices */
 .logo img {
-  max-height: var(--header-height);
+  /* Restore original visual balance: logo slightly larger than header baseline */
+  height: calc(var(--header-height) + 8px);
   width: auto;
-  height: auto;
   display: block;
   object-fit: contain;
 }
