@@ -23,3 +23,8 @@ dist-ssr
 *.sln
 *.sw?
 削除推奨/
+
+# Secrets (do not commit)
+.env
+.env.*
+*.pem
