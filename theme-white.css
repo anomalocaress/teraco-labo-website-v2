@@ -4,7 +4,11 @@
   - Shift overall base to white, reduce heavy glass/blur
   - Do not alter content/structure; style-only overrides
   - Add mobile-friendly defaults shared across all pages
+  - Modern minimal UI to match logotype (fonts + outline buttons + chips)
 */
+
+/* Modern web fonts (Inter + Noto Sans JP) */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;700&display=swap');
 
 :root {
   --primary-blue: #2563eb;
@@ -23,6 +27,12 @@
 html, body {
   background: var(--bg) !important;
   color: var(--text) !important;
+}
+
+/* Unify font across the site (keeps fallbacks) */
+body {
+  font-family: 'Inter', 'Noto Sans JP', 'Hiragino Sans', 'Yu Gothic', 'Meiryo', system-ui, -apple-system, 'Segoe UI', sans-serif !important;
+  letter-spacing: 0.01em;
 }
 
 /* Prevent accidental horizontal scrolling on small screens */
@@ -106,16 +116,12 @@ nav .container { height: 100%; display: flex; align-items: center; }
   box-shadow: var(--shadow) !important;
 }
 
-/* Section titles use gradient for emphasis */
+/* Section titles: clean solid text, subtle gradient underline */
 .section-title {
-  background: var(--gradient) !important;
-  -webkit-background-clip: text !important;
-  background-clip: text !important;
-  color: transparent !important;
-  -webkit-text-fill-color: transparent !important;
+  color: var(--text) !important;
   text-shadow: none !important;
   font-weight: 700 !important;
-  letter-spacing: -0.02em !important;
+  letter-spacing: -0.01em !important;
 }
 .section-title::after {
   content: "";
@@ -163,37 +169,56 @@ nav .container { height: 100%; display: flex; align-items: center; }
   letter-spacing: -0.01em !important;
 }
 
-/* Buttons use gradient for emphasis */
+/* Buttons: modern outline style (keeps markup/links intact) */
 .cta-button,
-.back-link {
-  background: var(--gradient) !important;
-  color: #fff !important;
-  border: none !important;
-  font-weight: 600 !important;
+.back-link,
+.contact-button,
+.contact-btn,
+.plan-cta {
+  background: transparent !important;
+  color: var(--text) !important;
+  border: 1.5px solid var(--border) !important;
+  border-radius: 12px !important;
+  box-shadow: none !important;
   letter-spacing: 0.02em !important;
 }
 
 .cta-button:hover,
-.back-link:hover {
-  filter: brightness(1.05);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(91, 82, 255, 0.3) !important;
+.back-link:hover,
+.contact-button:hover,
+.contact-btn:hover,
+.plan-cta:hover {
+  background: #f6f8fb !important;
+  transform: translateY(-1px);
+  box-shadow: none !important;
+  filter: none !important;
 }
 
+/* LINE button: use green outline style */
+.line-btn {
+  background: transparent !important;
+  color: #00B900 !important;
+  border: 1.5px solid #00B900 !important;
+  border-radius: 12px !important;
+}
+.line-btn:hover { background: rgba(0,185,0,0.06) !important; box-shadow: none !important; }
+
+/* Tags/Chips: outlined, lighter tone */
 .feature-tag,
 .price-tag,
 .status-tag,
 .scope-tag,
 .type-tag {
-  background: var(--gradient) !important;
-  color: #fff !important;
+  background: transparent !important;
+  color: var(--muted) !important;
+  border: 1px solid var(--border) !important;
   font-weight: 500 !important;
 }
 
 .duration-tag,
 .description-tag,
 .contact-tag {
-  background: #f6f8fb !important;
+  background: #f9fafb !important;
   color: var(--muted) !important;
   border: 1px solid var(--border) !important;
 }
@@ -205,21 +230,35 @@ input, textarea, select {
   color: var(--text) !important;
 }
 
+/* Form containers and service details: reduce heavy blur and fills */
+.form-container,
+.service-detail {
+  background: #fff !important;
+  border: 1px solid var(--border) !important;
+  box-shadow: var(--shadow) !important;
+  backdrop-filter: none !important;
+  border-radius: 16px !important;
+}
+
+/* Neutral contact section blocks */
+.contact-section {
+  background: transparent !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 16px !important;
+}
+
 /* Content paragraphs keep solid readable color */
 p, li, label, small { color: var(--text) !important; }
 
-/* Optional: gradient links inside content areas for subtle accent */
+/* Links: simple underline with subtle color */
 main a:not(.cta-button):not(.back-link),
 .content a {
-  color: var(--text) !important;
-  background-image: var(--gradient);
-  background-size: 100% 2px;
-  background-repeat: no-repeat;
-  background-position: 0 100%;
-  text-decoration: none !important;
+  color: var(--primary-blue) !important;
+  text-decoration: underline !important;
+  text-underline-offset: 3px;
 }
 main a:hover:not(.cta-button):not(.back-link),
-.content a:hover { filter: brightness(1.05); }
+.content a:hover { color: #1d4ed8 !important; }
 
 /* Footer (if any appear inside pages) */
 footer {
@@ -251,11 +290,7 @@ footer {
 }
 
 .pricing-title {
-  background: var(--gradient) !important;
-  -webkit-background-clip: text !important;
-  background-clip: text !important;
-  color: transparent !important;
-  -webkit-text-fill-color: transparent !important;
+  color: var(--text) !important;
 }
 
 .pricing-card,
@@ -302,11 +337,7 @@ footer {
 .pricing-details { color: var(--muted) !important; }
 
 .price {
-  background: var(--gradient) !important;
-  -webkit-background-clip: text !important;
-  background-clip: text !important;
-  color: transparent !important;
-  -webkit-text-fill-color: transparent !important;
+  color: var(--text) !important;
 }
 
 .pricing-row { border-bottom: 1px solid var(--border) !important; }
@@ -314,16 +345,17 @@ footer {
 .plan-cta {
   display: inline-block;
   margin-top: 1rem;
-  padding: 0.6rem 1.2rem;
-  border-radius: 999px;
-  background: var(--gradient);
-  color: #fff;
+  padding: 0.6rem 1.1rem;
+  border-radius: 12px;
+  background: transparent !important;
+  color: var(--text) !important;
+  border: 1.5px solid var(--border) !important;
   text-decoration: none;
   font-weight: 600;
-  transition: transform .2s ease, filter .2s ease;
+  transition: transform .15s ease, background .15s ease;
 }
 
-.plan-cta:hover { transform: translateY(-2px); filter: brightness(1.05); }
+.plan-cta:hover { transform: translateY(-1px); background: #f6f8fb; }
 
 .plan-badge {
   display: inline-block;
@@ -332,6 +364,7 @@ footer {
   letter-spacing: .02em;
   padding: .25rem .6rem;
   border-radius: 999px;
-  background: var(--gradient);
-  color: #fff;
+  background: #f9fafb !important;
+  color: var(--muted) !important;
+  border: 1px solid var(--border) !important;
 }
