@@ -121,6 +121,14 @@ header nav .container {
 }
 .hero-logo img { filter: none !important; }
 .hero-subtitle, .hero-description { color: var(--muted) !important; opacity: 1 !important; }
+/* Hero tagline: blue→green gradient text */
+.hero-description {
+  background: var(--gradient) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  color: transparent !important;
+  -webkit-text-fill-color: transparent !important;
+}
 
 /* Sections */
 .section-digital,
