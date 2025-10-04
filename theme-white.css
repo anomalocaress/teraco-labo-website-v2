@@ -68,8 +68,8 @@ header nav .container {
   margin-left: auto !important;
   margin-right: auto !important;
 }
-.logo { margin-right: 4px; }
-.nav-menu { margin-left: 12px !important; gap: 0.75rem !important; }
+.logo { margin-right: 0; }
+.nav-menu { margin-left: 0 !important; gap: 0.75rem !important; }
 .nav-menu a { padding: 0.45rem 0.6rem !important; }
 
 /* On mobile keep space-between so hamburger stays at right */
