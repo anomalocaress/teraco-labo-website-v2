@@ -59,10 +59,16 @@ nav { padding: 0 !important; min-height: var(--header-height) !important; }
 nav .container { height: 100%; display: flex; align-items: center; }
 
 /* Compact header navigation: keep menu closer to the logo */
-header nav .container { justify-content: flex-start !important; gap: 0.75rem; }
+/* Center the logo + menu group on desktop */
+header nav .container { justify-content: center !important; gap: 0.75rem; }
 .logo { margin-right: 4px; }
 .nav-menu { margin-left: 12px !important; gap: 0.75rem !important; }
 .nav-menu a { padding: 0.45rem 0.6rem !important; }
+
+/* On mobile keep space-between so hamburger stays at right */
+@media (max-width: 768px) {
+  header nav .container { justify-content: space-between !important; }
+}
 
 .logo h1 {
   color: var(--text) !important;
