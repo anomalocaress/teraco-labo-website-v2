@@ -60,7 +60,14 @@ nav .container { height: 100%; display: flex; align-items: center; }
 
 /* Compact header navigation: keep menu closer to the logo */
 /* Center the logo + menu group on desktop */
-header nav .container { justify-content: center !important; gap: 0.75rem; }
+header nav .container {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  gap: 0.75rem;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
 .logo { margin-right: 4px; }
 .nav-menu { margin-left: 12px !important; gap: 0.75rem !important; }
 .nav-menu a { padding: 0.45rem 0.6rem !important; }
