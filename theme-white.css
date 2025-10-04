@@ -302,8 +302,12 @@ footer {
   color: var(--text) !important;
 }
 
-/* Hero logo: keep full container width for better presence on mobile */
-.hero-logo img { max-width: 100%; height: auto; }
+/* Hero logo: use original wide logotype, avoid upscaling blur */
+.hero-logo img {
+  max-width: 820px;
+  width: min(92%, 820px);
+  height: auto;
+}
 
 /* Mobile adjustments */
 @media (max-width: 768px) {
