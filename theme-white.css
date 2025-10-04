@@ -100,9 +100,7 @@ nav .container { height: 100%; display: flex; align-items: center; }
   align-items: center;
   margin: 2rem 0;
 }
-.hero-logo img {
-  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
-}
+.hero-logo img { filter: none !important; }
 .hero-subtitle, .hero-description { color: var(--muted) !important; opacity: 1 !important; }
 
 /* Sections */
@@ -207,6 +205,7 @@ nav .container { height: 100%; display: flex; align-items: center; }
 
 /* Tags/Chips: outlined, lighter tone */
 .feature-tag,
+.feature-item,
 .price-tag,
 .status-tag,
 .scope-tag,
