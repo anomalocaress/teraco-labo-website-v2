@@ -317,6 +317,23 @@
             text-align: center;
             margin: 3rem 0;
         }
+        /* 問い合わせ導線の統一レイアウト */
+        .contact-actions {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            margin-top: 1.25rem;
+        }
+        /* LINEボタンも他ボタンと同デザインで統一するため、
+           専用スタイルは使用しません（contact-btnを使用） */
+        .line-qr-small {
+            margin-top: 1rem;
+            text-align: center;
+            color: #666;
+            font-size: 0.9rem;
+        }
 
         .contact-btn {
             display: inline-block;
@@ -504,54 +521,51 @@
                 </div>
 
                 <div class="pricing-section">
-                    <h3 class="pricing-title">料金プラン</h3>
+                    <h3 class="pricing-title">講座メニュー</h3>
                     <div class="pricing-grid">
                         <div class="pricing-card">
-                            <div class="plan-badge" aria-label="おすすめプラン">おすすめ</div>
-                            <h4>グループレッスン</h4>
-                            <div class="price">9,900円</div>
+                            <h4>まなび2</h4>
+                            <div class="price">月5,000円</div>
                             <div class="pricing-details">
-                                90分 × 月4回<br>
-                                少人数制でしっかり学習<br>
-                                質問し放題
+                                入門クラス（レギュラー会員）<br>
+                                45分 × 月2回
                             </div>
-                            <a class="plan-cta" href="contact.html?service=smartphone&plan=group">申し込む・相談</a>
+                            <a class="plan-cta" href="contact.html?service=smartphone&plan=manabi2">申し込む・相談</a>
                         </div>
                         <div class="pricing-card">
-                            <h4>グループライト</h4>
-                            <div class="price">6,000円</div>
+                            <h4>まなび4</h4>
+                            <div class="price">月8,000円</div>
                             <div class="pricing-details">
-                                90分 × 月2回<br>
-                                気軽に始められるプラン<br>
-                                基本操作を中心に
+                                入門クラス（レギュラー会員）<br>
+                                45分 × 月4回
                             </div>
-                            <a class="plan-cta" href="contact.html?service=smartphone&plan=light">申し込む・相談</a>
+                            <a class="plan-cta" href="contact.html?service=smartphone&plan=manabi4">申し込む・相談</a>
                         </div>
                         <div class="pricing-card">
-                            <h4>個人レッスン</h4>
-                            <div class="price">カスタマイズ</div>
+                            <h4>てらこ2</h4>
+                            <div class="price">月8,000円</div>
                             <div class="pricing-details">
-                                マンツーマン指導<br>
-                                個別のペースで学習<br>
-                                ご要望に応じて対応
+                                応用クラス（プレミアム会員）<br>
+                                90分 × 月2回
                             </div>
-                            <a class="plan-cta" href="contact.html?service=smartphone&plan=personal">相談する</a>
+                            <a class="plan-cta" href="contact.html?service=smartphone&plan=terako2">申し込む・相談</a>
                         </div>
                         <div class="pricing-card">
-                            <h4>おためしレッスン</h4>
-                            <div class="price">2,200円</div>
+                            <h4>てらこ4</h4>
+                            <div class="price">月12,000円</div>
                             <div class="pricing-details">
-                                90分 × 1回<br>
-                                好きな講座を選んで<br>
-                                1回限りのお試し料金
+                                応用クラス（プレミアム会員）<br>
+                                90分 × 月4回
                             </div>
-                            <a class="plan-cta" href="contact.html?service=smartphone&plan=trial">申し込む</a>
+                            <a class="plan-cta" href="contact.html?service=smartphone&plan=terako4">申し込む・相談</a>
                         </div>
                     </div>
                     
-                    <div style="margin-top: 2rem; padding: 1rem; background: #f6f8fb; border: 1px solid #e9eef3; border-radius: 8px; font-size: 0.9rem; color: #525a6a; text-align: left;">
-                        ※入会金5,500円が別途必要です。<br>
-                        ※料金は全て税込です。
+                    <div style="margin-top: 2rem; padding: 1rem; background: #f6f8fb; border: 1px solid #e9eef3; border-radius: 8px; font-size: 0.95rem; color: #525a6a; text-align: left; line-height: 1.8;">
+                        ・入会金：レギュラー会員 3,000円／プレミアム会員 5,000円<br>
+                        ・個人レッスン：1回50分 8,000円（入会金不要）<br>
+                        ・会員割引：現在ご入会中の会員様は、個人レッスンを1回5,000円でご利用いただけます。<br>
+                        ・料金はすべて税込です。
                     </div>
                 </div>
 
@@ -560,39 +574,21 @@
                     <p>スマホ教室の詳細や体験会についてお気軽にお問い合わせください。<br>
                     あなたに合ったプランをご提案いたします。</p>
                     
-                    <div style="margin-top: 2rem;">
-                        <a href="contact.html" class="contact-btn">
-                            メールでお問い合わせ
-                        </a>
-                        <a href="tel:090-6738-1469" class="contact-btn">
-                            電話でお問い合わせ
-                        </a>
+                    <div class="contact-actions">
+                        <a href="contact.html?service=smartphone" class="contact-btn">✉️ メールでお問い合わせ</a>
+                        <a href="tel:090-6738-1469" class="contact-btn">📞 電話する</a>
+                        <a href="https://lin.ee/tkYJ7Cw" target="_blank" class="contact-btn">💬 LINEで相談</a>
                     </div>
-                    
-                    <div class="line-contact-section" style="margin-top: 2rem; padding: 2rem; background: #f8f9fa; border-radius: 16px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1.5rem;">
-                        <div class="line-contact-content" style="flex: 1; min-width: 250px;">
-                            <h4 style="color: #00B900; margin-bottom: 1rem; font-size: 1.3rem;">LINEでお気軽にお問い合わせ</h4>
-                            <p style="color: #666; margin-bottom: 1.5rem; line-height: 1.6;">
-                                公式LINEアカウントから、いつでもお気軽にご質問・ご相談いただけます。<br>
-                                レッスン内容や日程についてお答えします。
-                            </p>
-                            <a href="https://lin.ee/tkYJ7Cw" target="_blank" class="line-btn" style="display: inline-block; background: #00B900; color: white; padding: 0.8rem 1.5rem; text-decoration: none; border-radius: 50px; font-weight: 600; transition: all 0.3s ease;">
-                                📱 LINEで友達追加
-                            </a>
+                    <div class="line-qr-small">
+                        <div style="width: 110px; height: 110px; margin: 0.5rem auto 0; border: 2px solid #ddd; border-radius: 8px; background: #fff; overflow: hidden;">
+                            <img src="images/line-qr.png" alt="LINE友達追加QRコード" style="width: 100%; height: 100%; object-fit: cover;">
                         </div>
-                        <div class="line-qr-code" style="flex-shrink: 0;">
-                            <div style="text-align: center;">
-                                <p style="font-size: 0.9rem; color: #666; margin-bottom: 0.5rem;">QRコードでも追加できます</p>
-                                <div style="width: 120px; height: 120px; margin: 0 auto; border: 2px solid #ddd; border-radius: 8px; background: white; overflow: hidden;">
-                                    <img src="images/line-qr.png" alt="LINE友達追加QRコード" style="width: 100%; height: 100%; object-fit: cover;">
-                                </div>
-                            </div>
-                        </div>
+                        <div style="margin-top: 0.25rem;">QRコードでも追加できます</div>
                     </div>
                     
                     <div style="margin-top: 2rem; font-size: 0.9rem; color: #666;">
                         <strong>連絡先</strong><br>
-                        smart.teraco@gmail.com<br>
+                        fujisaki@teraco-labo.com<br>
                         090-6738-1469<br>
                         宮崎県西都市大字三宅9437-9
                     </div>

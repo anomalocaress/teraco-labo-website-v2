@@ -302,6 +302,22 @@
             color: #666;
         }
 
+        /* 下部の電話案内 */
+        .call-footer {
+            margin-top: 2rem;
+            text-align: center;
+            background: #f8f9fa;
+            border-radius: 16px;
+            padding: 1rem;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+        .call-footer a {
+            color: #5b52ff;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1.25rem;
+        }
+
         @media (max-width: 768px) {
             .nav-menu {
                 display: none;
@@ -489,17 +505,22 @@
                 </form>
 
                 <div id="responseMessage"></div>
+                <div class="call-footer" aria-label="電話でお問い合わせ">
+                    <p style="color:#333; margin-bottom:0.25rem;">お急ぎの方はお電話ください</p>
+                    <p><a href="tel:090-6738-1469">📞 090-6738-1469</a></p>
+                </div>
             </div>
         </div>
     </main>
 
     <!-- EmailJS SDK -->
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script src="email-config.js"></script>
     
     <script>
         // EmailJS初期化
         (function(){
-            emailjs.init({publicKey: "zcA2Cp6c3OstOeY5o"}); // This will be replaced with actual key
+            emailjs.init({publicKey: "zcA2Cp6c3OstOeY5o"});
         })();
 
         // サービス選択の視覚的フィードバック
@@ -577,11 +598,12 @@
                 };
                 
                 // 1. 管理者宛メール送信
-                await emailjs.send('TERACO_Gmail', 'template_6838gcg', emailData);
+                const EMAIL_SERVICE_ID = window.EMAILJS_SERVICE_ID || 'TERACO_Gmail';
+                await emailjs.send(EMAIL_SERVICE_ID, 'template_6838gcg', emailData);
                 console.log('Admin email sent successfully');
                 
                 // 2. ユーザー自動返信メール送信
-                await emailjs.send('TERACO_Gmail', 'template_ww2xoao', emailData);
+                await emailjs.send(EMAIL_SERVICE_ID, 'template_ww2xoao', emailData);
                 console.log('ユーザー自動返信メール送信成功');
                 
                 // 成功メッセージを表示

@@ -14,6 +14,7 @@
         gtag('config', 'G-3GCZQ39LS1');
     </script>
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <script src="email-config.js"></script>
     <style>
         * {
             margin: 0;
@@ -317,6 +318,22 @@
             color: #666;
         }
 
+        /* 下部の電話案内 */
+        .call-footer {
+            margin-top: 2rem;
+            text-align: center;
+            background: #f8f9fa;
+            border-radius: 16px;
+            padding: 1rem;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+        .call-footer a {
+            color: #5b52ff;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1.25rem;
+        }
+
         @media (max-width: 768px) {
             .nav-menu {
                 display: none;
@@ -427,31 +444,31 @@
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label">ご希望のプラン<span class="required">*</span></label>
+                        <label class="form-label">ご希望の講座<span class="required">*</span></label>
                         <div class="plan-options">
                             <label class="plan-option">
-                                <input type="radio" name="plan" value="group-regular" required>
-                                <div class="plan-name">グループレッスン</div>
-                                <div class="plan-price">9,900円</div>
-                                <div class="plan-details">90分 × 月4回</div>
+                                <input type="radio" name="plan" value="manabi2" required>
+                                <div class="plan-name">まなび2</div>
+                                <div class="plan-price">月5,000円</div>
+                                <div class="plan-details">入門クラス（レギュラー会員）／45分 × 月2回</div>
                             </label>
                             <label class="plan-option">
-                                <input type="radio" name="plan" value="group-light" required>
-                                <div class="plan-name">グループライト</div>
-                                <div class="plan-price">6,000円</div>
-                                <div class="plan-details">90分 × 月2回</div>
+                                <input type="radio" name="plan" value="manabi4" required>
+                                <div class="plan-name">まなび4</div>
+                                <div class="plan-price">月8,000円</div>
+                                <div class="plan-details">入門クラス（レギュラー会員）／45分 × 月4回</div>
                             </label>
                             <label class="plan-option">
-                                <input type="radio" name="plan" value="private" required>
-                                <div class="plan-name">個人レッスン</div>
-                                <div class="plan-price">カスタマイズ</div>
-                                <div class="plan-details">マンツーマン指導</div>
+                                <input type="radio" name="plan" value="terako2" required>
+                                <div class="plan-name">てらこ2</div>
+                                <div class="plan-price">月8,000円</div>
+                                <div class="plan-details">応用クラス（プレミアム会員）／90分 × 月2回</div>
                             </label>
                             <label class="plan-option">
-                                <input type="radio" name="plan" value="trial" required>
-                                <div class="plan-name">おためしレッスン</div>
-                                <div class="plan-price">2,200円</div>
-                                <div class="plan-details">90分 × 1回</div>
+                                <input type="radio" name="plan" value="terako4" required>
+                                <div class="plan-name">てらこ4</div>
+                                <div class="plan-price">月12,000円</div>
+                                <div class="plan-details">応用クラス（プレミアム会員）／90分 × 月4回</div>
                             </label>
                         </div>
                     </div>
@@ -478,6 +495,10 @@
                 </form>
 
                 <div id="responseMessage"></div>
+                <div class="call-footer" aria-label="電話でお問い合わせ">
+                    <p style="color:#333; margin-bottom:0.25rem;">お急ぎの方はお電話ください</p>
+                    <p><a href="tel:090-6738-1469">📞 090-6738-1469</a></p>
+                </div>
             </div>
         </div>
     </main>
@@ -528,10 +549,10 @@
                 
                 // Collect form data for emails
                 const planNames = {
-                    'group-regular': 'グループレッスン（9,900円/月）',
-                    'group-light': 'グループライト（6,000円/月）',
-                    'private': '個人レッスン（カスタマイズ）',
-                    'trial': 'おためしレッスン（2,200円）'
+                    manabi2: 'まなび2（45分×月2回／5,000円）',
+                    manabi4: 'まなび4（45分×月4回／8,000円）',
+                    terako2: 'てらこ2（90分×月2回／8,000円）',
+                    terako4: 'てらこ4（90分×月4回／12,000円）'
                 };
                 
                 // デバッグ用ログ
@@ -547,7 +568,7 @@
                     email: data.email,
                     phone: data.phone || '未記入',
                     
-                    // サービス情報 - テンプレート変数名を確認
+                    // サービス情報
                     service_name: 'スマホ教室',
                     services: 'スマホ教室',  // 後方互換
                     plan: planNames[data.plan] || '未選択',
@@ -571,11 +592,12 @@
                 
                 
                 // 1. 管理者宛メール送信
-                await emailjs.send('TERACO_Gmail', 'template_6838gcg', emailData);
+                const EMAIL_SERVICE_ID = window.EMAILJS_SERVICE_ID || 'TERACO_Gmail';
+                await emailjs.send(EMAIL_SERVICE_ID, 'template_6838gcg', emailData);
                 console.log('管理者メール送信成功');
                 
                 // 2. ユーザー自動返信メール送信
-                await emailjs.send('TERACO_Gmail', 'template_ww2xoao', emailData);
+                await emailjs.send(EMAIL_SERVICE_ID, 'template_ww2xoao', emailData);
                 console.log('ユーザー自動返信メール送信成功');
                 
                 // 成功メッセージを表示
@@ -619,10 +641,10 @@
         // 管理アプリへ予約データを送信する関数
         async function sendToManagementApp(data) {
             const planNames = {
-                'group-regular': 'グループレッスン',
-                'group-light': 'グループライト',
-                'private': '個人レッスン',
-                'trial': 'おためしレッスン'
+                manabi2: 'まなび2',
+                manabi4: 'まなび4',
+                terako2: 'てらこ2',
+                terako4: 'てらこ4'
             };
 
             const reservationData = {

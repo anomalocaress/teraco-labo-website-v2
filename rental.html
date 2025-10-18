@@ -304,6 +304,10 @@
             text-align: center;
             margin: 3rem 0;
         }
+        /* 問い合わせ導線の統一レイアウト */
+        .contact-actions { display:flex; justify-content:center; align-items:center; gap:0.75rem; flex-wrap:wrap; margin-top:1.25rem; }
+        /* LINEも他ボタンと同デザイン（contact-btn）で統一 */
+        .line-qr-small { margin-top:1rem; text-align:center; color:#666; font-size:0.9rem; }
 
         .contact-btn {
             display: inline-block;
@@ -506,18 +510,15 @@
                     <p>ご利用希望日時をお知らせください。<br>
                     空き状況を確認してご連絡いたします。</p>
                     
-                    <div style="margin-top: 2rem;">
-                        <a href="contact.html" class="contact-btn">
-                            予約お問合せ
-                        </a>
-                        <a href="tel:090-6738-1469" class="contact-btn">
-                            電話で予約
-                        </a>
+                    <div class="contact-actions">
+                        <a href="contact.html?service=rental" class="contact-btn">✉️ メールでお問い合わせ</a>
+                        <a href="tel:090-6738-1469" class="contact-btn">📞 電話する</a>
+                        <a href="https://lin.ee/tkYJ7Cw" target="_blank" class="contact-btn">💬 LINEで相談</a>
                     </div>
                     
                     <div style="margin-top: 2rem; font-size: 0.9rem; color: #666;">
                         <strong>連絡先</strong><br>
-                        smart.teraco@gmail.com<br>
+                        fujisaki@teraco-labo.com<br>
                         090-6738-1469<br>
                         宮崎県西都市大字三宅9437-9
                     </div>

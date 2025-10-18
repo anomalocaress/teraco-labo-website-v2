@@ -14,6 +14,7 @@
         gtag('config', 'G-3GCZQ39LS1');
     </script>
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <script src="email-config.js"></script>
     <style>
         * {
             margin: 0;
@@ -332,6 +333,22 @@
             margin-top: 0.5rem;
         }
 
+        /* 下部の電話案内 */
+        .call-footer {
+            margin-top: 2rem;
+            text-align: center;
+            background: #f8f9fa;
+            border-radius: 16px;
+            padding: 1rem;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+        .call-footer a {
+            color: #5b52ff;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1.25rem;
+        }
+
         @media (max-width: 768px) {
             .nav-menu {
                 display: none;
@@ -442,36 +459,31 @@
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label">ご希望のコース<span class="required">*</span></label>
+                        <label class="form-label">ご希望の講座<span class="required">*</span></label>
                         <div class="plan-options">
                             <label class="plan-option">
-                                <input type="radio" name="plan" value="ai-life" required>
-                                <div class="plan-name">AIライフコース</div>
-                                <div class="plan-price">12,000円</div>
-                                <div class="plan-details">60分 × 月4回</div>
-                                <div class="plan-description">AIってなに？から日常で使えるAI活用まで</div>
+                                <input type="radio" name="plan" value="basic2" required>
+                                <div class="plan-name">ベーシック2</div>
+                                <div class="plan-price">月5,000円</div>
+                                <div class="plan-details">基礎クラス（レギュラー会員）／45分 × 月2回</div>
                             </label>
                             <label class="plan-option">
-                                <input type="radio" name="plan" value="ai-work" required>
-                                <div class="plan-name">AIワークコース</div>
-                                <div class="plan-price">16,000円</div>
-                                <div class="plan-details">60分 × 月4回</div>
-                                <div class="plan-description">仕事で使えるツールやWebページなどの開発</div>
+                                <input type="radio" name="plan" value="basic4" required>
+                                <div class="plan-name">ベーシック4</div>
+                                <div class="plan-price">月9,000円</div>
+                                <div class="plan-details">基礎クラス（レギュラー会員）／45分 × 月4回</div>
                             </label>
                             <label class="plan-option">
-                                <input type="radio" name="plan" value="trial" required>
-                                <div class="plan-name">おためしレッスン</div>
-                                <div class="plan-price">3,000円</div>
-                                <div class="plan-details">60分 × 1回</div>
-                                <div class="plan-description">まずは触ってみよう　1回限りのお試し料金</div>
+                                <input type="radio" name="plan" value="advance2" required>
+                                <div class="plan-name">アドバンス2</div>
+                                <div class="plan-price">月9,000円</div>
+                                <div class="plan-details">実践クラス（プレミアム会員）／90分 × 月2回</div>
                             </label>
                             <label class="plan-option">
-                                <input type="radio" name="plan" value="community" required>
-                                <div class="plan-name">TERACO.LABOオンラインコミュニティ</div>
-                                <div class="plan-price">-</div>
-                                <div class="plan-details">準備中</div>
-                                <div class="plan-description">チームとなってTERACO.LABOと共に学ぶ</div>
-                                <div class="plan-status">準備中</div>
+                                <input type="radio" name="plan" value="advance4" required>
+                                <div class="plan-name">アドバンス4</div>
+                                <div class="plan-price">月14,000円</div>
+                                <div class="plan-details">実践クラス（プレミアム会員）／90分 × 月4回</div>
                             </label>
                         </div>
                     </div>
@@ -498,6 +510,10 @@
                 </form>
 
                 <div id="responseMessage"></div>
+                <div class="call-footer" aria-label="電話でお問い合わせ">
+                    <p style="color:#333; margin-bottom:0.25rem;">お急ぎの方はお電話ください</p>
+                    <p><a href="tel:090-6738-1469">📞 090-6738-1469</a></p>
+                </div>
             </div>
         </div>
     </main>
@@ -548,10 +564,10 @@
                 
                 // Collect form data for emails
                 const planNames = {
-                    'ai-life': 'AIライフコース（12,000円/月）',
-                    'ai-work': 'AIワークコース（16,000円/月）',
-                    'trial': 'おためしレッスン（3,000円）',
-                    'community': 'TERACO.LABOオンラインコミュニティ（準備中）'
+                    basic2: 'ベーシック2（45分×月2回／5,000円）',
+                    basic4: 'ベーシック4（45分×月4回／9,000円）',
+                    advance2: 'アドバンス2（90分×月2回／9,000円）',
+                    advance4: 'アドバンス4（90分×月4回／14,000円）'
                 };
                 
                 // デバッグ用ログ
@@ -581,11 +597,12 @@
                 console.log('送信するemailData:', emailData);
                 
                 // 1. 管理者宛メール送信
-                await emailjs.send('TERACO_Gmail', 'template_6838gcg', emailData);
+                const EMAIL_SERVICE_ID = window.EMAILJS_SERVICE_ID || 'TERACO_Gmail';
+                await emailjs.send(EMAIL_SERVICE_ID, 'template_6838gcg', emailData);
                 console.log('管理者メール送信成功');
                 
                 // 2. ユーザー自動返信メール送信
-                await emailjs.send('TERACO_Gmail', 'template_ww2xoao', emailData);
+                await emailjs.send(EMAIL_SERVICE_ID, 'template_ww2xoao', emailData);
                 console.log('ユーザー自動返信メール送信成功');
                 
                 // 成功メッセージを表示

@@ -14,6 +14,7 @@
         gtag('config', 'G-3GCZQ39LS1');
     </script>
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <script src="email-config.js"></script>
     <style>
         * {
             margin: 0;
@@ -333,6 +334,22 @@
             margin-top: 0.5rem;
         }
 
+        /* 下部の電話案内 */
+        .call-footer {
+            margin-top: 2rem;
+            text-align: center;
+            background: #f8f9fa;
+            border-radius: 16px;
+            padding: 1rem;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+        .call-footer a {
+            color: #5b52ff;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1.25rem;
+        }
+
         @media (max-width: 768px) {
             .nav-menu {
                 display: none;
@@ -537,7 +554,7 @@
                             <strong>📞</strong>
                             <span>電話相談</span>
                         </a>
-                        <a href="mailto:fujisaki.eizo@gmail.com" class="contact-method">
+                        <a href="mailto:fujisaki@teraco-labo.com" class="contact-method">
                             <strong>✉️</strong>
                             <span>メール</span>
                         </a>
@@ -550,6 +567,10 @@
                             <span>制作実績</span>
                         </a>
                     </div>
+                </div>
+                <div class="call-footer" aria-label="電話でお問い合わせ">
+                    <p style="color:#333; margin-bottom:0.25rem;">お急ぎの方はお電話ください</p>
+                    <p><a href="tel:090-6738-1469">📞 090-6738-1469</a></p>
                 </div>
             </div>
         </div>
@@ -617,11 +638,12 @@
             responseMessage.innerHTML = '<div style="text-align: center; color: #5b52ff;">送信中...</div>';
             
             // Send to admin
-            emailjs.send('TERACO_Gmail', 'template_6838gcg', emailData)
+            const EMAIL_SERVICE_ID = window.EMAILJS_SERVICE_ID || 'TERACO_Gmail';
+            emailjs.send(EMAIL_SERVICE_ID, 'template_6838gcg', emailData)
                 .then(function(response) {
                     console.log('Admin email sent successfully');
                     // Send auto-reply to user
-                    return emailjs.send('TERACO_Gmail', 'template_ww2xoao', emailData);
+                    return emailjs.send(EMAIL_SERVICE_ID, 'template_ww2xoao', emailData);
                 })
                 .then(function(response) {
                     responseMessage.innerHTML = '<div class="success-message">お問い合わせありがとうございます。確認メールをお送りしました。24時間以内にご連絡いたします。</div>';

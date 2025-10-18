@@ -120,7 +120,7 @@ header nav .container {
   margin: 2rem 0;
 }
 .hero-logo img { filter: none !important; }
-.hero-subtitle, .hero-description { color: var(--muted) !important; opacity: 1 !important; }
+.hero-subtitle { color: var(--muted) !important; opacity: 1 !important; }
 /* Hero tagline: blue→green gradient text */
 .hero-description {
   background: var(--gradient) !important;
@@ -128,6 +128,8 @@ header nav .container {
   background-clip: text !important;
   color: transparent !important;
   -webkit-text-fill-color: transparent !important;
+  display: inline-block;
+  padding: 0 .1rem;
 }
 
 /* Sections */
