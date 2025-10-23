@@ -223,6 +223,22 @@
             border-radius: 20px;
             margin: 3rem 0;
         }
+        /* 折りたたみ（詳しく見る） */
+        .details-block {
+            background: #fff;
+            border: 1px solid #eaeaea;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 2rem 0;
+        }
+        .details-block > summary {
+            cursor: pointer;
+            padding: 1rem 1.25rem;
+            list-style: none;
+            font-weight: 700;
+            color: #5b52ff;
+        }
+        .details-block[open] > summary { border-bottom: 1px solid #f0f0f0; }
 
         .content-grid {
             display: grid;
@@ -451,76 +467,12 @@
                 <h1 class="service-title">スマホ教室</h1>
                 <div class="company-name" style="color: #5b52ff; font-size: 1.2rem; font-weight: 600; margin: 0.5rem 0 1.5rem 0; text-align: center;">スマホ教室TERACO</div>
                 <p class="service-subtitle">100回聞いても大丈夫♪<br>「分からない」が「できる！楽しい！」に変わる<br>カフェ感覚でゆったり学べる雰囲気</p>
-
-                <div class="features-section">
-                    <h3 class="features-title">教室の特徴</h3>
-                    <div class="features-grid">
-                        <div class="feature-card">
-                            <h4>少人数による個別指導</h4>
-                            <p>一人ひとりのペースに合わせて、きめ細やかなサポートを行います。</p>
-                        </div>
-                        <div class="feature-card">
-                            <h4>親切丁寧な指導</h4>
-                            <p>何度でも質問OK。理解できるまで優しく丁寧にお教えします。</p>
-                        </div>
-                        <div class="feature-card">
-                            <h4>手を動かして学ぶ</h4>
-                            <p>実際にスマホを操作しながら体験的に学習。身につきやすい方法で進めます。</p>
-                        </div>
-                        <div class="feature-card">
-                            <h4>実用的な操作方法</h4>
-                            <p>日常生活で本当に使える機能を中心に、すぐに役立つ内容をお教えします。</p>
-                        </div>
-                    </div>
+                <div style="text-align:center; margin: -1rem 0 0.5rem;">
+                    <a class="plan-cta" href="#plans">まずは料金プランを見る</a>
                 </div>
 
-                <div class="service-content">
-                    <h3 style="text-align: center; margin-bottom: 2rem; color: #5b52ff;">サービス内容</h3>
-                    <div class="content-grid">
-                        <div class="content-item">
-                            <h4>基本操作</h4>
-                            <ul>
-                                <li>電源の入れ方・切り方</li>
-                                <li>画面の見方・操作方法</li>
-                                <li>文字入力の基本</li>
-                                <li>電話のかけ方・受け方</li>
-                                <li>連絡先の登録・管理</li>
-                            </ul>
-                        </div>
-                        <div class="content-item">
-                            <h4>コミュニケーション</h4>
-                            <ul>
-                                <li>LINEの使い方</li>
-                                <li>メッセージの送受信</li>
-                                <li>写真・動画の共有</li>
-                                <li>ビデオ通話の方法</li>
-                                <li>グループの作り方</li>
-                            </ul>
-                        </div>
-                        <div class="content-item">
-                            <h4>写真・カメラ</h4>
-                            <ul>
-                                <li>写真の撮り方</li>
-                                <li>動画の撮影方法</li>
-                                <li>写真の保存・整理</li>
-                                <li>家族との写真共有</li>
-                                <li>プリント方法</li>
-                            </ul>
-                        </div>
-                        <div class="content-item">
-                            <h4>便利機能</h4>
-                            <ul>
-                                <li>インターネット検索</li>
-                                <li>地図・ナビゲーション</li>
-                                <li>天気予報の確認</li>
-                                <li>キャッシュレス決済</li>
-                                <li>アプリのダウンロード</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="pricing-section">
+                <!-- 料金を先頭側に配置 -->
+                <div class="pricing-section" id="plans">
                     <h3 class="pricing-title">講座メニュー</h3>
                     <div class="pricing-grid">
                         <div class="pricing-card">
@@ -568,6 +520,82 @@
                         ・料金はすべて税込です。
                     </div>
                 </div>
+
+                <details class="details-block" style="margin-top:2rem;">
+                    <summary>教室の特徴（詳しく見る）</summary>
+                <div class="features-section" style="margin:1rem 0 0;">
+                    <h3 class="features-title">教室の特徴</h3>
+                    <div class="features-grid">
+                        <div class="feature-card">
+                            <h4>少人数による個別指導</h4>
+                            <p>一人ひとりのペースに合わせて、きめ細やかなサポートを行います。</p>
+                        </div>
+                        <div class="feature-card">
+                            <h4>親切丁寧な指導</h4>
+                            <p>何度でも質問OK。理解できるまで優しく丁寧にお教えします。</p>
+                        </div>
+                        <div class="feature-card">
+                            <h4>手を動かして学ぶ</h4>
+                            <p>実際にスマホを操作しながら体験的に学習。身につきやすい方法で進めます。</p>
+                        </div>
+                        <div class="feature-card">
+                            <h4>実用的な操作方法</h4>
+                            <p>日常生活で本当に使える機能を中心に、すぐに役立つ内容をお教えします。</p>
+                        </div>
+                    </div>
+                </div>
+                </details>
+
+                <details class="details-block">
+                    <summary>学べる内容（詳しく見る）</summary>
+                <div class="service-content" style="margin-top:1rem;">
+                    <h3 style="text-align: center; margin-bottom: 2rem; color: #5b52ff;">サービス内容</h3>
+                    <div class="content-grid">
+                        <div class="content-item">
+                            <h4>基本操作</h4>
+                            <ul>
+                                <li>電源の入れ方・切り方</li>
+                                <li>画面の見方・操作方法</li>
+                                <li>文字入力の基本</li>
+                                <li>電話のかけ方・受け方</li>
+                                <li>連絡先の登録・管理</li>
+                            </ul>
+                        </div>
+                        <div class="content-item">
+                            <h4>コミュニケーション</h4>
+                            <ul>
+                                <li>LINEの使い方</li>
+                                <li>メッセージの送受信</li>
+                                <li>写真・動画の共有</li>
+                                <li>ビデオ通話の方法</li>
+                                <li>グループの作り方</li>
+                            </ul>
+                        </div>
+                        <div class="content-item">
+                            <h4>写真・カメラ</h4>
+                            <ul>
+                                <li>写真の撮り方</li>
+                                <li>動画の撮影方法</li>
+                                <li>写真の保存・整理</li>
+                                <li>家族との写真共有</li>
+                                <li>プリント方法</li>
+                            </ul>
+                        </div>
+                        <div class="content-item">
+                            <h4>便利機能</h4>
+                            <ul>
+                                <li>インターネット検索</li>
+                                <li>地図・ナビゲーション</li>
+                                <li>天気予報の確認</li>
+                                <li>キャッシュレス決済</li>
+                                <li>アプリのダウンロード</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                </details>
+
+                
 
                 <div class="contact-section">
                     <h3>お問い合わせ・体験会のお申し込み</h3>
