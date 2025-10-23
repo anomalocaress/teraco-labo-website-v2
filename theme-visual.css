@@ -1,0 +1,61 @@
+/*
+  Visual Enhancements for index sections only
+  - Small corner illustrations inside service/rental/instructor/video cards
+  - Minimal, tasteful; easy to disable by removing this CSS link
+*/
+
+:root { --illus-size: 92px; --illus-radius: 14px; }
+
+/* Base illustration chip */
+.section-illus {
+  position: absolute;
+  width: var(--illus-size);
+  height: var(--illus-size);
+  border-radius: var(--illus-radius);
+  object-fit: cover;
+  object-position: center;
+  box-shadow: 0 10px 24px rgba(0,0,0,0.12);
+  border: 2px solid #fff;
+  z-index: 3;
+  opacity: 0.98;
+  transition: transform .25s cubic-bezier(.22,.61,.36,1), box-shadow .25s ease;
+}
+
+/* Positions */
+.illus--tl { top: 14px; left: 14px; }
+.illus--tr { top: 14px; right: 14px; }
+
+/* Lift slightly when parent card is interactive and hovered */
+.service-card-large[role="link"]:hover .section-illus,
+.space-card[role="link"]:hover .section-illus,
+.service-card-large[onclick]:hover .section-illus,
+.space-card[onclick]:hover .section-illus {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 32px rgba(0,0,0,0.16);
+}
+
+/* Mobile scaling */
+@media (max-width: 768px) {
+  :root { --illus-size: 78px; --illus-radius: 12px; }
+}
+
+@media (max-width: 480px) {
+  :root { --illus-size: 72px; --illus-radius: 12px; }
+}
+
+/* Wide banners placed under section titles (index only) */
+.section-banner { display: none; }
+
+/* Card-embedded media (index only) */
+.service-card-large .card-media,
+.space-card .card-media {
+  width: 100%;
+  height: clamp(150px, 26vw, 210px);
+  object-fit: cover;
+  object-position: center;
+  border-radius: 12px;
+  border: 1px solid var(--border, #e5e7eb);
+  box-shadow: 0 8px 20px rgba(17, 24, 39, 0.08);
+  margin: 0 0 1rem 0;
+  display: block;
+}

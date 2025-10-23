@@ -21,6 +21,8 @@
   --shadow: 0 4px 16px rgba(0,0,0,0.04);
   --gradient: linear-gradient(135deg, var(--primary-blue), var(--accent-green));
   --header-height: 72px;
+  --ease-out: cubic-bezier(.22, .61, .36, 1);
+  --ring: 0 0 0 3px rgba(37, 99, 235, 0.35);
 }
 
 /* Base */
@@ -111,6 +113,22 @@ header nav .container {
 .nav-menu a:hover::after,
 .nav-menu a.active::after { opacity: 1; transform: translateY(0); }
 
+/* Generic affordances */
+a, button { cursor: pointer; }
+[onclick] { cursor: pointer !important; }
+
+/* Accessible focus ring for interactive elements */
+a:focus-visible,
+button:focus-visible,
+[role="button"]:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: none !important;
+  box-shadow: var(--ring) !important;
+  border-color: var(--primary-blue) !important;
+}
+
 /* Hero */
 .hero { color: var(--text) !important; }
 .hero-logo {
@@ -166,13 +184,47 @@ header nav .container {
   background: #fff !important;
   border: 1px solid var(--border) !important;
   box-shadow: var(--shadow) !important;
+  position: relative !important;
+  /* デフォルトは静的。クリック可能要素だけにアニメ付与 */
 }
 
-.service-card-large:hover,
-.space-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 14px 40px rgba(20,28,38,0.10) !important;
+.service-card-large[role="link"]:hover,
+.space-card[role="link"]:hover,
+.service-card-large[onclick]:hover,
+.space-card[onclick]:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 16px 44px rgba(20,28,38,0.12) !important;
+  border-color: transparent !important;
+  background: linear-gradient(#fff, #fff) padding-box,
+              var(--gradient) border-box !important;
 }
+
+/* Click cue: subtle chevron appears on hover */
+.service-card-large[role="link"]::after,
+.space-card[role="link"]::after,
+.service-card-large[onclick]::after,
+.space-card[onclick]::after {
+  content: "\2192"; /* → */
+  position: absolute;
+  right: 18px;
+  bottom: 14px;
+  font-weight: 700;
+  color: var(--primary-blue);
+  opacity: 0;
+  transform: translateX(-4px);
+  transition: transform .2s var(--ease-out), opacity .2s var(--ease-out);
+  pointer-events: none;
+}
+.service-card-large[role="link"]:hover::after,
+.space-card[role="link"]:hover::after,
+.service-card-large[onclick]:hover::after,
+.space-card[onclick]:hover::after { opacity: 1; transform: translateX(0); }
+
+/* Press/tap feedback */
+.service-card-large[role="link"]:active,
+.space-card[role="link"]:active,
+.service-card-large[onclick]:active,
+.space-card[onclick]:active { transform: translateY(-2px) scale(0.99); }
 
 /* Image overlay cards keep their white veil */
 .smartphone-card::before,
@@ -202,6 +254,8 @@ header nav .container {
 .contact-button,
 .contact-btn,
 .submit-button,
+.submit-btn,
+.all-videos-btn,
 .plan-cta {
   background: transparent !important;
   color: var(--text) !important;
@@ -209,6 +263,10 @@ header nav .container {
   border-radius: 12px !important;
   box-shadow: none !important;
   letter-spacing: 0.02em !important;
+  display: inline-flex;
+  align-items: center;
+  gap: .35em;
+  transition: transform .2s var(--ease-out), box-shadow .2s var(--ease-out), background-color .2s ease, color .2s ease, border-color .2s ease !important;
 }
 
 .cta-button:hover,
@@ -216,12 +274,48 @@ header nav .container {
 .contact-button:hover,
 .contact-btn:hover,
 .submit-button:hover,
+.submit-btn:hover,
+.all-videos-btn:hover,
 .plan-cta:hover {
   background: #f6f8fb !important;
-  transform: translateY(-1px);
+  transform: translateY(-2px);
   box-shadow: none !important;
   filter: none !important;
 }
+
+/* Button arrows animate slightly on hover to suggest forward move */
+.cta-button::after,
+.back-link::after,
+.contact-button::after,
+.contact-btn::after,
+.submit-button::after,
+.submit-btn::after,
+.all-videos-btn::after,
+.plan-cta::after {
+  content: "\2192"; /* → */
+  display: inline-block;
+  transform: translateX(0);
+  transition: transform .18s var(--ease-out), opacity .18s var(--ease-out);
+  opacity: .8;
+}
+.cta-button:hover::after,
+.back-link:hover::after,
+.contact-button:hover::after,
+.contact-btn:hover::after,
+.submit-button:hover::after,
+.submit-btn:hover::after,
+.all-videos-btn:hover::after,
+.plan-cta:hover::after { transform: translateX(3px); opacity: 1; }
+
+/* Active/tap state for buttons */
+.cta-button:active,
+.back-link:active,
+.contact-button:active,
+.contact-btn:active,
+.submit-button:active,
+.submit-btn:active,
+.all-videos-btn:active,
+.plan-cta:active { transform: translateY(0) scale(0.98); }
 
 /* LINE button: use green outline style */
 .line-btn {
@@ -286,9 +380,13 @@ main a:not(.cta-button):not(.back-link),
   color: var(--primary-blue) !important;
   text-decoration: underline !important;
   text-underline-offset: 3px;
+  transition: color .2s ease, text-underline-offset .2s var(--ease-out);
 }
 main a:hover:not(.cta-button):not(.back-link),
-.content a:hover { color: #1d4ed8 !important; }
+.content a:hover {
+  color: #1d4ed8 !important;
+  text-underline-offset: 5px;
+}
 
 /* Footer (if any appear inside pages) */
 footer {
@@ -401,4 +499,22 @@ footer {
   background: #f9fafb !important;
   color: var(--muted) !important;
   border: 1px solid var(--border) !important;
+}
+
+/* Subtle pulse for primary calls-to-action to draw attention */
+.cta-button,.contact-button,.contact-btn,.all-videos-btn {
+  animation: ctaPulse 4.5s ease-in-out infinite;
+}
+
+@keyframes ctaPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(37,99,235,0.0); }
+  50%      { box-shadow: 0 0 0 6px rgba(37,99,235,0.06); }
+}
+
+/* Respect reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation: none !important;
+    transition: none !important;
+  }
 }

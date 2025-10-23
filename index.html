@@ -183,6 +183,36 @@ nav .container {
     text-align: center;
 }
 
+/* ロゴ合成（タグラインを建物左に重ねる） */
+@import url('https://fonts.googleapis.com/css2?family=Yuji+Syuku&display=swap');
+.hero-logo-composite { position: relative; display: inline-block; }
+.hero-logo-img { display: block; width: min(92%, 820px); height: auto; }
+
+/* 新タグライン（添付デザイン風） */
+.hero-tagline {
+    position: absolute;
+    left: 5.5%;
+    top: 18%;
+    font-family: 'Yuji Syuku', 'Hiragino Mincho ProN', 'Yu Mincho', serif;
+    font-size: clamp(1.15rem, 2.1vw + 0.38rem, 1.75rem);
+    color: #111;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+    pointer-events: none;
+    animation: fadeInUp 0.9s ease-out 0.2s both;
+    /* オフセット調整: 左へ5px・下へ3px */
+    margin-left: -18px; /* さらに左へ3px */
+    margin-top: 5px;    /* 下方向から 8px 上へ戻す */
+}
+
+/* 画面幅が狭いときの微調整 */
+@media (max-width: 768px) {
+    .hero-tagline { left: 7%; top: 17%; font-size: clamp(1.05rem, 2.3vw + 0.48rem, 1.55rem); }
+}
+@media (max-width: 480px) {
+    .hero-tagline { left: 8.5%; top: 16%; font-size: 1.3rem; }
+}
+
 .cta-button {
     display: inline-block;
     background: rgba(255, 255, 255, 0.2);
@@ -864,6 +894,8 @@ footer {
 }
     </style>
     <link rel="stylesheet" href="theme-white.css">
+    <!-- Experimental: visual accents for section cards. Remove this line to revert. -->
+    <link id="visual-enhance-css" rel="stylesheet" href="theme-visual.css">
 </head>
 <body>
 
@@ -876,10 +908,10 @@ footer {
                     </a>
                 </div>
                 <ul class="nav-menu">
-                    <li><a href="video.html">映像制作</a></li>
                     <li><a href="smartphone.html">スマホ教室</a></li>
                     <li><a href="ai.html">AIスクール</a></li>
                     <li><a href="instructor.html">外部講師</a></li>
+                    <li><a href="video.html">映像制作</a></li>
                     <li><a href="rental.html">レンタルスペース</a></li>
                     
                     <li><a href="index.html#about">代表紹介</a></li>
@@ -900,33 +932,16 @@ footer {
             <div class="container">
                 <div class="hero-content">
                     <div class="hero-logo">
-                        <img src="images/teraco-labo-logo-main.png" alt="TERACO.LABO ロゴ" style="margin: 2rem 0;">
-                    </div>
-                    <p class="hero-description">人と地域の未来をひらく<br>まちのデジタル寺子屋</p>
-                </div>
-            </div>
-        </section>
-
-        <!-- セクション1: 映像制作 -->
-        <section id="video" class="section-video">
-            <div class="container">
-                <h2 class="section-title">映像制作・ドローン</h2>
-                
-                <div class="space-card-container">
-                    <div class="space-card video-card" onclick="window.location.href='video.html'">
-                        <div class="space-content">
-                            <h3>映像制作</h3>
-                            <p>地域PR動画、事業紹介ムービー、ドローン撮影など「伝わる」クリエイティブをご提供いたします。</p>
-                            <div class="space-features">
-                                <span class="feature-item">地域PR動画</span>
-                                <span class="feature-item">ドローン撮影</span>
-                                <span class="feature-item">企業向け制作</span>
-                            </div>
+                        <div class="hero-logo-composite">
+                            <img class="hero-logo-img" src="images/teraco-labo-logo-main.png" alt="TERACO.LABO ロゴ">
+                            <div class="hero-tagline" aria-hidden="true">まちのデジタルてらこや。</div>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
+
+        
 
         <!-- セクション2: スマホ教室 -->
         <section id="smartphone" class="section-digital">
@@ -934,8 +949,9 @@ footer {
                 <h2 class="section-title">スマホ教室</h2>
                 
                 <div class="service-grid-single">
-                    <div class="service-card-large smartphone-card" onclick="window.location.href='smartphone.html'">
+                    <div class="service-card-large smartphone-card" role="link" tabindex="0" aria-label="スマホ教室の詳細へ" onclick="window.location.href='smartphone.html'">
                         <div style="display: flex; flex-direction: column; height: 100%; justify-content: space-between;">
+                            <img class="card-media" src="images/smartphone-class.png" alt="" aria-hidden="true" loading="lazy">
                             <h3>スマホ・タブレット教室</h3>
                             <p>初めてでも安心。スマホ・タブレットの基本から、LINE・写真・キャッシュレスまで幅広くサポート。</p>
                             <div class="card-footer">
@@ -955,8 +971,9 @@ footer {
                 <h2 class="section-title">AIスクール</h2>
                 
                 <div class="service-grid-single">
-                    <div class="service-card-large ai-card" onclick="window.location.href='ai.html'">
+                    <div class="service-card-large ai-card" role="link" tabindex="0" aria-label="AIスクールの詳細へ" onclick="window.location.href='ai.html'">
                         <div style="display: flex; flex-direction: column; height: 100%; justify-content: space-between; position: relative;">
+                            <img class="card-media" src="images/ai-school.png" alt="" aria-hidden="true" loading="lazy">
                             <h3>AI活用・生成AI講座</h3>
                             <p>話題のChatGPTやAIツールを、生活や仕事に活かす使い方を丁寧にレクチャー。</p>
                             <div class="card-footer">
@@ -970,14 +987,15 @@ footer {
             </div>
         </section>
 
-        <!-- セクション4: 外部講師 -->
+        <!-- セクション3: 外部講師 -->
         <section id="instructor" class="section-instructor">
             <div class="container">
                 <h2 class="section-title">専門講座・研修サービス</h2>
                 
                 <div class="space-card-container">
-                    <div class="space-card instructor-card" onclick="window.location.href='instructor.html'">
+                    <div class="space-card instructor-card" role="link" tabindex="0" aria-label="外部講師の詳細へ" onclick="window.location.href='instructor.html'">
                         <div class="space-content">
+                            <img class="card-media" src="images/instructor.png" alt="" aria-hidden="true" loading="lazy">
                             <h3>外部講師</h3>
                             <p>行政/企業向け講座受託、AI活用支援、ICT推進支援など、ご要望によりカスタマイズ可能です。</p>
                             <div class="space-features">
@@ -991,14 +1009,37 @@ footer {
             </div>
         </section>
 
+        <!-- セクション4: 映像制作 -->
+        <section id="video" class="section-video">
+            <div class="container">
+                <h2 class="section-title">映像制作・ドローン</h2>
+                
+                <div class="space-card-container">
+                    <div class="space-card video-card" role="link" tabindex="0" aria-label="映像制作の詳細へ" onclick="window.location.href='video.html'">
+                        <div class="space-content">
+                            <img class="card-media" src="images/video-production.png" alt="" aria-hidden="true" loading="lazy">
+                            <h3>映像制作</h3>
+                            <p>地域PR動画、事業紹介ムービー、ドローン撮影など「伝わる」クリエイティブをご提供いたします。</p>
+                            <div class="space-features">
+                                <span class="feature-item">地域PR動画</span>
+                                <span class="feature-item">ドローン撮影</span>
+                                <span class="feature-item">企業向け制作</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- セクション5: スペースレンタル -->
         <section id="space" class="section-space">
             <div class="container">
                 <h2 class="section-title">レンタルスペース・会議室</h2>
                 
                 <div class="space-card-container">
-                    <div class="space-card rental-card" onclick="window.location.href='rental.html'">
+                    <div class="space-card rental-card" role="link" tabindex="0" aria-label="レンタルスペースの詳細へ" onclick="window.location.href='rental.html'">
                         <div class="space-content">
+                            <img class="card-media" src="images/rental-space.png" alt="" aria-hidden="true" loading="lazy">
                             <h3>レンタルスペース</h3>
                             <p>少人数の教室・勉強会・ワークショップに最適な落ち着いた空間。1時間から利用OK。</p>
                             <div class="space-features">
@@ -1124,6 +1165,17 @@ footer {
                     }
                 });
             }
+
+            // キーボード操作でカードを開けるようにする（Enter / Space）
+            const clickableCards = document.querySelectorAll('.space-card[role="link"], .service-card-large[role="link"]');
+            clickableCards.forEach(card => {
+                card.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        this.click();
+                    }
+                });
+            });
         });
     </script>
 </body>
