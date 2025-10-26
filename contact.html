@@ -879,7 +879,7 @@
                     const endTime = getSelectValue('rental-end-time');
                     
                     if (rentalPurpose) details += `利用目的: ${rentalPurpose}\n`;
-                    if (capacity) details += `利用人数: ${capacity}名\n`;
+                    if (capacity) details += `利用人数: ${capacity}\n`;
                     if (startTime && endTime) {
                         details += `利用時間: ${startTime}〜${endTime}\n`;
                         // 概算料金試算（1時間あたり：最大(3,000円, 600円×人数)）
