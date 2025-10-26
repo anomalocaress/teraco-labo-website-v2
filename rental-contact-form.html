@@ -564,6 +564,10 @@
                         </div>
                     </div>
 
+                    <div id="priceSummary" style="display:none; margin: .5rem 0 1rem; padding: .75rem 1rem; background: #f6f8fb; border: 1px solid #e9eef3; border-radius: 8px; color: #334155;">
+                        概算料金: <strong id="priceTotal">-</strong>（<span id="priceHours">-</span>、1時間あたり<span id="priceHourly">-</span>／税込）
+                    </div>
+
                     <div class="form-row">
                         <div class="form-group">
                             <label for="participants">参加予定人数 <span class="required">*</span></label>
@@ -635,13 +639,40 @@
             emailjs.init({publicKey: "zcA2Cp6c3OstOeY5o"}); // This will be replaced with actual key
         })();
 
-        // 時間差を計算する関数
-        function calculateDuration(startTime, endTime) {
-            const start = parseInt(startTime.split(':')[0]);
-            const end = parseInt(endTime.split(':')[0]);
-            const duration = end - start;
-            return duration + '時間';
+        // ユーティリティ
+        function toMinutes(t){ if(!t) return 0; const [h,m] = t.split(':').map(Number); return h*60+(m||0); }
+        function formatYen(n){ return Number(n).toLocaleString('ja-JP'); }
+        function calculateDuration(startTime, endTime){
+            const min = Math.max(0, toMinutes(startTime) - 0);
+            const diff = Math.max(0, toMinutes(endTime) - toMinutes(startTime));
+            const hours = Math.ceil(diff/60);
+            return hours + '時間';
         }
+        function updatePrice() {
+            const start = document.getElementById('start_time').value;
+            const end = document.getElementById('end_time').value;
+            const participantsText = document.getElementById('participants').value || '';
+            if(!start || !end) { document.getElementById('priceSummary').style.display='none'; return; }
+            const diffMin = Math.max(0, toMinutes(end) - toMinutes(start));
+            if(diffMin <= 0) { document.getElementById('priceSummary').style.display='none'; return; }
+            const hours = Math.ceil(diffMin/60);
+            const persons = parseInt(participantsText.replace(/\D/g,'')) || 5;
+            const hourly = Math.max(3000, persons*600);
+            const total = hourly * hours;
+            document.getElementById('priceTotal').textContent = formatYen(total)+'円';
+            document.getElementById('priceHours').textContent = hours+'時間';
+            document.getElementById('priceHourly').textContent = formatYen(hourly)+'円';
+            document.getElementById('priceSummary').style.display='block';
+            // メッセージ欄に自動追記（上部にまとめて記載）
+            const msg = document.getElementById('message');
+            const header = `【概算料金】${formatYen(total)}円（${hours}時間、1時間あたり${formatYen(hourly)}円／税込）\n`;
+            const rest = msg.value.replace(/^【概算料金】.*\n/m, '');
+            msg.value = header + rest;
+        }
+        ['start_time','end_time','participants'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.addEventListener('change', updatePrice);
+        });
 
         // チェックボックスの視覚効果
         document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
