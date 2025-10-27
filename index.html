@@ -207,10 +207,20 @@ nav .container {
 
 /* 画面幅が狭いときの微調整 */
 @media (max-width: 768px) {
-    .hero-tagline { left: 7%; top: 17%; font-size: clamp(0.98rem, 2.05vw + 0.43rem, 1.45rem); }
+    .hero-tagline {
+        left: 4.5%;
+        top: 12.5%;
+        margin-left: -10px; /* モバイルでは左寄せを弱める */
+        font-size: clamp(0.96rem, 1.9vw + 0.42rem, 1.38rem);
+    }
 }
 @media (max-width: 480px) {
-    .hero-tagline { left: 8.5%; top: 16%; font-size: 1.2rem; }
+    .hero-tagline {
+        left: 3.5%;
+        top: 11.5%;
+        margin-left: -8px;
+        font-size: 1.12rem;
+    }
 }
 
 .cta-button {
