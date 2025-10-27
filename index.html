@@ -223,6 +223,26 @@ nav .container {
     }
 }
 
+/* 追加: スマホ縦向けの微調整（ロゴへの干渉回避） */
+@media (max-width: 768px) and (orientation: portrait) {
+    .hero-tagline {
+        left: 3.2%;
+        top: 10.8%;
+        margin-left: -8px;
+        font-size: clamp(0.94rem, 1.75vw + 0.4rem, 1.32rem);
+    }
+}
+@media (max-width: 480px) and (orientation: portrait) {
+    .hero-tagline {
+        left: 2.6%;
+        top: 10.2%;
+        margin-left: -6px;
+        font-size: 1.08rem;
+    }
+    /* ロゴをわずかに縮小して安全域を作る */
+    .hero-logo-img { width: min(88%, 760px); }
+}
+
 .cta-button {
     display: inline-block;
     background: rgba(255, 255, 255, 0.2);
