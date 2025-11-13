@@ -183,63 +183,13 @@ nav .container {
     text-align: center;
 }
 
-/* ロゴ合成（タグラインを建物左に重ねる） */
+/* ロゴ合成 */
 .hero-logo-composite { position: relative; display: inline-block; }
-.hero-logo-img { display: block; width: min(92%, 820px); height: auto; }
+.hero-logo-img { display: block; width: min(88%, 780px); height: auto; }
 
-/* 新タグライン（添付デザイン風） */
-.hero-tagline {
-    position: absolute;
-    left: 5.5%;
-    top: 21%;
-    font-family: 'M PLUS Rounded 1c', 'Hiragino Sans', 'Yu Gothic', 'Meiryo', sans-serif;
-    font-size: clamp(0.88rem, 1.25vw + 0.28rem, 1.18rem);
-    color: #111;
-    letter-spacing: 0.02em;
-    white-space: nowrap;
-    pointer-events: none;
-    animation: fadeInUp 0.9s ease-out 0.2s both;
-    /* オフセット調整: 左へ5px・下へ3px */
-    margin-left: -18px; /* さらに左へ3px */
-    margin-top: 0;
-}
-
-/* 画面幅が狭いときの微調整 */
-@media (max-width: 768px) {
-    .hero-tagline {
-        left: 4.5%;
-        top: 16.5%;
-        margin-left: -10px; /* モバイルでは左寄せを弱める */
-        font-size: clamp(0.8rem, 1.4vw + 0.3rem, 1.06rem);
-    }
-}
-@media (max-width: 480px) {
-    .hero-tagline {
-        left: 3.5%;
-        top: 15%;
-        margin-left: -8px;
-        font-size: 0.94rem;
-    }
-}
-
-/* 追加: スマホ縦向けの微調整（ロゴへの干渉回避） */
-@media (max-width: 768px) and (orientation: portrait) {
-    .hero-tagline {
-        left: 3.6%;
-        top: 15.8%;
-        margin-left: -7px;
-        font-size: clamp(0.78rem, 1.35vw + 0.28rem, 1.02rem);
-    }
-}
 @media (max-width: 480px) and (orientation: portrait) {
-    .hero-tagline {
-        left: 2.8%;
-        top: 14.2%;
-        margin-left: -5px;
-        font-size: 0.9rem;
-    }
-    /* ロゴをわずかに縮小して安全域を作る */
-    .hero-logo-img { width: min(88%, 760px); }
+    /* スマホ縦ではロゴを少しだけ縮小 */
+    .hero-logo-img { width: min(84%, 720px); }
 }
 
 .cta-button {
@@ -963,7 +913,7 @@ footer {
                     <div class="hero-logo">
                             <div class="hero-logo-composite">
                                 <img class="hero-logo-img" src="images/teraco-labo-logo-main.png" alt="TERACO.LABO ロゴ">
-                                <div class="hero-tagline" aria-hidden="true">テクノロジーが育むコミュニティ。</div>
+                                <!-- Tagline temporarily removed (テクノロジーが育むコミュニティ。) -->
                             </div>
                         </div>
                 </div>
