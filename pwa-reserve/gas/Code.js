@@ -100,6 +100,12 @@ function doPost(e) {
                             const newDesc = currentDesc ? `${currentDesc}\n${data.name}` : data.name;
                             targetEvent.setDescription(newDesc);
                         }
+
+                        // ゲスト追加（メールアドレスがある場合）
+                        if (data.email) {
+                            targetEvent.addGuest(data.email);
+                        }
+
                         results.push({
                             slot_id: slotId,
                             event_id: targetEvent.getId()
@@ -107,7 +113,13 @@ function doPost(e) {
                     } else {
                         // 新規作成
                         const desc = data.name;
+                        // descriptionに加えて、optionsでguestsを指定可能だが、作成後にaddGuestが無難
                         const ev = calendar.createEvent(title, startTime, endTime, { description: desc });
+
+                        if (data.email) {
+                            ev.addGuest(data.email);
+                        }
+
                         results.push({
                             slot_id: slotId,
                             event_id: ev.getId()
