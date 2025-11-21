@@ -606,67 +606,94 @@ function renderExisting() {
     row.className = 'selected-item';
     row.style.borderColor = '#ccc';
     row.style.background = '#f9f9f9';
-
-    // Checkbox for multi-select
-    const checkbox = document.createElement('input');
-    checkbox.type = 'checkbox';
-    checkbox.className = 'cancel-checkbox';
-    checkbox.value = ev.slot_id; // Use slot_id as value
-    checkbox.dataset.eventId = ev.event_id; // Store event_id
-    checkbox.style.transform = 'scale(1.5)';
-    checkbox.style.marginRight = '16px';
+    row.dataset.slotId = ev.slot_id;
+    row.dataset.eventId = ev.event_id;
 
     row.innerHTML = `
-      <div style="display:flex; align-items:center; flex:1;">
-        ${checkbox.outerHTML}
-        <div style="flex:1;">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
-            <span style="font-weight:700;">${formatDayLabelFromKey(ev.start.slice(0, 10))}</span>
-            <span style="font-size:12px;background:#999;color:#fff;padding:2px 6px;border-radius:4px;">${typeLabel}</span>
-          </div>
-          <div style="font-size:18px;color:#333;margin-bottom:4px;">
-            ${fmtTime_(new Date(ev.start))} 〜 ${fmtTime_(new Date(ev.end))}
-          </div>
-          <div style="font-size:14px;color:#666;">
-            ${displayTitle}
-          </div>
+      <div style="flex:1;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+          <span style="font-weight:700;">${formatDayLabelFromKey(ev.start.slice(0, 10))}</span>
+          <span style="font-size:12px;background:#999;color:#fff;padding:2px 6px;border-radius:4px;">${typeLabel}</span>
+        </div>
+        <div style="font-size:18px;color:#333;margin-bottom:4px;">
+          ${fmtTime_(new Date(ev.start))} 〜 ${fmtTime_(new Date(ev.end))}
+        </div>
+        <div style="font-size:14px;color:#666;">
+          ${displayTitle}
         </div>
       </div>
     `;
 
-    // Re-attach event listener to the checkbox element we just created via string
-    const actualCheckbox = row.querySelector('.cancel-checkbox');
-    // No specific listener needed, we will querySelectorAll on submit
+    const btn = document.createElement('button');
+    btn.className = 'soft toggle-cancel';
+    btn.textContent = '選択';
+    btn.style.minWidth = '60px';
 
+    // Toggle selection logic
+    btn.addEventListener('click', () => {
+      const isSelected = row.classList.toggle('to-be-cancelled');
+      if (isSelected) {
+        btn.textContent = '解除';
+        btn.style.background = 'var(--error)';
+        btn.style.color = '#fff';
+        btn.style.borderColor = 'var(--error)';
+        row.style.background = '#ffebee'; // Light red background
+      } else {
+        btn.textContent = '選択';
+        btn.style.background = '';
+        btn.style.color = '';
+        btn.style.borderColor = '';
+        row.style.background = '#f9f9f9';
+      }
+      updateBatchCancelButton();
+    });
+
+    row.appendChild(btn);
     existingList.appendChild(row);
   });
 
-  // Re-bind cancel button
-  const btnCancelSelected = document.getElementById('btnCancelSelected');
-  // Remove old listeners to avoid duplicates (simple way: clone node)
-  const newBtn = btnCancelSelected.cloneNode(true);
-  btnCancelSelected.parentNode.replaceChild(newBtn, btnCancelSelected);
-
-  newBtn.addEventListener('click', async () => {
-    const checked = document.querySelectorAll('.cancel-checkbox:checked');
-    if (checked.length === 0) {
-      alert('取り消す予約を選択してください。');
-      return;
-    }
-
-    if (!confirm(`${checked.length}件の予約を取り消しますか？`)) return;
-
-    const itemsToCancel = [];
-    checked.forEach(cb => {
-      itemsToCancel.push({
-        slot_id: cb.value,
-        event_id: cb.dataset.eventId
-      });
-    });
-
-    await batchCancelReservations(itemsToCancel);
-  });
+  // Initialize button state
+  updateBatchCancelButton();
 }
+
+function updateBatchCancelButton() {
+  const btn = document.getElementById('btnCancelSelected');
+  const selectedCount = document.querySelectorAll('.selected-item.to-be-cancelled').length;
+
+  if (selectedCount > 0) {
+    btn.textContent = `${selectedCount}件の予約を取り消す`;
+    btn.disabled = false;
+    btn.style.opacity = '1';
+  } else {
+    btn.textContent = '取り消す予約を選択してください';
+    btn.disabled = true;
+    btn.style.opacity = '0.5';
+  }
+}
+
+// Bind the batch cancel button once (outside render loop or check existence)
+// We'll just attach listener here since renderExisting is called repeatedly
+// Better to attach to a static element or replace node to clear listeners
+const btnCancelSelected = document.getElementById('btnCancelSelected');
+const newBtn = btnCancelSelected.cloneNode(true);
+btnCancelSelected.parentNode.replaceChild(newBtn, btnCancelSelected);
+
+newBtn.addEventListener('click', async () => {
+  const selectedRows = document.querySelectorAll('.selected-item.to-be-cancelled');
+  if (selectedRows.length === 0) return;
+
+  if (!confirm(`${selectedRows.length}件の予約を取り消しますか？`)) return;
+
+  const itemsToCancel = [];
+  selectedRows.forEach(row => {
+    itemsToCancel.push({
+      slot_id: row.dataset.slotId,
+      event_id: row.dataset.eventId
+    });
+  });
+
+  await batchCancelReservations(itemsToCancel);
+});
 
 async function submitSelection() {
   // Validate Name
