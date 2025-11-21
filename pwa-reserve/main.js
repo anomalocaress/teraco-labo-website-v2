@@ -366,17 +366,23 @@ function buildMonthCalendar(monthKey) {
         let text = `${slot.start_time}`;
         let disabled = false;
 
+        // Calculate remaining seats based on server data
+        let remaining = Math.max(0, slot.capacity - slot.reserved_count);
+
         if (state.existingSet.has(slot.slot_id)) {
-          text += '(済)';
+          // Already reserved by this user
+          text += ` (済) (あと${remaining}人)`;
           disabled = true;
         } else if (slot.reserved_count >= slot.capacity) {
-          text += '(満)';
+          text += ' (満)';
           disabled = true;
         } else if (state.selected.has(slot.slot_id)) {
-          text += '(選)';
+          // Selected by user currently
+          // Show remaining count AFTER this user's potential reservation
+          const remainingAfter = Math.max(0, remaining - 1);
+          text += ` (選) (あと${remainingAfter}人)`;
           disabled = true;
         } else {
-          const remaining = Math.max(0, slot.capacity - slot.reserved_count);
           text += ` (あと${remaining}人)`;
         }
 
