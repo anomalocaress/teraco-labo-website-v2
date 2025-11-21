@@ -606,27 +606,65 @@ function renderExisting() {
     row.className = 'selected-item';
     row.style.borderColor = '#ccc';
     row.style.background = '#f9f9f9';
+
+    // Checkbox for multi-select
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    checkbox.className = 'cancel-checkbox';
+    checkbox.value = ev.slot_id; // Use slot_id as value
+    checkbox.dataset.eventId = ev.event_id; // Store event_id
+    checkbox.style.transform = 'scale(1.5)';
+    checkbox.style.marginRight = '16px';
+
     row.innerHTML = `
-      <div style="flex:1;">
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
-          <span style="font-weight:700;">${formatDayLabelFromKey(ev.start.slice(0, 10))}</span>
-          <span style="font-size:12px;background:#999;color:#fff;padding:2px 6px;border-radius:4px;">${typeLabel}</span>
-        </div>
-        <div style="font-size:18px;color:#333;margin-bottom:4px;">
-          ${fmtTime_(new Date(ev.start))} 〜 ${fmtTime_(new Date(ev.end))}
-        </div>
-        <div style="font-size:14px;color:#666;">
-          ${displayTitle}
+      <div style="display:flex; align-items:center; flex:1;">
+        ${checkbox.outerHTML}
+        <div style="flex:1;">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+            <span style="font-weight:700;">${formatDayLabelFromKey(ev.start.slice(0, 10))}</span>
+            <span style="font-size:12px;background:#999;color:#fff;padding:2px 6px;border-radius:4px;">${typeLabel}</span>
+          </div>
+          <div style="font-size:18px;color:#333;margin-bottom:4px;">
+            ${fmtTime_(new Date(ev.start))} 〜 ${fmtTime_(new Date(ev.end))}
+          </div>
+          <div style="font-size:14px;color:#666;">
+            ${displayTitle}
+          </div>
         </div>
       </div>
     `;
 
-    const btn = document.createElement('button');
-    btn.className = 'soft';
-    btn.textContent = '取消';
-    btn.addEventListener('click', () => cancelReservation(ev));
-    row.appendChild(btn);
+    // Re-attach event listener to the checkbox element we just created via string
+    const actualCheckbox = row.querySelector('.cancel-checkbox');
+    // No specific listener needed, we will querySelectorAll on submit
+
     existingList.appendChild(row);
+  });
+
+  // Re-bind cancel button
+  const btnCancelSelected = document.getElementById('btnCancelSelected');
+  // Remove old listeners to avoid duplicates (simple way: clone node)
+  const newBtn = btnCancelSelected.cloneNode(true);
+  btnCancelSelected.parentNode.replaceChild(newBtn, btnCancelSelected);
+
+  newBtn.addEventListener('click', async () => {
+    const checked = document.querySelectorAll('.cancel-checkbox:checked');
+    if (checked.length === 0) {
+      alert('取り消す予約を選択してください。');
+      return;
+    }
+
+    if (!confirm(`${checked.length}件の予約を取り消しますか？`)) return;
+
+    const itemsToCancel = [];
+    checked.forEach(cb => {
+      itemsToCancel.push({
+        slot_id: cb.value,
+        event_id: cb.dataset.eventId
+      });
+    });
+
+    await batchCancelReservations(itemsToCancel);
   });
 }
 
@@ -713,34 +751,41 @@ async function submitSelection() {
   }
 }
 
-async function cancelReservation(item) {
-  if (!confirm(`${item.label} の予約を取り消しますか？`)) return;
-
+async function batchCancelReservations(items) {
   try {
-    // showMessage('予約を取り消しています...');
     setLoading(true, '予約を取り消しています...');
 
-    const res = await fetch(API_BASE, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify({
-        action: 'cancel',
-        slot_id: item.slot_id,
-        event_id: item.event_id,
-        name: state.displayName
-      })
-    });
-    const data = await res.json();
+    // Process sequentially or parallel? Parallel is faster but might hit rate limits.
+    // Let's do parallel for better UX, GAS should handle it with lock (wait).
+    // Or we can update GAS to handle batch cancel, but for now let's loop fetch.
 
-    if (!data.ok) {
-      alert(data.message || '取り消しに失敗しました。');
-      return;
+    const promises = items.map(item => {
+      return fetch(API_BASE, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({
+          action: 'cancel',
+          slot_id: item.slot_id,
+          event_id: item.event_id,
+          name: state.displayName
+        })
+      }).then(res => res.json());
+    });
+
+    const results = await Promise.all(promises);
+
+    // Check results
+    const failures = results.filter(r => !r.ok);
+    if (failures.length > 0) {
+      console.error("Some cancellations failed", failures);
+      alert('一部の予約の取り消しに失敗しました。');
+    } else {
+      alert('予約を取り消しました。');
     }
 
     // Reload
     await loadOverview({ preserveSelection: true });
     showMessage('予約を取り消しました。');
-    alert('予約を取り消しました。');
 
   } catch (err) {
     console.error(err);
@@ -748,6 +793,11 @@ async function cancelReservation(item) {
   } finally {
     setLoading(false);
   }
+}
+
+async function cancelReservation(item) {
+  // Deprecated single cancel, redirect to batch
+  await batchCancelReservations([item]);
 }
 
 function showMessage(text) {
