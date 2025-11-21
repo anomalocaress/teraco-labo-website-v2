@@ -1,0 +1,523 @@
+<!doctype html>
+<html lang="ja">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>TERACO予約</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#06C755">
+  <style>
+    :root {
+      --green: #06C755;
+      --green-deep: #039744;
+      --green-weak: #e2fbe7;
+      --border: #e5f5e8;
+      --bg: #f8fdf8;
+      --text: #222;
+      --muted: #555;
+      --error: #d32f2f;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      background: #fff;
+      color: var(--text);
+      font-size: 18px;
+      line-height: 1.6;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      padding: 16px 20px;
+      background: var(--green);
+      color: #fff;
+      font-size: 24px;
+      font-weight: 700;
+      z-index: 10;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .wrap {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 24px 20px 60px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    /* Common Panel Styles */
+    .panel {
+      border: 2px solid var(--border);
+      border-radius: 20px;
+      padding: 20px;
+      background: #fff;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+    }
+
+    .panel h2 {
+      margin: 0 0 16px;
+      color: var(--green-deep);
+      font-size: 22px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .panel h2 .step-badge {
+      background: var(--green);
+      color: #fff;
+      font-size: 14px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-weight: 700;
+    }
+
+    .panel.hidden {
+      display: none;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    /* Notice */
+    .notice {
+      font-size: 17px;
+      background: var(--bg);
+      border: 2px solid var(--border);
+      border-radius: 16px;
+      padding: 16px;
+    }
+
+    /* Calendar */
+    .calendar-wrap {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: center;
+    }
+
+    .calendar {
+      flex: 1 1 300px;
+      border: 2px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      background: #fff;
+    }
+
+    .calendar header {
+      position: static;
+      background: var(--bg);
+      color: var(--green-deep);
+      font-size: 20px;
+      font-weight: 700;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      text-align: center;
+    }
+
+    table.month-grid {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+    }
+
+    table.month-grid th {
+      padding: 10px 0;
+      background: #f5faf6;
+      color: var(--muted);
+      font-weight: 600;
+      border-bottom: 1px solid var(--border);
+    }
+
+    table.month-grid td {
+      height: 56px;
+      text-align: center;
+      vertical-align: middle;
+      border-bottom: 1px solid var(--border);
+      border-right: 1px solid var(--border);
+      cursor: pointer;
+      position: relative;
+      font-size: 18px;
+    }
+
+    table.month-grid td:last-child {
+      border-right: none;
+    }
+
+    td.disabled {
+      color: #ccc;
+      background: #fafafa;
+      cursor: default;
+    }
+
+    td.active {
+      background: var(--green);
+      color: #fff !important;
+      font-weight: 700;
+    }
+
+    td.has-reservation::after {
+      content: '●';
+      position: absolute;
+      bottom: 4px;
+      right: 50%;
+      transform: translateX(50%);
+      font-size: 10px;
+      color: var(--green-deep);
+    }
+
+    td.active.has-reservation::after {
+      color: #fff;
+    }
+
+    td.has-selected {
+      background: var(--green-weak);
+      color: var(--green-deep);
+      font-weight: 700;
+      border: 2px solid var(--green);
+    }
+
+    td.full {
+      color: #ccc;
+      background: #fff0f0;
+    }
+
+    /* Time Selection (Dropdown) */
+    .time-select-wrapper {
+      margin-top: 20px;
+      padding: 20px;
+      background: var(--bg);
+      border-radius: 16px;
+      border: 2px solid var(--green);
+    }
+
+    .time-select-label {
+      display: block;
+      font-weight: 700;
+      margin-bottom: 10px;
+      color: var(--green-deep);
+      font-size: 20px;
+    }
+
+    select.large-select {
+      width: 100%;
+      font-size: 22px;
+      padding: 16px;
+      border-radius: 12px;
+      border: 2px solid #ccc;
+      background: #fff;
+      appearance: none;
+      background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23007CB2%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+      background-repeat: no-repeat;
+      background-position: right 16px top 50%;
+      background-size: 16px auto;
+    }
+
+    select.large-select:focus {
+      outline: none;
+      border-color: var(--green);
+      box-shadow: 0 0 0 4px rgba(6, 199, 85, 0.2);
+    }
+
+    /* Selected Items */
+    .selected-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border: 2px solid var(--green);
+      background: #fff;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 12px;
+      font-size: 18px;
+    }
+
+    /* Input Field */
+    label.field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    input[type="text"] {
+      font-size: 22px;
+      padding: 16px;
+      border: 2px solid #ccc;
+      border-radius: 12px;
+      width: 100%;
+    }
+
+    input[type="text"]:focus {
+      outline: none;
+      border-color: var(--green);
+      box-shadow: 0 0 0 4px rgba(6, 199, 85, 0.2);
+    }
+
+    /* Buttons */
+    .actions {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin-top: 20px;
+    }
+
+    button.big {
+      font-size: 18px;
+      padding: 20px;
+      border-radius: 16px;
+      border: 0;
+      background: var(--green);
+      color: #fff;
+      font-weight: 700;
+      cursor: pointer;
+      width: 100%;
+      box-shadow: 0 4px 0 var(--green-deep);
+      transition: transform 0.1s;
+    }
+
+    button.big:active {
+      transform: translateY(4px);
+      box-shadow: none;
+    }
+
+    button.big:disabled {
+      background: #ccc;
+      box-shadow: none;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    button.soft {
+      background: #fff;
+      color: var(--muted);
+      border: 2px solid #ccc;
+      padding: 16px;
+      font-size: 18px;
+      border-radius: 12px;
+      cursor: pointer;
+    }
+
+    .hint {
+      font-size: 15px;
+      color: var(--muted);
+      margin-top: 6px;
+    }
+
+    .error-msg {
+      color: var(--error);
+      font-weight: 700;
+      margin-top: 8px;
+      display: none;
+    }
+
+    /* Inline Time Select */
+    .inline-time-select {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      font-size: 16px;
+      opacity: 0;
+      /* Invisible overlay */
+      cursor: pointer;
+      z-index: 10;
+      appearance: none;
+      /* Remove default arrow */
+    }
+
+    /* Toggle Buttons for Class Selection */
+    .selection-group {
+      margin-bottom: 16px;
+    }
+
+    .field-label {
+      display: block;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: var(--text);
+    }
+
+    .toggle-group {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .toggle-btn {
+      flex: 1;
+      padding: 12px;
+      border: 2px solid #ddd;
+      background: #fff;
+      color: var(--text);
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: center;
+      min-width: 120px;
+    }
+
+    .toggle-btn.active {
+      border-color: var(--green);
+      background: var(--green-light);
+      color: var(--green-deep);
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @media (max-width:640px) {
+      .wrap {
+        padding: 16px;
+      }
+
+      table.month-grid td {
+        height: 48px;
+        font-size: 16px;
+      }
+
+      .calendar {
+        flex: 1 1 100%;
+      }
+
+      .toggle-btn {
+        font-size: 14px;
+        padding: 10px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header>TERACO予約</header>
+  <div class="wrap">
+
+    <div class="notice">
+      <strong>予約の手順：</strong><br>
+      1. <strong>お名前</strong>と<strong>クラス</strong>を入力・選択します。<br>
+      2. カレンダーから<strong>日付</strong>と<strong>時間</strong>を選びます。<br>
+      3. 「予約を確定する」を押してください。<br>
+      ※ 予約の確認・変更はページ下部から行えます。
+    </div>
+
+    <div class="panels">
+
+      <!-- STEP 1: Name & Class Selection -->
+      <div id="namePanel" class="panel">
+        <h2><span class="step-badge">STEP 1</span> お名前とクラス選択</h2>
+        <div id="inputSection">
+          <label class="field">
+            <span>お名前 <span style="color:var(--error);font-size:14px;">(必須)</span></span>
+            <input id="nameInput" type="text" placeholder="例：寺子まなぶ" autocomplete="name">
+            <div class="hint">※ 姓と名の間にスペースを入れず続けて入力してください。</div>
+            <div id="nameError" class="error-msg">お名前を入力してください。</div>
+          </label>
+
+          <!-- Class Selection -->
+          <div class="class-selection" style="margin-top: 32px; border-top: 1px solid #eee; padding-top: 24px;">
+
+            <!-- Category -->
+            <div class="selection-group">
+              <label class="field-label">コース種別</label>
+              <div class="toggle-group" id="categoryGroup">
+                <button type="button" class="toggle-btn active" data-value="smartphone">スマホ</button>
+                <button type="button" class="toggle-btn" data-value="pc_ai">パソコンAI</button>
+              </div>
+            </div>
+
+            <!-- Course (Dynamic) -->
+            <div class="selection-group">
+              <label class="field-label">クラス</label>
+              <!-- Smartphone Options -->
+              <div id="courseSmartphone" class="toggle-group">
+                <button type="button" class="toggle-btn active" data-value="intro">入門まなび(45分)</button>
+                <button type="button" class="toggle-btn" data-value="applied">応用てらこ(90分)</button>
+              </div>
+              <!-- PC/AI Options (Hidden initially) -->
+              <div id="coursePcAi" class="toggle-group hidden">
+                <button type="button" class="toggle-btn active" data-value="basic">基礎ベーシック(45分)</button>
+                <button type="button" class="toggle-btn" data-value="advance">実践アドバンス(90分)</button>
+              </div>
+            </div>
+
+            <!-- Frequency -->
+            <div class="selection-group">
+              <label class="field-label">回数</label>
+              <div class="toggle-group" id="frequencyGroup">
+                <button type="button" class="toggle-btn active" data-value="2">月2回</button>
+                <button type="button" class="toggle-btn" data-value="4">月4回</button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 2: Calendar & Time -->
+      <div id="calendarPanel" class="panel">
+        <h2><span class="step-badge">STEP 2</span> 日時を選ぶ</h2>
+        <div class="hint" style="margin-bottom:16px;">ご希望の日付をタップしてください。</div>
+
+        <div id="calendarWrap" class="calendar-wrap"></div>
+
+        <!-- Old Time Select Container (Hidden) -->
+        <div id="timeSelectContainer" class="hidden" style="display:none;"></div>
+      </div>
+
+      <!-- STEP 3: Confirmation -->
+      <div id="confirmPanel" class="panel">
+        <h2><span class="step-badge">STEP 3</span> 予約内容の確認</h2>
+
+        <div id="selectedList">
+          <div class="hint">まだ日時が選択されていません。</div>
+        </div>
+
+        <div class="actions">
+          <button id="btnClear" class="soft">選択をクリア</button>
+          <button id="btnSubmit" class="big" disabled>予約を確定する</button>
+        </div>
+      </div>
+
+      <!-- STEP 4: Check & Cancel Reservations -->
+      <div id="managePanel" class="panel" style="margin-top: 40px; border-top: 4px solid var(--green);">
+        <h2>予約済みの確認・キャンセル</h2>
+        <p style="margin-bottom:16px;">
+          現在確定している予約を確認し、不要な予約を<strong>キャンセル</strong>できます。<br>日程変更をする場合は、一度キャンセルしてから、再度上のカレンダーで予約を取り直してください。</p>
+
+        <div style="text-align:center; margin-bottom:24px;">
+          <button id="btnCheckReservation" class="soft"
+            style="width:100%; max-width:300px; padding:16px; font-size:16px; font-weight:bold;">
+            予約を確認する
+          </button>
+        </div>
+
+        <div id="existingPanel" class="hidden">
+          <h3>あなたの予約状況</h3>
+          <div id="existingList"></div>
+        </div>
+      </div>
+
+    </div>
+
+    <div id="message" class="message" style="text-align:center;font-weight:700;color:var(--green);"></div>
+  </div>
+  <script src="main.js"></script>
+  <script>if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js'); }</script>
+</body>
+
+</html>
