@@ -10,6 +10,17 @@ const btnSubmit = document.getElementById('btnSubmit');
 const btnClear = document.getElementById('btnClear');
 const btnCheckReservation = document.getElementById('btnCheckReservation');
 const nameError = document.getElementById('nameError');
+const loadingOverlay = document.getElementById('loadingOverlay');
+const loadingText = document.getElementById('loadingText');
+
+function setLoading(isLoading, text) {
+  if (isLoading) {
+    loadingText.textContent = text || '処理中です...';
+    loadingOverlay.classList.add('visible');
+  } else {
+    loadingOverlay.classList.remove('visible');
+  }
+}
 
 const state = {
   displayName: '',
@@ -165,19 +176,24 @@ async function checkReservations() {
     return;
   }
 
-  showMessage('予約状況を確認しています...');
+  // showMessage('予約状況を確認しています...');
+  setLoading(true, '予約状況を確認しています...');
 
-  // Load real data
-  await loadOverview({ preserveSelection: true });
+  try {
+    // Load real data
+    await loadOverview({ preserveSelection: true });
 
-  if (state.existing.length === 0) {
-    alert('現在、登録されている予約はありません。');
-    existingPanel.classList.add('hidden');
-  } else {
-    existingPanel.classList.remove('hidden');
-    // Scroll to existing panel
-    existingPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    showMessage('予約状況を表示しました。');
+    if (state.existing.length === 0) {
+      alert('現在、登録されている予約はありません。');
+      existingPanel.classList.add('hidden');
+    } else {
+      existingPanel.classList.remove('hidden');
+      // Scroll to existing panel
+      existingPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      showMessage('予約状況を表示しました。');
+    }
+  } finally {
+    setLoading(false);
   }
 }
 
@@ -586,7 +602,9 @@ async function submitSelection() {
 
   try {
     btnSubmit.disabled = true;
-    showMessage('予約を登録しています…');
+    // showMessage('予約を登録しています…');
+    setLoading(true, '予約を登録しています...');
+
     const payload = {
       action: 'batch_reserve',
       name: state.displayName,
@@ -626,6 +644,7 @@ async function submitSelection() {
     alert('予約の登録に失敗しました。時間をおいて再度お試しください。');
   } finally {
     btnSubmit.disabled = false;
+    setLoading(false);
   }
 }
 
@@ -633,7 +652,9 @@ async function cancelReservation(item) {
   if (!confirm(`${item.label} の予約を取り消しますか？`)) return;
 
   try {
-    showMessage('予約を取り消しています...');
+    // showMessage('予約を取り消しています...');
+    setLoading(true, '予約を取り消しています...');
+
     const res = await fetch(API_BASE, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain;charset=utf-8' },
@@ -659,6 +680,8 @@ async function cancelReservation(item) {
   } catch (err) {
     console.error(err);
     alert('エラーが発生しました。');
+  } finally {
+    setLoading(false);
   }
 }
 
