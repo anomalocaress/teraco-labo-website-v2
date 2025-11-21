@@ -473,6 +473,17 @@ function renderSelected() {
       typeLabel = '枠外'; // Should not happen due to addSlot check
     }
 
+    // Get current class selection details for display
+    const { category, course, frequency } = state.classSelection;
+    const categoryLabel = category === 'smartphone' ? 'スマホ' : 'パソコンAI';
+    let courseLabel = '';
+    if (category === 'smartphone') {
+      courseLabel = course === 'intro' ? '入門まなび' : '応用てらこ';
+    } else {
+      courseLabel = course === 'basic' ? '基礎ベーシック' : '実践アドバンス';
+    }
+    const freqLabel = `月${frequency}回`;
+
     const row = document.createElement('div');
     row.className = 'selected-item';
     row.innerHTML = `
@@ -481,7 +492,10 @@ function renderSelected() {
           <span style="font-weight:700;">${slot.day_label}</span>
           <span style="font-size:12px;background:${typeColor};color:#fff;padding:2px 6px;border-radius:4px;">${typeLabel}</span>
         </div>
-        <div style="font-size:20px;color:var(--green-deep);">${slot.start_time} 〜 ${slot.end_time}</div>
+        <div style="font-size:20px;color:var(--green-deep);margin-bottom:4px;">${slot.start_time} 〜 ${slot.end_time}</div>
+        <div style="font-size:14px;color:#666;">
+          ${categoryLabel} / ${courseLabel} / ${freqLabel}
+        </div>
       </div>
     `;
 
@@ -543,6 +557,23 @@ function renderExisting() {
       }
     }
 
+    // Parse description to extract class details if available
+    let details = '';
+    if (ev.description) {
+      const lines = ev.description.split('\n');
+      // Assuming format: "お名前: ...", "カテゴリ: ...", "コース: ...", "頻度: ..."
+      // But since we changed logic to just append names, we might not have this metadata in description anymore for shared events.
+      // However, the TITLE now contains "Category Course".
+      // Let's use the title for basic info.
+    }
+
+    // Title format is expected to be "Category Course" (e.g. "スマホ 入門まなび(45分)")
+    // or old format "TERACO予約: Name"
+    let displayTitle = ev.label;
+    if (displayTitle.startsWith('TERACO予約')) {
+      displayTitle = '旧形式の予約';
+    }
+
     const row = document.createElement('div');
     row.className = 'selected-item';
     row.style.borderColor = '#ccc';
@@ -550,8 +581,14 @@ function renderExisting() {
     row.innerHTML = `
       <div style="flex:1;">
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
-          <span style="font-weight:700;">${ev.label}</span>
+          <span style="font-weight:700;">${formatDayLabelFromKey(ev.start.slice(0, 10))}</span>
           <span style="font-size:12px;background:#999;color:#fff;padding:2px 6px;border-radius:4px;">${typeLabel}</span>
+        </div>
+        <div style="font-size:18px;color:#333;margin-bottom:4px;">
+          ${fmtTime_(new Date(ev.start))} 〜 ${fmtTime_(new Date(ev.end))}
+        </div>
+        <div style="font-size:14px;color:#666;">
+          ${displayTitle}
         </div>
       </div>
     `;
