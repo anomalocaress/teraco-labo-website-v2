@@ -48,37 +48,16 @@ const state = {
 window.handleCredentialResponse = function (response) {
   try {
     const responsePayload = decodeJwtResponse(response.credential);
-    console.log("ID: " + responsePayload.sub);
-    console.log('Full Name: ' + responsePayload.name);
-    console.log('Given Name: ' + responsePayload.given_name);
-    console.log('Family Name: ' + responsePayload.family_name);
-    console.log("Image URL: " + responsePayload.picture);
-    console.log("Email: " + responsePayload.email);
 
-    state.googleUser = {
+    const user = {
       sub: responsePayload.sub,
       name: responsePayload.name,
       email: responsePayload.email,
       picture: responsePayload.picture
     };
 
-    // Auto-fill name and lock input
-    nameInput.value = responsePayload.name;
-    nameInput.disabled = true;
-    state.displayName = responsePayload.name;
-
-    // Visual feedback
-    const wrapper = document.getElementById('googleBtnWrapper');
-    wrapper.innerHTML = `
-      <div style="display:flex;align-items:center;gap:10px;padding:8px;background:#f1f8e9;border-radius:4px;border:1px solid #c5e1a5;">
-        <img src="${responsePayload.picture}" style="width:32px;height:32px;border-radius:50%;">
-        <div style="flex:1;">
-          <div style="font-weight:bold;font-size:14px;">${responsePayload.name}</div>
-          <div style="font-size:12px;color:#666;">${responsePayload.email}</div>
-        </div>
-        <button onclick="signOut()" style="background:none;border:none;color:#666;cursor:pointer;font-size:12px;text-decoration:underline;">ログアウト</button>
-      </div>
-    `;
+    // Save to session
+    setGoogleUser(user);
 
     // Trigger check
     loadOverview({ preserveSelection: true });
@@ -88,15 +67,57 @@ window.handleCredentialResponse = function (response) {
   }
 };
 
+function setGoogleUser(user) {
+  state.googleUser = user;
+
+  if (user) {
+    // Save to localStorage
+    localStorage.setItem('teraco_google_user', JSON.stringify(user));
+
+    // Auto-fill name and lock input
+    nameInput.value = user.name;
+    nameInput.disabled = true;
+    state.displayName = user.name;
+
+    // Visual feedback
+    const wrapper = document.getElementById('googleBtnWrapper');
+    wrapper.innerHTML = `
+      <div style="display:flex;align-items:center;gap:10px;padding:8px;background:#f1f8e9;border-radius:4px;border:1px solid #c5e1a5;">
+        <img src="${user.picture}" style="width:32px;height:32px;border-radius:50%;">
+        <div style="flex:1;">
+          <div style="font-weight:bold;font-size:14px;">${user.name}</div>
+          <div style="font-size:12px;color:#666;">${user.email}</div>
+        </div>
+        <button onclick="signOut()" style="background:none;border:none;color:#666;cursor:pointer;font-size:12px;text-decoration:underline;">ログアウト</button>
+      </div>
+    `;
+  }
+}
+
 window.signOut = function () {
   state.googleUser = null;
   state.displayName = '';
   nameInput.value = '';
   nameInput.disabled = false;
 
-  // Reload page to reset button (simplest way to re-render Google button)
+  localStorage.removeItem('teraco_google_user');
+
+  // Reload page to reset button
   location.reload();
 };
+
+function checkSavedSession() {
+  const saved = localStorage.getItem('teraco_google_user');
+  if (saved) {
+    try {
+      const user = JSON.parse(saved);
+      setGoogleUser(user);
+    } catch (e) {
+      console.error("Failed to restore session", e);
+      localStorage.removeItem('teraco_google_user');
+    }
+  }
+}
 
 function decodeJwtResponse(token) {
   var base64Url = token.split('.')[1];
@@ -948,5 +969,6 @@ function buildMockSlots(days) {
   return slots;
 }
 
-// Initial Load - Fetch data immediately
+// Initial Load
+checkSavedSession();
 loadOverview({ preserveSelection: false });
