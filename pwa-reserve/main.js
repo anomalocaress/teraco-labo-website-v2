@@ -110,12 +110,12 @@ function updateCourseSelection(val) {
 
 initClassSelection();
 
-// Restore name from local storage
-const savedName = localStorage.getItem('teraco_name');
-if (savedName) {
-  nameInput.value = savedName;
-  normalizeNameInput();
-}
+// Restore name from local storage - REMOVED
+// const savedName = localStorage.getItem('teraco_name');
+// if (savedName) {
+//   nameInput.value = savedName;
+//   normalizeNameInput();
+// }
 
 nameInput.addEventListener('input', () => {
   normalizeNameInput();
@@ -126,9 +126,9 @@ nameInput.addEventListener('input', () => {
 
 nameInput.addEventListener('blur', () => {
   normalizeNameInput();
-  if (state.displayName) {
-    localStorage.setItem('teraco_name', state.displayName);
-  }
+  // if (state.displayName) {
+  //   localStorage.setItem('teraco_name', state.displayName);
+  // }
 });
 
 btnClear.addEventListener('click', () => {
@@ -581,8 +581,8 @@ async function submitSelection() {
 
   if (!confirm(confirmMsg)) return;
 
-  // Save name for next time
-  localStorage.setItem('teraco_name', state.displayName);
+  // Save name for next time - REMOVED
+  // localStorage.setItem('teraco_name', state.displayName);
 
   try {
     btnSubmit.disabled = true;
