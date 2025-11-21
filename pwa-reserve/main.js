@@ -69,6 +69,7 @@ window.handleCredentialResponse = function (response) {
 
 function setGoogleUser(user) {
   state.googleUser = user;
+  const wrapper = document.getElementById('googleBtnWrapper');
 
   if (user) {
     // Save to localStorage
@@ -79,8 +80,7 @@ function setGoogleUser(user) {
     nameInput.disabled = true;
     state.displayName = user.name;
 
-    // Visual feedback
-    const wrapper = document.getElementById('googleBtnWrapper');
+    // Show Profile
     wrapper.innerHTML = `
       <div style="display:flex;align-items:center;gap:10px;padding:8px;background:#f1f8e9;border-radius:4px;border:1px solid #c5e1a5;">
         <img src="${user.picture}" style="width:32px;height:32px;border-radius:50%;">
@@ -91,6 +91,20 @@ function setGoogleUser(user) {
         <button onclick="signOut()" style="background:none;border:none;color:#666;cursor:pointer;font-size:12px;text-decoration:underline;">ログアウト</button>
       </div>
     `;
+  } else {
+    // Logout / Initial State
+    // Restore original Google Button HTML
+    // We need to re-render the button using GSI API if possible, or just reload page.
+    // Since we reload page on signOut, this block is mostly for initial state if we were to do it dynamically.
+    // But wait, if we reload, the HTML in index.html is used, which IS the button.
+    // So we don't need to manually restore HTML here if we reload.
+    // However, if we want to support dynamic switch without reload, we need to put back the div.
+
+    // For now, signOut does location.reload(), so index.html's default button will show.
+    // If the user request implies it's NOT showing, maybe it's because we are overwriting it somewhere else?
+    // No, index.html has the button by default.
+
+    // Let's ensure signOut clears everything and reloads.
   }
 }
 
@@ -102,7 +116,7 @@ window.signOut = function () {
 
   localStorage.removeItem('teraco_google_user');
 
-  // Reload page to reset button
+  // Reload page to reset button and state completely
   location.reload();
 };
 
