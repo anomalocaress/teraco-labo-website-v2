@@ -19,7 +19,13 @@ function doGet(e) {
         if (desc) {
             count = desc.split('\n').filter(line => line.trim() !== '').length;
         }
-        slot_counts[slotId] = count;
+
+        // 同じ時間枠（slotId）に複数のイベント（別コースなど）がある場合を考慮して加算する
+        if (slot_counts[slotId]) {
+            slot_counts[slotId] += count;
+        } else {
+            slot_counts[slotId] = count;
+        }
 
         // ユーザー名が説明文に含まれているか確認
         if (name && desc.includes(name)) {
