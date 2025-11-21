@@ -7,16 +7,25 @@ function doGet(e) {
 
     const events = calendar.getEvents(now, threeMonthsLater);
     const existing = [];
+    const slot_counts = {};
 
     events.forEach(ev => {
         const title = ev.getTitle();
         const desc = ev.getDescription();
+        const slotId = ev.getStartTime().getTime().toString();
+
+        // 予約人数の計算: 説明文の行数（空行を除く）をカウント
+        let count = 0;
+        if (desc) {
+            count = desc.split('\n').filter(line => line.trim() !== '').length;
+        }
+        slot_counts[slotId] = count;
 
         // ユーザー名が説明文に含まれているか確認
         if (name && desc.includes(name)) {
             existing.push({
                 event_id: ev.getId(),
-                slot_id: ev.getStartTime().getTime().toString(),
+                slot_id: slotId,
                 label: title,
                 start: ev.getStartTime().toISOString(),
                 end: ev.getEndTime().toISOString(),
@@ -26,7 +35,8 @@ function doGet(e) {
     });
 
     return ContentService.createTextOutput(JSON.stringify({
-        existing: existing
+        existing: existing,
+        slot_counts: slot_counts
     })).setMimeType(ContentService.MimeType.JSON);
 }
 
