@@ -470,6 +470,12 @@
         <div id="inputSection">
           <div class="input-group">
             <label>お名前 (必須)</label>
+            <input type="text" id="nameInput" placeholder="お名前を入力してください" />
+            <div class="hint">※ 姓と名の間にスペースを入れず続けて入力してください。</div>
+            <div class="error-msg" id="nameError">お名前を入力してください</div>
+
+            <div style="text-align:center; margin: 16px 0 8px; font-size:12px; color:#666;">または Googleアカウントで自動入力</div>
+
             <div id="googleBtnWrapper" style="margin-bottom: 12px;">
               <!-- Google Sign-In Button Container -->
               <div id="g_id_onload"
@@ -481,10 +487,6 @@
                 data-text="sign_in_with" data-shape="rectangular" data-logo_alignment="left">
               </div>
             </div>
-            <div style="text-align:center; margin-bottom:8px; font-size:12px; color:#666;">または</div>
-            <input type="text" id="nameInput" placeholder="お名前を入力してください" />
-            <div class="hint">※ 姓と名の間にスペースを入れず続けて入力してください。</div>
-            <div class="error-msg" id="nameError">お名前を入力してください</div>
 
             <!-- Calendar Invite Option -->
             <div id="calendarOption" style="margin-top: 12px; display: none;">
