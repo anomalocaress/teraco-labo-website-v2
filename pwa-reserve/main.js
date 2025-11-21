@@ -222,6 +222,20 @@ async function loadOverview({ preserveSelection }) {
           state.existingByDay.set(dayKey, (state.existingByDay.get(dayKey) || 0) + 1);
         });
       }
+
+      // Update slot counts based on real data
+      if (data.slot_counts) {
+        state.slots.forEach(slot => {
+          // Default capacity is 8
+          slot.capacity = 8;
+          // Update reserved count if available in response
+          if (data.slot_counts[slot.slot_id] !== undefined) {
+            slot.reserved_count = data.slot_counts[slot.slot_id];
+          } else {
+            slot.reserved_count = 0;
+          }
+        });
+      }
     } catch (e) {
       console.error("Failed to fetch reservations:", e);
       showMessage('予約情報の取得に失敗しました。');
@@ -349,7 +363,8 @@ function buildMonthCalendar(monthKey) {
           text += '(選)';
           disabled = true;
         } else {
-          text += ` (残${slot.capacity - slot.reserved_count})`;
+          const remaining = Math.max(0, slot.capacity - slot.reserved_count);
+          text += ` (あと${remaining}人)`;
         }
 
         option.textContent = text;
@@ -764,7 +779,7 @@ function buildMockSlots(days) {
         end_time: fmtTime_(endTime),
         month_key: `${day.getFullYear()}-${String(day.getMonth() + 1).padStart(2, '0')}`,
         capacity: 8,
-        reserved_count: Math.floor(Math.random() * 3) // Randomly fill some slots
+        reserved_count: 0 // Initial mock count, will be overwritten by API
       });
     });
   }
