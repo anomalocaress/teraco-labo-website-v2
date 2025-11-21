@@ -203,43 +203,56 @@ async function loadOverview({ preserveSelection }) {
     applySlotList(buildMockSlots(90));
   }
 
-  // 2. Fetch Existing Reservations from GAS if name is present
-  if (state.displayName) {
-    try {
-      const res = await fetch(`${API_BASE}?name=${encodeURIComponent(state.displayName)}`);
-      const data = await res.json();
-
-      if (data.existing) {
-        state.existing = data.existing;
-        state.existingSet = new Set(state.existing.map(e => e.slot_id));
-
-        // Re-map existing by day
-        state.existingByDay = new Map();
-        state.existing.forEach(ev => {
-          const slot = state.slotIndex.get(ev.slot_id);
-          const dayKey = slot ? slot.day_key : (ev.iso ? ev.iso.slice(0, 10) : '');
-          if (!dayKey) return;
-          state.existingByDay.set(dayKey, (state.existingByDay.get(dayKey) || 0) + 1);
-        });
-      }
-
-      // Update slot counts based on real data
-      if (data.slot_counts) {
-        state.slots.forEach(slot => {
-          // Default capacity is 8
-          slot.capacity = 8;
-          // Update reserved count if available in response
-          if (data.slot_counts[slot.slot_id] !== undefined) {
-            slot.reserved_count = data.slot_counts[slot.slot_id];
-          } else {
-            slot.reserved_count = 0;
-          }
-        });
-      }
-    } catch (e) {
-      console.error("Failed to fetch reservations:", e);
-      showMessage('予約情報の取得に失敗しました。');
+  // 2. Fetch Data from GAS (Always fetch to get slot counts)
+  try {
+    const url = new URL(API_BASE);
+    if (state.displayName) {
+      url.searchParams.append('name', state.displayName);
     }
+
+    // Show loading if it's the first load or explicit check
+    // We check a flag on the first slot to see if we've updated counts yet
+    const firstSlot = state.slots[0];
+    if (firstSlot && !firstSlot.reserved_count_updated) {
+      setLoading(true, '最新の予約状況を読み込んでいます...');
+    }
+
+    const res = await fetch(url.toString());
+    const data = await res.json();
+
+    if (data.existing) {
+      state.existing = data.existing;
+      state.existingSet = new Set(state.existing.map(e => e.slot_id));
+
+      // Re-map existing by day
+      state.existingByDay = new Map();
+      state.existing.forEach(ev => {
+        const slot = state.slotIndex.get(ev.slot_id);
+        const dayKey = slot ? slot.day_key : (ev.iso ? ev.iso.slice(0, 10) : '');
+        if (!dayKey) return;
+        state.existingByDay.set(dayKey, (state.existingByDay.get(dayKey) || 0) + 1);
+      });
+    }
+
+    // Update slot counts based on real data
+    if (data.slot_counts) {
+      state.slots.forEach(slot => {
+        // Default capacity is 8
+        slot.capacity = 8;
+        // Update reserved count if available in response
+        if (data.slot_counts[slot.slot_id] !== undefined) {
+          slot.reserved_count = data.slot_counts[slot.slot_id];
+        } else {
+          slot.reserved_count = 0;
+        }
+        slot.reserved_count_updated = true;
+      });
+    }
+  } catch (e) {
+    console.error("Failed to fetch reservations:", e);
+    // showMessage('予約情報の取得に失敗しました。');
+  } finally {
+    setLoading(false);
   }
 
   renderAll();
@@ -786,5 +799,5 @@ function buildMockSlots(days) {
   return slots;
 }
 
-// Initial Load
+// Initial Load - Fetch data immediately
 loadOverview({ preserveSelection: false });
