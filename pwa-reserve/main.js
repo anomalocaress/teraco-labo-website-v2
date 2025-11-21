@@ -91,6 +91,10 @@ function setGoogleUser(user) {
         <button onclick="signOut()" style="background:none;border:none;color:#666;cursor:pointer;font-size:12px;text-decoration:underline;">ログアウト</button>
       </div>
     `;
+
+    // Show Calendar Option
+    document.getElementById('calendarOption').style.display = 'block';
+
   } else {
     // Logout / Initial State
     // Restore original Google Button HTML
@@ -105,6 +109,8 @@ function setGoogleUser(user) {
     // No, index.html has the button by default.
 
     // Let's ensure signOut clears everything and reloads.
+    document.getElementById('calendarOption').style.display = 'none';
+    document.getElementById('addToCalendar').checked = false;
   }
 }
 
@@ -841,10 +847,13 @@ async function submitSelection() {
     // showMessage('予約を登録しています…');
     setLoading(true, '予約を登録しています...');
 
+    const addToCalendar = document.getElementById('addToCalendar').checked;
+
     const payload = {
       action: 'batch_reserve',
       name: state.displayName,
       email: state.googleUser ? state.googleUser.email : null, // Send email if logged in
+      add_to_calendar: addToCalendar, // User preference
       slots: Array.from(state.selected.keys()),
       class_details: {
         category: categoryLabel,

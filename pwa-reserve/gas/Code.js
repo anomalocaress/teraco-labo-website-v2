@@ -101,8 +101,8 @@ function doPost(e) {
                             targetEvent.setDescription(newDesc);
                         }
 
-                        // ゲスト追加（メールアドレスがある場合）
-                        if (data.email) {
+                        // ゲスト追加（メールアドレスがあり、かつカレンダー追加希望の場合）
+                        if (data.email && data.add_to_calendar) {
                             targetEvent.addGuest(data.email);
                         }
 
@@ -116,7 +116,7 @@ function doPost(e) {
                         // descriptionに加えて、optionsでguestsを指定可能だが、作成後にaddGuestが無難
                         const ev = calendar.createEvent(title, startTime, endTime, { description: desc });
 
-                        if (data.email) {
+                        if (data.email && data.add_to_calendar) {
                             ev.addGuest(data.email);
                         }
 
