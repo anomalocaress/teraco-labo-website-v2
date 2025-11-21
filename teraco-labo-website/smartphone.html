@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-deploy="1752373145">スマホ教室 - TERACO.LABO</title>
+    
+    <!-- Google Analytics 4 -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-3GCZQ39LS1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-3GCZQ39LS1');
+    </script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'M PLUS Rounded 1c', 'Hiragino Sans', 'Yu Gothic', 'Meiryo', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(to right, #5b52ff, #1fffa1);
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+            background-size: cover;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        nav {
+            padding: 1rem 0;
+        }
+
+        nav .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo h1 {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #5b52ff;
+            margin-bottom: 0.2rem;
+        }
+
+        .logo p {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 1rem;
+            justify-content: flex-end;
+            align-items: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        .nav-menu a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            transition: color 0.3s ease;
+            padding: 0.5rem 0.8rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            white-space: nowrap;
+        }
+
+        .nav-menu a:hover,
+        .nav-menu a.active {
+            color: #5b52ff;
+            background: rgba(91, 82, 255, 0.1);
+        }
+
+        .back-link {
+            background: #5b52ff;
+            color: white;
+            padding: 0.5rem 1.5rem;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .back-link:hover {
+            background: #5a6fd8;
+            transform: translateY(-2px);
+        }
+
+        /* ハンバーガーメニューボタン */
+        .mobile-menu-toggle {
+            display: none;
+            flex-direction: column;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.5rem;
+            width: 30px;
+            height: 30px;
+            justify-content: space-between;
+        }
+
+        .mobile-menu-toggle span {
+            display: block;
+            height: 3px;
+            width: 100%;
+            background: linear-gradient(135deg, #5b52ff 0%, #1fffa1 100%);
+            border-radius: 3px;
+            transition: all 0.3s ease;
+        }
+
+        .mobile-menu-toggle.active span:nth-child(1) {
+            transform: rotate(45deg) translate(5px, 5px);
+        }
+
+        .mobile-menu-toggle.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .mobile-menu-toggle.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(7px, -6px);
+        }
+
+        main {
+            padding: 120px 0 80px;
+        }
+
+        .service-detail {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 24px;
+            padding: 3rem;
+            margin: 2rem 0;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.1);
+        }
+
+        .service-title {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: #5b52ff;
+            text-align: center;
+        }
+
+        .service-subtitle {
+            font-size: 1.2rem;
+            color: #666;
+            text-align: center;
+            margin-bottom: 3rem;
+            line-height: 1.8;
+        }
+
+        .features-section {
+            margin: 3rem 0;
+        }
+
+        .features-title {
+            font-size: 1.8rem;
+            color: #5b52ff;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .feature-card {
+            background: #f8f9fa;
+            padding: 2rem;
+            border-radius: 16px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .feature-card h4 {
+            color: #5b52ff;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .feature-card p {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        /* お客様の声（テストモニアル） */
+        .testimonials-section { margin: 2rem 0; }
+        .testimonial-card { text-align: left; }
+        .testimonial-quote { color: #333; line-height: 1.7; font-size: 1rem; }
+        .testimonial-author { margin-top: .75rem; color: #5b52ff; font-weight: 700; }
+        .testimonial-meta { color: #6b7280; font-size: .9rem; }
+        .stars { color: #f59e0b; letter-spacing: 1px; margin-bottom: .5rem; display: inline-block; }
+
+        .service-content {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 3rem;
+            border-radius: 20px;
+            margin: 3rem 0;
+        }
+        /* 折りたたみ（詳しく見る） */
+        .details-block {
+            background: #fff;
+            border: 1px solid #eaeaea;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 2rem 0;
+        }
+        .details-block > summary {
+            cursor: pointer;
+            padding: 1rem 1.25rem;
+            list-style: none;
+            font-weight: 700;
+            color: #5b52ff;
+        }
+        .details-block[open] > summary { border-bottom: 1px solid #f0f0f0; }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .content-item {
+            background: white;
+            padding: 2rem;
+            border-radius: 16px;
+            border-left: 4px solid #5b52ff;
+        }
+
+        .content-item h4 {
+            color: #5b52ff;
+            margin-bottom: 1rem;
+        }
+
+        .content-item ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .content-item li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .content-item li:last-child {
+            border-bottom: none;
+        }
+
+        .content-item li:before {
+            content: "✓ ";
+            color: #5b52ff;
+            font-weight: bold;
+        }
+
+        .pricing-section {
+            background: linear-gradient(135deg, #5b52ff 0%, #1fffa1 100%);
+            color: white;
+            padding: 3rem;
+            border-radius: 20px;
+            margin: 3rem 0;
+        }
+
+        .pricing-title {
+            font-size: 2rem;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .pricing-card {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 2rem;
+            border-radius: 16px;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .pricing-card h4 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .price {
+            font-size: 2rem;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .pricing-details {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .contact-section {
+            background: #f8f9fa;
+            padding: 3rem;
+            border-radius: 20px;
+            text-align: center;
+            margin: 3rem 0;
+        }
+        /* 問い合わせ導線の統一レイアウト */
+        .contact-actions {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            margin-top: 1.25rem;
+        }
+        /* LINEボタンも他ボタンと同デザインで統一するため、
+           専用スタイルは使用しません（contact-btnを使用） */
+        .line-qr-small {
+            margin-top: 1rem;
+            text-align: center;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .contact-btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #5b52ff 0%, #1fffa1 100%);
+            color: white;
+            padding: 1rem 2rem;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin: 0.5rem;
+        }
+
+        .contact-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        @media (max-width: 768px) {
+            .service-title {
+                font-size: 2rem;
+            }
+            
+            .service-detail {
+                padding: 2rem;
+            }
+            
+            .pricing-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .line-contact-section {
+                flex-direction: column !important;
+                text-align: center;
+            }
+            
+            .line-contact-content {
+                min-width: auto !important;
+            }
+            
+            .line-qr-code img {
+                margin: 1rem auto 0 !important;
+            }
+            
+            .nav-menu {
+                display: none;
+                position: fixed;
+                top: 80px;
+                left: 0;
+                right: 0;
+                background: rgba(255, 255, 255, 0.98);
+                backdrop-filter: blur(20px);
+                flex-direction: column;
+                padding: 1rem;
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+                z-index: 999;
+            }
+            
+            .nav-menu.active {
+                display: flex;
+            }
+            
+            .nav-menu li {
+                margin: 0.5rem 0;
+            }
+            
+            .nav-menu a {
+                display: block;
+                padding: 1rem;
+                font-size: 1.1rem;
+                text-align: center;
+                border-bottom: 1px solid rgba(91, 82, 255, 0.1);
+            }
+            
+            .mobile-menu-toggle {
+                display: flex;
+            }
+        }
+
+        @media (max-width: 600px) {
+            main {
+                padding: 110px 0 60px;
+            }
+
+            .service-detail {
+                padding: 1.75rem;
+                margin: 1.25rem 0;
+            }
+
+            .service-content {
+                padding: 1.5rem;
+                margin: 2rem 0;
+            }
+
+            .content-grid {
+                grid-template-columns: 1fr;
+                gap: 1.2rem;
+                margin-top: 1.2rem;
+            }
+
+            .content-item {
+                padding: 1.25rem 1rem;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="theme-white.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="container">
+                <div class="logo">
+                    <a href="index.html" aria-label="TERACO.LABO ホーム" style="text-decoration: none; color: inherit; display:flex; align-items:center;">
+                        <img src="images/teraco-labo-logo-new.png" alt="TERACO.LABO ロゴ">
+                    </a>
+                </div>
+                <ul class="nav-menu">
+                    <li><a href="smartphone.html" class="active">スマホ教室</a></li>
+                    <li><a href="ai.html">パソコンAI教室</a></li>
+                    <li><a href="instructor.html">外部講師</a></li>
+                    <li><a href="video.html">映像制作</a></li>
+                    <li><a href="rental.html">レンタルスペース</a></li>
+                    
+                    <li><a href="index.html#about">代表紹介</a></li>
+                    <li><a href="contact.html">お問い合わせ</a></li>
+                </ul>
+                <button class="mobile-menu-toggle" aria-label="メニューを開く">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <div class="container">
+            <div class="service-detail">
+                <div class="hero-image" style="width: 100%; height: 300px; background-image: url('images/smartphone-class.png'); background-size: contain; background-position: center; background-repeat: no-repeat; border-radius: 16px; margin-bottom: 3rem; background-color: #f8f9fa;"></div>
+                
+                <h1 class="service-title">スマホ教室</h1>
+                <div class="company-name" style="color: #5b52ff; font-size: 1.2rem; font-weight: 600; margin: 0.5rem 0 1.5rem 0; text-align: center;">スマホ教室TERACO</div>
+                <p class="service-subtitle">講座数200種類以上　何回でも質問OK　じっくり学んで「できる」を実感！</p>
+
+                <!-- 学べる内容（料金の前に、非折りたたみ） -->
+                <div class="service-content">
+                    <h3 style="text-align: center; margin-bottom: 2rem; color: #5b52ff;">サービス内容</h3>
+                    <div class="content-grid">
+                        <div class="content-item">
+                            <h4>基本操作</h4>
+                            <ul>
+                                <li>電源の入れ方・切り方</li>
+                                <li>画面の見方・操作方法</li>
+                                <li>文字入力の基本</li>
+                                <li>電話のかけ方・受け方</li>
+                                <li>連絡先の登録・管理</li>
+                            </ul>
+                        </div>
+                        <div class="content-item">
+                            <h4>コミュニケーション</h4>
+                            <ul>
+                                <li>LINEの使い方</li>
+                                <li>メッセージの送受信</li>
+                                <li>写真・動画の共有</li>
+                                <li>ビデオ通話の方法</li>
+                                <li>グループの作り方</li>
+                            </ul>
+                        </div>
+                        <div class="content-item">
+                            <h4>写真・カメラ</h4>
+                            <ul>
+                                <li>写真の撮り方</li>
+                                <li>動画の撮影方法</li>
+                                <li>写真の保存・整理</li>
+                                <li>家族との写真共有</li>
+                                <li>プリント方法</li>
+                            </ul>
+                        </div>
+                        <div class="content-item">
+                            <h4>便利機能</h4>
+                            <ul>
+                                <li>インターネット検索</li>
+                                <li>地図・ナビゲーション</li>
+                                <li>天気予報の確認</li>
+                                <li>キャッシュレス決済</li>
+                                <li>アプリのダウンロード</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 料金（アンカーでスキップ可能） -->
+                <div class="pricing-section" id="plans">
+                    <h3 class="pricing-title">講座メニュー</h3>
+                    <div class="pricing-grid">
+                        <div class="pricing-card">
+                            <h4>まなび2</h4>
+                            <div class="price">月5,000円</div>
+                            <div class="pricing-details">
+                                入門クラス（レギュラー会員）<br>
+                                45分 × 月2回
+                            </div>
+                            <a class="plan-cta" href="contact.html?service=smartphone&plan=manabi2">申し込む・相談</a>
+                        </div>
+                        <div class="pricing-card">
+                            <h4>まなび4</h4>
+                            <div class="price">月8,000円</div>
+                            <div class="pricing-details">
+                                入門クラス（レギュラー会員）<br>
+                                45分 × 月4回
+                            </div>
+                            <a class="plan-cta" href="contact.html?service=smartphone&plan=manabi4">申し込む・相談</a>
+                        </div>
+                        <div class="pricing-card">
+                            <h4>てらこ2</h4>
+                            <div class="price">月8,000円</div>
+                            <div class="pricing-details">
+                                応用クラス（プレミアム会員）<br>
+                                90分 × 月2回
+                            </div>
+                            <a class="plan-cta" href="contact.html?service=smartphone&plan=terako2">申し込む・相談</a>
+                        </div>
+                        <div class="pricing-card">
+                            <h4>てらこ4</h4>
+                            <div class="price">月12,000円</div>
+                            <div class="pricing-details">
+                                応用クラス（プレミアム会員）<br>
+                                90分 × 月4回
+                            </div>
+                            <a class="plan-cta" href="contact.html?service=smartphone&plan=terako4">申し込む・相談</a>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 2rem; padding: 1rem; background: #f6f8fb; border: 1px solid #e9eef3; border-radius: 8px; font-size: 0.95rem; color: #525a6a; text-align: left; line-height: 1.8;">
+                        ・料金はすべて税込です。<br>
+                        ・入会金：レギュラー会員 3,000円／プレミアム会員 5,000円<br>
+                        ・個人レッスンは入会金なし、完全マンツーマンのため別途ご相談ください。（会員割引あり）
+                    </div>
+                </div>
+
+                <details class="details-block" style="margin-top:2rem;">
+                    <summary>お客様の声（詳しく見る）</summary>
+                    <div class="testimonials-section" style="margin:1rem 0 0;">
+                        <h3 class="features-title">お客様の声</h3>
+                        <div class="features-grid">
+                            <div class="feature-card testimonial-card">
+                                <div class="stars">★★★★★</div>
+                                <p class="testimonial-quote">写真の送り方やLINEの操作がスムーズになりました。家族とのやりとりがぐっと楽に！</p>
+                                <div class="testimonial-author">60代 女性</div>
+                                <div class="testimonial-meta">はじめての受講から2カ月</div>
+                            </div>
+                            <div class="feature-card testimonial-card">
+                                <div class="stars">★★★★★</div>
+                                <p class="testimonial-quote">何度聞いても笑顔で教えてもらえるので安心。操作に自信がついて毎日が楽しくなりました。</p>
+                                <div class="testimonial-author">70代 男性</div>
+                                <div class="testimonial-meta">基礎クラス まなび4</div>
+                            </div>
+                            <div class="feature-card testimonial-card">
+                                <div class="stars">★★★★☆</div>
+                                <p class="testimonial-quote">キャッシュレス決済や地図アプリなど、生活で役立つことをじっくり学べました。</p>
+                                <div class="testimonial-author">50代 女性</div>
+                                <div class="testimonial-meta">応用クラス てらこ2</div>
+                            </div>
+                            <div class="feature-card testimonial-card">
+                                <div class="stars">★★★★★</div>
+                                <p class="testimonial-quote">講座数が多く、興味に合わせて選べるのが良いです。自分のペースで上達できました。</p>
+                                <div class="testimonial-author">60代 男性</div>
+                                <div class="testimonial-meta">受講6カ月</div>
+                            </div>
+                        </div>
+                    </div>
+                </details>
+
+                
+
+                
+
+                <div class="contact-section">
+                    <h3>お問い合わせ・体験会のお申し込み</h3>
+                    <p>スマホ教室の詳細や体験会についてお気軽にお問い合わせください。<br>
+                    あなたに合ったプランをご提案いたします。</p>
+                    
+                    <div class="contact-actions">
+                        <a href="contact.html?service=smartphone" class="contact-btn">✉️ メールでお問い合わせ</a>
+                        <a href="tel:090-6738-1469" class="contact-btn">📞 電話する</a>
+                        <a href="https://lin.ee/tkYJ7Cw" target="_blank" class="contact-btn">💬 LINEで相談</a>
+                    </div>
+                    <div class="line-qr-small">
+                        <div style="width: 110px; height: 110px; margin: 0.5rem auto 0; border: 2px solid #ddd; border-radius: 8px; background: #fff; overflow: hidden;">
+                            <img src="images/line-qr.png" alt="LINE友達追加QRコード" style="width: 100%; height: 100%; object-fit: cover;">
+                        </div>
+                        <div style="margin-top: 0.25rem;">QRコードでも追加できます</div>
+                    </div>
+                    
+                    <div style="margin-top: 2rem; font-size: 0.9rem; color: #666;">
+                        <strong>連絡先</strong><br>
+                        fujisaki@teraco-labo.com<br>
+                        090-6738-1469<br>
+                        宮崎県西都市大字三宅9437-9
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <script>
+        // ハンバーガーメニューの開閉
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
+            const navMenu = document.querySelector('.nav-menu');
+            
+            if (mobileMenuToggle && navMenu) {
+                mobileMenuToggle.addEventListener('click', function() {
+                    this.classList.toggle('active');
+                    navMenu.classList.toggle('active');
+                });
+                
+                // メニュー項目をクリックしたときにメニューを閉じる
+                const menuLinks = navMenu.querySelectorAll('a');
+                menuLinks.forEach(link => {
+                    link.addEventListener('click', function() {
+                        mobileMenuToggle.classList.remove('active');
+                        navMenu.classList.remove('active');
+                    });
+                });
+                
+                // モバイルメニュー外をクリックしたときに閉じる
+                document.addEventListener('click', function(e) {
+                    if (!mobileMenuToggle.contains(e.target) && !navMenu.contains(e.target)) {
+                        mobileMenuToggle.classList.remove('active');
+                        navMenu.classList.remove('active');
+                    }
+                });
+                
+                // ESCキーでメニューを閉じる
+                document.addEventListener('keydown', function(e) {
+                    if (e.key === 'Escape') {
+                        mobileMenuToggle.classList.remove('active');
+                        navMenu.classList.remove('active');
+                    }
+                });
+            }
+            
+            // LINEボタンのホバーエフェクトを追加
+            const lineBtn = document.querySelector('.line-btn');
+            if (lineBtn) {
+                lineBtn.addEventListener('mouseenter', function() {
+                    this.style.background = '#009A00';
+                    this.style.transform = 'translateY(-2px)';
+                    this.style.boxShadow = '0 8px 20px rgba(0, 185, 0, 0.3)';
+                });
+                
+                lineBtn.addEventListener('mouseleave', function() {
+                    this.style.background = '#00B900';
+                    this.style.transform = 'translateY(0)';
+                    this.style.boxShadow = 'none';
+                });
+            }
+        });
+    </script>
+</body>
+</html>

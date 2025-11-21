@@ -1,0 +1,1220 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-deploy="1752373145">TERACO.LABO - まちのデジタル寺子屋</title>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    
+    <!-- Google Analytics 4 -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-3GCZQ39LS1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-3GCZQ39LS1');
+    </script>
+    <style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+
+body {
+    font-family: 'M PLUS Rounded 1c', 'Hiragino Sans', 'Yu Gothic', 'Meiryo', sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background: linear-gradient(to right, #5b52ff, #1fffa1);
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    background-size: cover;
+    min-height: 100vh;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* ヘッダー */
+header {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+nav {
+    padding: 1rem 0;
+}
+
+nav .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo h1 {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #5b52ff;
+    margin-bottom: 0.2rem;
+}
+
+.logo p {
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.nav-menu {
+    display: flex;
+    list-style: none;
+    gap: 1rem;
+    justify-content: flex-end;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+}
+
+.nav-menu a {
+    text-decoration: none;
+    color: #333;
+    font-weight: 500;
+    transition: color 0.3s ease;
+    padding: 0.5rem 0.8rem;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+    white-space: nowrap;
+}
+
+.nav-menu a:hover {
+    color: #5b52ff;
+    background: rgba(91, 82, 255, 0.1);
+}
+
+
+
+/* ハンバーガーメニューボタン */
+.mobile-menu-toggle {
+    display: none;
+    flex-direction: column;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    width: 30px;
+    height: 30px;
+    justify-content: space-between;
+}
+
+.mobile-menu-toggle span {
+    display: block;
+    height: 3px;
+    width: 100%;
+    background: linear-gradient(135deg, #5b52ff 0%, #1fffa1 100%);
+    border-radius: 3px;
+    transition: all 0.3s ease;
+}
+
+.mobile-menu-toggle.active span:nth-child(1) {
+    transform: rotate(45deg) translate(5px, 5px);
+}
+
+.mobile-menu-toggle.active span:nth-child(2) {
+    opacity: 0;
+}
+
+.mobile-menu-toggle.active span:nth-child(3) {
+    transform: rotate(-45deg) translate(7px, -6px);
+}
+
+/* ヒーローセクション */
+.hero {
+    padding: 120px 0 80px;
+    text-align: center;
+    color: white;
+    min-height: 70vh;
+    display: flex;
+    align-items: center;
+}
+
+.hero-content {
+    max-width: 800px;
+    margin: 0 auto;
+    text-align: center;
+    padding-top: 2rem;
+}
+
+.hero-title {
+    font-size: 3.5rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+    margin-top: 2rem;
+    color: white;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    animation: fadeInUp 1s ease-out;
+    text-align: center;
+}
+
+.hero-subtitle {
+    font-size: 2rem;
+    margin-bottom: 2rem;
+    opacity: 0.9;
+    animation: fadeInUp 1s ease-out 0.2s both;
+    text-align: center;
+}
+
+.hero-description {
+    font-size: 1.2rem;
+    margin-bottom: 3rem;
+    opacity: 0.8;
+    animation: fadeInUp 1s ease-out 0.4s both;
+    letter-spacing: 0.02em;
+    text-align: center;
+}
+
+/* ロゴ合成 */
+.hero-logo-composite { position: relative; display: inline-block; }
+.hero-logo-img { display: block; width: min(88%, 780px); height: auto; }
+
+@media (max-width: 480px) and (orientation: portrait) {
+    /* スマホ縦ではロゴを少しだけ縮小 */
+    .hero-logo-img { width: min(84%, 720px); }
+}
+
+.cta-button {
+    display: inline-block;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 1rem 2rem;
+    text-decoration: none;
+    border-radius: 50px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    transition: all 0.3s ease;
+    animation: fadeInUp 1s ease-out 0.6s both;
+}
+
+.cta-button:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+/* セクション共通スタイル */
+.section-digital,
+.section-instructor,
+.section-video,
+.section-space {
+    padding: 80px 0;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    margin: 20px 0;
+    border-radius: 20px;
+    scroll-margin-top: 120px;
+}
+
+.section-title {
+    text-align: center;
+    font-size: 2.5rem;
+    margin-bottom: 3rem;
+    color: white;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* サービスカードグリッド */
+.service-grid-large {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.service-grid-single {
+    display: flex;
+    justify-content: center;
+    margin-top: 2rem;
+}
+
+.service-card-large {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 24px;
+    padding: 3rem;
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(20px);
+    transition: all 0.4s ease;
+    cursor: pointer;
+    min-height: 300px;
+}
+
+.smartphone-card {
+    background-image: url('images/smartphone-class.png');
+    background-size: cover;
+    background-position: center calc(52% + 150px);
+    background-repeat: no-repeat;
+    position: relative;
+}
+
+.smartphone-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.85);
+    border-radius: 24px;
+    z-index: 1;
+}
+
+.smartphone-card > * {
+    position: relative;
+    z-index: 2;
+}
+
+.smartphone-card h3 {
+    font-size: 2.2rem;
+    text-align: center;
+    margin-bottom: 1.5rem;
+    margin-top: 1rem;
+    font-weight: bold;
+}
+
+.smartphone-card p {
+    text-align: center;
+    margin-bottom: 2rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    padding: 0 1rem;
+}
+
+.smartphone-card .card-footer {
+    justify-content: center;
+    gap: 0.8rem;
+    margin-top: auto;
+    flex-wrap: wrap;
+}
+
+.ai-card {
+    background-image: url('images/ai-school.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    position: relative;
+}
+
+.ai-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.85);
+    border-radius: 24px;
+    z-index: 1;
+}
+
+.ai-card > * {
+    position: relative;
+    z-index: 2;
+}
+
+.ai-card h3 {
+    font-size: 2.2rem;
+    text-align: center;
+    margin-bottom: 1.5rem;
+    margin-top: 1rem;
+    font-weight: bold;
+}
+
+.ai-card p {
+    text-align: center;
+    margin-bottom: 2rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    padding: 0 1rem;
+}
+
+.ai-card .card-footer {
+    justify-content: center;
+    gap: 0.8rem;
+    margin-top: auto;
+    flex-wrap: wrap;
+}
+
+.ai-credit {
+    position: absolute;
+    bottom: -75px;
+    right: -38px;
+    font-size: 0.65rem;
+    color: #333;
+    z-index: 3;
+    font-style: italic;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 2px 5px;
+    border-radius: 3px;
+}
+
+.service-card-large:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 25px 80px rgba(0, 0, 0, 0.15);
+}
+
+.card-image-placeholder {
+    width: 100%;
+    height: 150px;
+    background: white;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+    color: #666;
+    font-size: 0.9rem;
+    border: 2px dashed #ddd;
+}
+
+.service-card-large h3 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    color: #333;
+    text-align: center;
+}
+
+.service-card-large p {
+    color: #666;
+    margin-bottom: 2rem;
+    line-height: 1.8;
+    text-align: center;
+}
+
+.card-footer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: auto;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+}
+
+.feature-tag,
+.price-tag,
+.status-tag,
+.scope-tag,
+.type-tag {
+    background: linear-gradient(135deg, #5b52ff 0%, #1fffa1 100%);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.duration-tag,
+.description-tag,
+.contact-tag {
+    background: #f8f9fa;
+    color: #666;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+}
+
+/* スペースセクション */
+.space-card-container {
+    display: flex;
+    justify-content: center;
+}
+
+.space-card {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 24px;
+    padding: 3rem;
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(20px);
+    transition: all 0.4s ease;
+    cursor: pointer;
+    max-width: 600px;
+    width: 100%;
+}
+
+.instructor-card {
+    background-image: url('images/instructor.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    position: relative;
+}
+
+.instructor-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.85);
+    border-radius: 24px;
+    z-index: 1;
+}
+
+.instructor-card > * {
+    position: relative;
+    z-index: 2;
+}
+
+.video-card {
+    background-image: url('images/video-production.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    position: relative;
+}
+
+.video-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.85);
+    border-radius: 24px;
+    z-index: 1;
+}
+
+.video-card > * {
+    position: relative;
+    z-index: 2;
+}
+
+.rental-card {
+    background-image: url('images/rental-space.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    position: relative;
+}
+
+.rental-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.85);
+    border-radius: 24px;
+    z-index: 1;
+}
+
+.rental-card > * {
+    position: relative;
+    z-index: 2;
+}
+
+.space-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 25px 80px rgba(0, 0, 0, 0.15);
+}
+
+.space-card h3 {
+    text-align: center;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    color: #333;
+}
+
+.space-card p {
+    text-align: center;
+    color: #666;
+    line-height: 1.8;
+    margin-bottom: 1.5rem;
+}
+
+.space-features {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1.5rem;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.feature-item {
+    background: linear-gradient(135deg, #5b52ff 0%, #1fffa1 100%);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+/* 代表紹介・お問い合わせセクション */
+.about,
+.contact {
+    padding: 80px 0;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    margin: 20px 0;
+    border-radius: 20px;
+    scroll-margin-top: 120px;
+}
+
+.about .section-title,
+.contact h2 {
+    text-align: center;
+    font-size: 2.5rem;
+    margin-bottom: 3rem;
+    color: white;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.about-card {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 24px;
+    padding: 3rem;
+    margin: 0 auto;
+    max-width: 800px;
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(20px);
+    text-align: center;
+}
+
+.about-header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+    padding-bottom: 2rem;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.about-name {
+    font-size: 2.2rem;
+    color: #5b52ff;
+    margin-bottom: 0.8rem;
+    font-weight: 600;
+}
+
+.about-title {
+    font-size: 1.1rem;
+    color: #666;
+    font-weight: 500;
+}
+
+.about-details {
+    margin-bottom: 3rem;
+}
+
+.detail-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+}
+
+.detail-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 12px;
+    border-left: 4px solid #5b52ff;
+    gap: 0.5rem;
+}
+
+.detail-label {
+    font-weight: 600;
+    color: #5b52ff;
+    min-width: 80px;
+}
+
+.detail-value {
+    color: #333;
+    flex: 1;
+}
+
+.detail-link {
+    text-decoration: none;
+    color: #5b52ff;
+    transition: all 0.3s ease;
+}
+
+.detail-link:hover {
+    color: #5a6fd8;
+    text-decoration: underline;
+}
+
+.experience-section {
+    margin-top: 3rem;
+}
+
+.experience-title {
+    font-size: 1.5rem;
+    color: #5b52ff;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.experience-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.experience-item {
+    padding: 1.5rem;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 16px;
+    transition: all 0.3s ease;
+    border-left: 4px solid #5b52ff;
+}
+
+.experience-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.experience-content {
+    width: 100%;
+}
+
+.experience-text {
+    color: #333;
+    line-height: 1.6;
+    font-size: 1rem;
+}
+
+.contact-section {
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 2px solid #f0f0f0;
+}
+
+.contact-button-container {
+    display: flex;
+    justify-content: center;
+}
+
+.contact-button {
+    background: linear-gradient(135deg, #5b52ff 0%, #1fffa1 100%);
+    color: white;
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: 50px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(91, 82, 255, 0.3);
+}
+
+.contact-button:hover {
+    background: linear-gradient(135deg, #4a40e6 0%, #0dcc88 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(91, 82, 255, 0.4);
+}
+
+.about-content,
+.contact-content {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.contact-info h3 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    color: #5b52ff;
+}
+
+.contact-message h4 {
+    font-size: 1.2rem;
+    margin: 2rem 0 1rem;
+    color: #333;
+}
+
+/* フッター */
+footer {
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    text-align: center;
+    padding: 2rem 0;
+    margin-top: 2rem;
+}
+
+/* アニメーション */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* レスポンシブデザイン */
+@media (max-width: 768px) {
+    .hero-title {
+        font-size: 2.5rem;
+    }
+    
+    .hero-subtitle {
+        font-size: 1.5rem;
+    }
+    
+    .service-grid-large {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    .service-grid-single {
+        justify-content: center;
+    }
+    
+    .service-card-large {
+        padding: 2rem;
+    }
+    
+    .nav-menu {
+        display: none;
+        position: fixed;
+        top: 80px;
+        left: 0;
+        right: 0;
+        background: rgba(255, 255, 255, 0.98);
+        backdrop-filter: blur(20px);
+        flex-direction: column;
+        padding: 1rem;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        z-index: 999;
+    }
+    
+    .nav-menu.active {
+        display: flex;
+    }
+    
+    .nav-menu li {
+        margin: 0.5rem 0;
+    }
+    
+    .nav-menu a {
+        display: block;
+        padding: 1rem;
+        font-size: 1.1rem;
+        text-align: center;
+        border-bottom: 1px solid rgba(91, 82, 255, 0.1);
+    }
+    
+    .mobile-menu-toggle {
+        display: flex;
+    }
+    
+    .section-title {
+        font-size: 2rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 0 15px;
+    }
+    
+    .hero {
+        padding: 100px 0 60px;
+    }
+    
+    .hero-title {
+        font-size: 2rem;
+    }
+    
+    .hero-subtitle {
+        font-size: 1.2rem;
+    }
+    
+    .service-card-large {
+        padding: 1.5rem;
+    }
+    
+    .about-card {
+        padding: 2rem;
+    }
+    
+    .about-name {
+        font-size: 1.8rem;
+    }
+    
+    .experience-item {
+        padding: 1rem;
+    }
+    
+    .detail-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+    
+    .detail-label {
+        min-width: auto;
+        margin-right: 0;
+    }
+}
+
+@media (max-width: 600px) and (orientation: portrait) {
+    .section-digital,
+    .section-instructor,
+    .section-video,
+    .section-space {
+        padding: 32px 0 24px;
+        margin: 10px 0;
+        border-radius: 16px;
+    }
+
+    .section-title {
+        font-size: 1.65rem;
+        margin-bottom: 1.1rem;
+    }
+
+    .service-grid-large,
+    .service-grid-single {
+        margin-top: 0.5rem;
+        gap: 0.85rem;
+    }
+
+    .service-grid-single {
+        padding: 0;
+    }
+
+    .service-card-large {
+        padding: 1.4rem;
+        border-radius: 18px;
+        min-height: auto;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    }
+
+    .service-card-large h3 {
+        font-size: 1.25rem;
+        margin-bottom: 0.45rem;
+    }
+
+    .service-card-large p {
+        font-size: 0.88rem;
+        margin-bottom: 0.7rem;
+    }
+
+    .service-card-large .card-footer {
+        gap: 0.35rem;
+        flex-wrap: wrap;
+    }
+
+    .card-media {
+        height: clamp(120px, 36vw, 150px);
+        margin: 0 0 0.5rem 0;
+        border-radius: 12px;
+    }
+
+    .feature-tag {
+        font-size: 0.78rem;
+        padding: 0.25rem 0.7rem;
+    }
+}
+    </style>
+    <link rel="stylesheet" href="theme-white.css">
+    <!-- Experimental: visual accents for section cards. Remove this line to revert. -->
+    <link id="visual-enhance-css" rel="stylesheet" href="theme-visual.css">
+</head>
+<body>
+
+    <header>
+        <nav>
+            <div class="container">
+                <div class="logo">
+                    <a href="index.html" aria-label="TERACO.LABO ホーム" style="text-decoration: none; color: inherit; display:flex; align-items:center;">
+                        <img src="images/teraco-labo-logo-new.png" alt="TERACO.LABO ロゴ">
+                    </a>
+                </div>
+                <ul class="nav-menu">
+                    <li><a href="smartphone.html">スマホ教室</a></li>
+                    <li><a href="ai.html">パソコンAI教室</a></li>
+                    <li><a href="instructor.html">外部講師</a></li>
+                    <li><a href="video.html">映像制作</a></li>
+                    <li><a href="rental.html">レンタルスペース</a></li>
+                    
+                    <li><a href="index.html#about">代表紹介</a></li>
+                    <li><a href="contact.html">お問い合わせ</a></li>
+                </ul>
+                <button class="mobile-menu-toggle" aria-label="メニューを開く">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <!-- ヒーローセクション -->
+        <section id="home" class="hero">
+            <div class="container">
+                <div class="hero-content">
+                    <div class="hero-logo">
+                            <div class="hero-logo-composite">
+                                <img class="hero-logo-img" src="images/teraco-labo-logo-main.png" alt="TERACO.LABO ロゴ">
+                                <!-- Tagline temporarily removed (テクノロジーが育むコミュニティ。) -->
+                            </div>
+                        </div>
+                </div>
+            </div>
+        </section>
+
+        
+
+        <!-- セクション2: スマホ教室 -->
+        <section id="smartphone" class="section-digital">
+            <div class="container">
+                <h2 class="section-title">スマホ教室</h2>
+                
+                <div class="service-grid-single">
+                    <div class="service-card-large smartphone-card" role="link" tabindex="0" aria-label="スマホ教室の詳細へ" onclick="window.location.href='smartphone.html'">
+                        <div style="display: flex; flex-direction: column; height: 100%; justify-content: space-between;">
+                            <img class="card-media" src="images/smartphone-class.png" alt="" aria-hidden="true" loading="lazy">
+                            <h3>スマホ・タブレット教室</h3>
+                            <p>初めてでも安心。スマホ・タブレットの基本から、LINE・写真・キャッシュレスまで幅広くサポート。</p>
+                            <div class="card-footer">
+                                <span class="feature-tag">初心者歓迎</span>
+                                <span class="feature-tag">少人数制</span>
+                                <span class="feature-tag">体験会受付中</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- セクション3: パソコンAI教室 -->
+        <section id="ai" class="section-digital">
+            <div class="container">
+                <h2 class="section-title">パソコンAI教室</h2>
+                
+                <div class="service-grid-single">
+                    <div class="service-card-large ai-card" role="link" tabindex="0" aria-label="パソコンAI教室の詳細へ" onclick="window.location.href='ai.html'">
+                        <div style="display: flex; flex-direction: column; height: 100%; justify-content: space-between; position: relative;">
+                            <img class="card-media" src="images/ai-school.png" alt="" aria-hidden="true" loading="lazy">
+                            <h3>AI活用・生成AI講座</h3>
+                            <p>話題のChatGPTやAIツールを、生活や仕事に活かす使い方を丁寧にレクチャー。</p>
+                            <div class="card-footer">
+                                <span class="feature-tag">生成AI</span>
+                                <span class="feature-tag">仕事効率化</span>
+                                <span class="feature-tag">AI開発</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- セクション3: 外部講師 -->
+        <section id="instructor" class="section-instructor">
+            <div class="container">
+                <h2 class="section-title">専門講座・研修サービス</h2>
+                
+                <div class="space-card-container">
+                    <div class="space-card instructor-card" role="link" tabindex="0" aria-label="外部講師の詳細へ" onclick="window.location.href='instructor.html'">
+                        <div class="space-content">
+                            <img class="card-media" src="images/instructor.png" alt="" aria-hidden="true" loading="lazy">
+                            <h3>外部講師</h3>
+                            <p>行政/企業向け講座受託、AI活用支援、ICT推進支援など、ご要望によりカスタマイズ可能です。</p>
+                            <div class="space-features">
+                                <span class="feature-item">カスタマイズ対応</span>
+                                <span class="feature-item">企業・行政向け</span>
+                                <span class="feature-item">個別見積もり</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- セクション4: 映像制作 -->
+        <section id="video" class="section-video">
+            <div class="container">
+                <h2 class="section-title">映像制作・ドローン</h2>
+                
+                <div class="space-card-container">
+                    <div class="space-card video-card" role="link" tabindex="0" aria-label="映像制作の詳細へ" onclick="window.location.href='video.html'">
+                        <div class="space-content">
+                            <img class="card-media" src="images/video-production.png" alt="" aria-hidden="true" loading="lazy">
+                            <h3>映像制作</h3>
+                            <p>地域PR動画、事業紹介ムービー、ドローン撮影など「伝わる」クリエイティブをご提供いたします。</p>
+                            <div class="space-features">
+                                <span class="feature-item">地域PR動画</span>
+                                <span class="feature-item">ドローン撮影</span>
+                                <span class="feature-item">企業向け制作</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- セクション5: スペースレンタル -->
+        <section id="space" class="section-space">
+            <div class="container">
+                <h2 class="section-title">レンタルスペース・会議室</h2>
+                
+                <div class="space-card-container">
+                    <div class="space-card rental-card" role="link" tabindex="0" aria-label="レンタルスペースの詳細へ" onclick="window.location.href='rental.html'">
+                        <div class="space-content">
+                            <img class="card-media" src="images/rental-space.png" alt="" aria-hidden="true" loading="lazy">
+                            <h3>レンタルスペース</h3>
+                            <p>少人数の教室・勉強会・ワークショップに最適な落ち着いた空間。1時間から利用OK。</p>
+                            <div class="space-features">
+                                <span class="feature-item">定員8名</span>
+                                <span class="feature-item">駐車場無料</span>
+                                <span class="feature-item">大型モニター完備</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 代表紹介セクション -->
+        <section id="about" class="about">
+            <div class="container">
+                <h2 class="section-title">代表紹介</h2>
+                <div class="about-content">
+                    <div class="about-card">
+                        <div class="about-header">
+                            <p class="about-title">映像作家 / 講師</p>
+                            <h3 class="about-name">藤﨑 秀一</h3>
+                        </div>
+                        
+                        <div class="about-details">
+                            <div class="detail-grid">
+                                <div class="detail-item">
+                                    <span class="detail-label">屋号</span>
+                                    <a href="https://www.youtube.com/@fujisaki_eizo_design" target="_blank" class="detail-value detail-link">藤﨑映像デザイン</a>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">事業所</span>
+                                    <a href="https://maps.google.com/?q=宮崎県西都市大字三宅9437-9" target="_blank" class="detail-value detail-link">宮崎県西都市大字三宅9437-9</a>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">電話番号</span>
+                                    <a href="tel:090-6738-1469" class="detail-value detail-link">090-6738-1469</a>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">メール</span>
+                                    <a href="mailto:fujisaki@teraco-labo.com" class="detail-value detail-link">fujisaki@teraco-labo.com</a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="experience-section">
+                            <h4 class="experience-title">経歴・実績</h4>
+                            <div class="experience-list">
+                                <div class="experience-item">
+                                    <div class="experience-content">
+                                        <span class="experience-text">通信業界に20年以上従事、3万人以上の接客・サポート経験</span>
+                                    </div>
+                                </div>
+                                <div class="experience-item">
+                                    <div class="experience-content">
+                                        <span class="experience-text">地域おこし協力隊3年満了、任期中に映像制作事業で起業</span>
+                                    </div>
+                                </div>
+                                <div class="experience-item">
+                                    <div class="experience-content">
+                                        <span class="experience-text">高齢者向けスマホ講座を受託、地域の公民館や地区館で継続開催</span>
+                                    </div>
+                                </div>
+                                <div class="experience-item">
+                                    <div class="experience-content">
+                                        <span class="experience-text">講師として年間300講座、延べ1000人以上の指導実績</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="contact-section">
+                            <div class="contact-button-container">
+                                <button class="contact-button" onclick="window.location.href='contact.html'">お問い合わせ</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 TERACO.LABO. All rights reserved.</p>
+        </div>
+    </footer>
+    <script>
+        // ハンバーガーメニューの開閉
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
+            const navMenu = document.querySelector('.nav-menu');
+            
+            if (mobileMenuToggle && navMenu) {
+                mobileMenuToggle.addEventListener('click', function() {
+                    this.classList.toggle('active');
+                    navMenu.classList.toggle('active');
+                });
+                
+                // メニュー項目をクリックしたときにメニューを閉じる
+                const menuLinks = navMenu.querySelectorAll('a');
+                menuLinks.forEach(link => {
+                    link.addEventListener('click', function() {
+                        mobileMenuToggle.classList.remove('active');
+                        navMenu.classList.remove('active');
+                    });
+                });
+                
+                // モバイルメニュー外をクリックしたときに閉じる
+                document.addEventListener('click', function(e) {
+                    if (!mobileMenuToggle.contains(e.target) && !navMenu.contains(e.target)) {
+                        mobileMenuToggle.classList.remove('active');
+                        navMenu.classList.remove('active');
+                    }
+                });
+                
+                // ESCキーでメニューを閉じる
+                document.addEventListener('keydown', function(e) {
+                    if (e.key === 'Escape') {
+                        mobileMenuToggle.classList.remove('active');
+                        navMenu.classList.remove('active');
+                    }
+                });
+            }
+
+            // キーボード操作でカードを開けるようにする（Enter / Space）
+            const clickableCards = document.querySelectorAll('.space-card[role="link"], .service-card-large[role="link"]');
+            clickableCards.forEach(card => {
+                card.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        this.click();
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

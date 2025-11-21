@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-deploy="1752373145">外部講師 - TERACO.LABO</title>
+    
+    <!-- Google Analytics 4 -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-3GCZQ39LS1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-3GCZQ39LS1');
+    </script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'M PLUS Rounded 1c', 'Hiragino Sans', 'Yu Gothic', 'Meiryo', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(to right, #5b52ff, #1fffa1);
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+            background-size: cover;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* ヘッダー */
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        nav {
+            padding: 1rem 0;
+        }
+
+        nav .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo h1 {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #5b52ff;
+            margin-bottom: 0.2rem;
+        }
+
+        .logo p {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 1rem;
+            justify-content: flex-end;
+            align-items: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        .nav-menu a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            transition: color 0.3s ease;
+            padding: 0.5rem 0.8rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            white-space: nowrap;
+        }
+
+        .nav-menu a:hover,
+        .nav-menu a.active {
+            color: #5b52ff;
+            background: rgba(91, 82, 255, 0.1);
+        }
+
+        .back-link {
+            background: #5b52ff;
+            color: white;
+            padding: 0.5rem 1.5rem;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .back-link:hover {
+            background: #5a6fd8;
+            transform: translateY(-2px);
+        }
+
+        /* ハンバーガーメニューボタン */
+        .mobile-menu-toggle {
+            display: none;
+            flex-direction: column;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.5rem;
+            width: 30px;
+            height: 30px;
+            justify-content: space-between;
+        }
+
+        .mobile-menu-toggle span {
+            display: block;
+            height: 3px;
+            width: 100%;
+            background: #5b52ff;
+            border-radius: 3px;
+            transition: all 0.3s ease;
+        }
+
+        .mobile-menu-toggle.active span:nth-child(1) {
+            transform: rotate(45deg) translate(5px, 5px);
+        }
+
+        .mobile-menu-toggle.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .mobile-menu-toggle.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(7px, -6px);
+        }
+
+        /* メインコンテンツ */
+        main {
+            padding: 120px 0 80px;
+        }
+
+        .service-detail {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 24px;
+            padding: 3rem;
+            margin: 2rem 0;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.1);
+        }
+
+        .service-title {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: #5b52ff;
+            text-align: center;
+        }
+
+        .service-subtitle {
+            font-size: 1.2rem;
+            color: #666;
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .service-categories {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .category-card {
+            background: #f8f9fa;
+            border-radius: 16px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+            border-left: 4px solid #5b52ff;
+        }
+
+        .category-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .category-card h4 {
+            color: #5b52ff;
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+        }
+
+        .category-card ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .category-card li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .category-card li:last-child {
+            border-bottom: none;
+        }
+
+        .category-card li:before {
+            content: "✓ ";
+            color: #5b52ff;
+            font-weight: bold;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .feature-item {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 2rem;
+            border-radius: 16px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .feature-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+
+        .feature-item h4 {
+            color: #5b52ff;
+            margin-bottom: 1rem;
+        }
+
+        .pricing-info {
+            background: linear-gradient(135deg, #5b52ff 0%, #1fffa1 100%);
+            color: white;
+            padding: 3rem;
+            border-radius: 20px;
+            text-align: center;
+            margin: 3rem 0;
+        }
+
+        .contact-section {
+            background: #f8f9fa;
+            padding: 3rem;
+            border-radius: 20px;
+            text-align: center;
+            margin: 3rem 0;
+        }
+        /* 問い合わせ導線の統一レイアウト */
+        .contact-actions { display:flex; justify-content:center; align-items:center; gap:0.75rem; flex-wrap:wrap; margin-top:1.25rem; }
+        /* LINEも他ボタンと同デザイン（contact-btn）で統一 */
+        .line-qr-small { margin-top:1rem; text-align:center; color:#666; font-size:0.9rem; }
+
+        .contact-btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #5b52ff 0%, #1fffa1 100%);
+            color: white;
+            padding: 1rem 2rem;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin: 0.5rem;
+        }
+
+        .contact-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        @media (max-width: 768px) {
+            .service-title {
+                font-size: 2rem;
+            }
+            
+            .service-detail {
+                padding: 2rem;
+            }
+            
+            .service-categories {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            
+            .line-contact-section {
+                flex-direction: column !important;
+                text-align: center;
+            }
+            
+            .line-contact-content {
+                min-width: auto !important;
+            }
+            
+            .line-qr-code img {
+                margin: 1rem auto 0 !important;
+            }
+            
+            .nav-menu {
+                display: none;
+                position: fixed;
+                top: 80px;
+                left: 0;
+                right: 0;
+                background: rgba(255, 255, 255, 0.98);
+                backdrop-filter: blur(20px);
+                flex-direction: column;
+                padding: 1rem;
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+                z-index: 999;
+            }
+            
+            .nav-menu.active {
+                display: flex;
+            }
+            
+            .nav-menu li {
+                margin: 0.5rem 0;
+            }
+            
+            .nav-menu a {
+                display: block;
+                padding: 1rem;
+                font-size: 1.1rem;
+                text-align: center;
+                border-bottom: 1px solid rgba(91, 82, 255, 0.1);
+            }
+            
+            .mobile-menu-toggle {
+                display: flex;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="theme-white.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="container">
+                <div class="logo">
+                    <a href="index.html" aria-label="TERACO.LABO ホーム" style="text-decoration: none; color: inherit; display:flex; align-items:center;">
+                        <img src="images/teraco-labo-logo-new.png" alt="TERACO.LABO ロゴ">
+                    </a>
+                </div>
+                <ul class="nav-menu">
+                    <li><a href="smartphone.html">スマホ教室</a></li>
+                    <li><a href="ai.html">パソコンAI教室</a></li>
+                    <li><a href="instructor.html" class="active">外部講師</a></li>
+                    <li><a href="video.html">映像制作</a></li>
+                    <li><a href="rental.html">レンタルスペース</a></li>
+                    
+                    <li><a href="index.html#about">代表紹介</a></li>
+                    <li><a href="contact.html">お問い合わせ</a></li>
+                </ul>
+                <button class="mobile-menu-toggle" aria-label="メニューを開く">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <div class="container">
+            <div class="service-detail">
+                <div class="hero-image" style="width: 100%; height: 300px; background-image: url('images/instructor.png'); background-size: contain; background-position: center; background-repeat: no-repeat; border-radius: 16px; margin-bottom: 3rem; background-color: #f8f9fa;"></div>
+                
+                <h1 class="service-title">外部講師</h1>
+                <p class="service-subtitle">行政/企業向け講座受託、AI活用支援、ICT推進支援など、ご要望によりカスタマイズ可能です</p>
+
+                <div class="features-grid">
+                    <div class="feature-item">
+                        <h4>企業研修</h4>
+                        <p>DX推進、AI活用、デジタルスキル向上など企業のニーズに合わせた研修</p>
+                    </div>
+                    <div class="feature-item">
+                        <h4>行政向け講座</h4>
+                        <p>自治体職員向けICT研修、住民向けデジタル講座の企画・実施</p>
+                    </div>
+                    <div class="feature-item">
+                        <h4>AI活用支援</h4>
+                        <p>ChatGPT等のAIツール導入支援、業務効率化コンサルティング</p>
+                    </div>
+                    <div class="feature-item">
+                        <h4>ICT推進支援</h4>
+                        <p>デジタル化、業務効率化、ICT活用を一貫してサポート</p>
+                    </div>
+                </div>
+
+                <div class="service-categories">
+                    <div class="category-card">
+                        <h4>研修・講座内容</h4>
+                        <ul>
+                            <li>デジタルリテラシー向上</li>
+                            <li>AI・ChatGPT活用研修</li>
+                            <li>スマートフォン・タブレット操作</li>
+                            <li>動画編集・配信技術</li>
+                            <li>SNS活用・情報発信</li>
+                            <li>セキュリティ対策</li>
+                        </ul>
+                    </div>
+                    <div class="category-card">
+                        <h4>対象組織</h4>
+                        <ul>
+                            <li>地方自治体・行政機関</li>
+                            <li>中小企業・ベンチャー企業</li>
+                            <li>NPO・市民団体</li>
+                            <li>教育機関・学校</li>
+                            <li>商工会・経済団体</li>
+                            <li>医療・福祉施設</li>
+                        </ul>
+                    </div>
+                    <div class="category-card">
+                        <h4>実施形式</h4>
+                        <ul>
+                            <li>対面講座・セミナー</li>
+                            <li>オンライン研修</li>
+                            <li>ハイブリッド形式</li>
+                            <li>個別コンサルティング</li>
+                            <li>継続サポート</li>
+                            <li>カスタマイズ対応</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="pricing-info">
+                    <h3>料金体系</h3>
+                    <div style="margin-top: 2rem;">
+                        <strong>基本料金の目安</strong><br>
+                        講座１コマ（90分）：50,000円〜<br>
+                        資料作成・教材費など別途相談<br>
+                        お見積もりにて承ります<br>
+                        <small>※内容・人数・開催地により変動いたします</small>
+                    </div>
+                </div>
+
+                <div class="contact-section">
+                    <h3>お問い合わせ・お見積もりのご依頼</h3>
+                    <p>組織の課題やご要望をお聞かせいただき、<br>
+                    最適な研修・支援プランをご提案いたします。</p>
+                    
+                    <div class="contact-actions">
+                        <a href="contact.html?service=instructor" class="contact-btn">✉️ メールでお問い合わせ</a>
+                        <a href="tel:090-6738-1469" class="contact-btn">📞 電話する</a>
+                        <a href="https://lin.ee/tkYJ7Cw" target="_blank" class="contact-btn">💬 LINEで相談</a>
+                    </div>
+                    <div class="line-qr-small">
+                        <div style="width: 110px; height: 110px; margin: 0.5rem auto 0; border: 2px solid #ddd; border-radius: 8px; background: #fff; overflow: hidden;">
+                            <img src="images/line-qr.png" alt="LINE友達追加QRコード" style="width: 100%; height: 100%; object-fit: cover;">
+                        </div>
+                        <div style="margin-top: 0.25rem;">QRコードでも追加できます</div>
+                    </div>
+                    
+                    <div style="margin-top: 2rem; font-size: 0.9rem; color: #666;">
+                        <strong>連絡先</strong><br>
+                        fujisaki@teraco-labo.com<br>
+                        090-6738-1469<br>
+                        宮崎県西都市大字三宅9437-9
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <script>
+        // ハンバーガーメニューの開閉
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
+            const navMenu = document.querySelector('.nav-menu');
+            
+            if (mobileMenuToggle && navMenu) {
+                mobileMenuToggle.addEventListener('click', function() {
+                    this.classList.toggle('active');
+                    navMenu.classList.toggle('active');
+                });
+                
+                // メニュー項目をクリックしたときにメニューを閉じる
+                const menuLinks = navMenu.querySelectorAll('a');
+                menuLinks.forEach(link => {
+                    link.addEventListener('click', function() {
+                        mobileMenuToggle.classList.remove('active');
+                        navMenu.classList.remove('active');
+                    });
+                });
+                
+                // モバイルメニュー外をクリックしたときに閉じる
+                document.addEventListener('click', function(e) {
+                    if (!mobileMenuToggle.contains(e.target) && !navMenu.contains(e.target)) {
+                        mobileMenuToggle.classList.remove('active');
+                        navMenu.classList.remove('active');
+                    }
+                });
+                
+                // ESCキーでメニューを閉じる
+                document.addEventListener('keydown', function(e) {
+                    if (e.key === 'Escape') {
+                        mobileMenuToggle.classList.remove('active');
+                        navMenu.classList.remove('active');
+                    }
+                });
+            }
+            
+            // LINEボタンのホバーエフェクトを追加
+            const lineBtn = document.querySelector('.line-btn');
+            if (lineBtn) {
+                lineBtn.addEventListener('mouseenter', function() {
+                    this.style.background = '#009A00';
+                    this.style.transform = 'translateY(-2px)';
+                    this.style.boxShadow = '0 8px 20px rgba(0, 185, 0, 0.3)';
+                });
+                
+                lineBtn.addEventListener('mouseleave', function() {
+                    this.style.background = '#00B900';
+                    this.style.transform = 'translateY(0)';
+                    this.style.boxShadow = 'none';
+                });
+            }
+        });
+    </script>
+</body>
+</html>

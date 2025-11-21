@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-deploy="1752373145">スマホ教室 お問い合わせフォーム - TERACO.LABO</title>
+    
+    <!-- Google Analytics 4 -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-3GCZQ39LS1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-3GCZQ39LS1');
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <script src="email-config.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'M PLUS Rounded 1c', 'Hiragino Sans', 'Yu Gothic', 'Meiryo', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(to right, #5b52ff, #1fffa1);
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+            background-size: cover;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        nav {
+            padding: 1rem 0;
+        }
+
+        nav .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo h1 {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #5b52ff;
+            margin-bottom: 0.2rem;
+        }
+
+        .logo p {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 1rem;
+            justify-content: flex-end;
+            align-items: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        .nav-menu a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            transition: color 0.3s ease;
+            padding: 0.5rem 0.8rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            white-space: nowrap;
+        }
+
+        .nav-menu a:hover {
+            color: #5b52ff;
+            background: rgba(91, 82, 255, 0.1);
+        }
+
+        .nav-menu a.active {
+            color: #5b52ff;
+            background: rgba(91, 82, 255, 0.1);
+            font-weight: 600;
+        }
+
+        /* ハンバーガーメニューボタン */
+        .mobile-menu-toggle {
+            display: none;
+            flex-direction: column;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.5rem;
+            width: 30px;
+            height: 30px;
+            justify-content: space-between;
+        }
+
+        .mobile-menu-toggle span {
+            display: block;
+            height: 3px;
+            width: 100%;
+            background: linear-gradient(135deg, #5b52ff 0%, #1fffa1 100%);
+            border-radius: 3px;
+            transition: all 0.3s ease;
+        }
+
+        .mobile-menu-toggle.active span:nth-child(1) {
+            transform: rotate(45deg) translate(5px, 5px);
+        }
+
+        .mobile-menu-toggle.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .mobile-menu-toggle.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(7px, -6px);
+        }
+
+        main {
+            padding: 120px 0 80px;
+        }
+
+        .form-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 24px;
+            padding: 3rem;
+            margin: 2rem auto;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+        }
+
+        .form-title {
+            font-size: 2.2rem;
+            margin-bottom: 1rem;
+            color: #5b52ff;
+            text-align: center;
+        }
+
+        .form-subtitle {
+            font-size: 1.1rem;
+            color: #666;
+            text-align: center;
+            margin-bottom: 3rem;
+            line-height: 1.8;
+        }
+
+        .form-group {
+            margin-bottom: 2rem;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .required {
+            color: #e74c3c;
+            margin-left: 0.3rem;
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: #5b52ff;
+            box-shadow: 0 0 0 3px rgba(91, 82, 255, 0.1);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .calendar-container {
+            position: relative;
+        }
+
+        .calendar-input {
+            cursor: pointer;
+        }
+
+        .submit-button {
+            background: linear-gradient(to right, #5b52ff, #1fffa1);
+            color: white;
+            padding: 1rem 3rem;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: block;
+            margin: 3rem auto 0;
+            min-width: 200px;
+        }
+
+        .submit-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .submit-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .success-message,
+        .error-message {
+            padding: 1rem;
+            border-radius: 12px;
+            margin: 1rem 0;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .plan-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        .plan-option {
+            padding: 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .plan-option:hover {
+            border-color: #5b52ff;
+        }
+
+        .plan-option.selected {
+            border-color: #5b52ff;
+            background: rgba(91, 82, 255, 0.1);
+        }
+
+        .plan-option input[type="radio"] {
+            display: none;
+        }
+
+        .plan-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .plan-price {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #5b52ff;
+            margin-bottom: 0.3rem;
+        }
+
+        .plan-details {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        /* 下部の電話案内 */
+        .call-footer {
+            margin-top: 2rem;
+            text-align: center;
+            background: #f8f9fa;
+            border-radius: 16px;
+            padding: 1rem;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+        .call-footer a {
+            color: #5b52ff;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1.25rem;
+        }
+
+        @media (max-width: 768px) {
+            .nav-menu {
+                display: none;
+                position: fixed;
+                top: 80px;
+                left: 0;
+                right: 0;
+                background: rgba(255, 255, 255, 0.98);
+                backdrop-filter: blur(20px);
+                flex-direction: column;
+                padding: 1rem;
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+                z-index: 999;
+            }
+            
+            .nav-menu.active {
+                display: flex;
+            }
+            
+            .nav-menu li {
+                margin: 0.5rem 0;
+            }
+            
+            .nav-menu a {
+                display: block;
+                padding: 1rem;
+                font-size: 1.1rem;
+                text-align: center;
+                border-bottom: 1px solid rgba(91, 82, 255, 0.1);
+            }
+            
+            .mobile-menu-toggle {
+                display: flex;
+            }
+            
+            .form-container {
+                padding: 2rem;
+                margin: 1rem 0;
+            }
+            
+            .form-title {
+                font-size: 1.8rem;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .plan-options {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="theme-white.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="container">
+                <div class="logo">
+                    <a href="index.html" aria-label="TERACO.LABO ホーム" style="text-decoration: none; color: inherit; display:flex; align-items:center;">
+                        <img src="images/teraco-labo-logo-new.png" alt="TERACO.LABO ロゴ">
+                    </a>
+                </div>
+                <ul class="nav-menu">
+                    <li><a href="smartphone.html">スマホ教室</a></li>
+                    <li><a href="ai.html">パソコンAI教室</a></li>
+                    <li><a href="instructor.html">外部講師</a></li>
+                    <li><a href="video.html">映像制作</a></li>
+                    <li><a href="rental.html">レンタルスペース</a></li>
+                    <li><a href="index.html#about">代表紹介</a></li>
+                    <li><a href="general-contact-form.html" class="active">お問い合わせ</a></li>
+                </ul>
+                <button class="mobile-menu-toggle" aria-label="メニューを開く">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <div class="container">
+            <div class="form-container">
+                <h1 class="form-title">スマホ教室 お問い合わせフォーム</h1>
+                <p class="form-subtitle">
+                    ご興味をお持ちいただき、ありがとうございます。<br>
+                    以下のフォームにご記入いただければ、詳細なご案内をお送りいたします。
+                </p>
+
+                <form id="contactForm">
+                    <div class="form-group">
+                        <label for="name" class="form-label">お名前<span class="required">*</span></label>
+                        <input type="text" id="name" name="name" class="form-input" required>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="phone" class="form-label">電話番号<span class="required">*</span></label>
+                            <input type="tel" id="phone" name="phone" class="form-input" placeholder="090-1234-5678" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email" class="form-label">メールアドレス<span class="required">*</span></label>
+                            <input type="email" id="email" name="email" class="form-input" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">ご希望の講座<span class="required">*</span></label>
+                        <div class="plan-options">
+                            <label class="plan-option">
+                                <input type="radio" name="plan" value="manabi2" required>
+                                <div class="plan-name">まなび2</div>
+                                <div class="plan-price">月5,000円</div>
+                                <div class="plan-details">入門クラス（レギュラー会員）／45分 × 月2回</div>
+                            </label>
+                            <label class="plan-option">
+                                <input type="radio" name="plan" value="manabi4" required>
+                                <div class="plan-name">まなび4</div>
+                                <div class="plan-price">月8,000円</div>
+                                <div class="plan-details">入門クラス（レギュラー会員）／45分 × 月4回</div>
+                            </label>
+                            <label class="plan-option">
+                                <input type="radio" name="plan" value="terako2" required>
+                                <div class="plan-name">てらこ2</div>
+                                <div class="plan-price">月8,000円</div>
+                                <div class="plan-details">応用クラス（プレミアム会員）／90分 × 月2回</div>
+                            </label>
+                            <label class="plan-option">
+                                <input type="radio" name="plan" value="terako4" required>
+                                <div class="plan-name">てらこ4</div>
+                                <div class="plan-price">月12,000円</div>
+                                <div class="plan-details">応用クラス（プレミアム会員）／90分 × 月4回</div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="preferred-date" class="form-label">ご希望日程<span class="required">*</span></label>
+                        <div class="calendar-container">
+                            <input type="date" id="preferred-date" name="preferred-date" class="form-input calendar-input" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="message" class="form-label">ご質問・ご要望</label>
+                        <textarea id="message" name="message" class="form-textarea" placeholder="ご質問やご要望がございましたら、お気軽にお書きください。"></textarea>
+                    </div>
+
+                    <button type="submit" class="submit-button" id="submitBtn">
+                        お問い合わせを送信
+                    </button>
+                    
+                    <p style="text-align: center; margin-top: 1rem; color: #e74c3c; font-size: 0.9rem; line-height: 1.4;">
+                        数時間経っても確認メールが届かない場合は、再度お申し込みいただくか直接お電話ください。
+                    </p>
+                </form>
+
+                <div id="responseMessage"></div>
+                <div class="call-footer" aria-label="電話でお問い合わせ">
+                    <p style="color:#333; margin-bottom:0.25rem;">お急ぎの方はお電話ください</p>
+                    <p><a href="tel:090-6738-1469">📞 090-6738-1469</a></p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // EmailJS初期化
+        (function() {
+            emailjs.init({
+                publicKey: "zcA2Cp6c3OstOeY5o"
+            });
+            console.log("EmailJS初期化完了");
+        })();
+
+        // プラン選択の視覚的フィードバック
+        document.querySelectorAll('.plan-option input[type="radio"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                // 全ての選択肢から selected クラスを削除
+                document.querySelectorAll('.plan-option').forEach(option => {
+                    option.classList.remove('selected');
+                });
+                // 選択された選択肢に selected クラスを追加
+                this.closest('.plan-option').classList.add('selected');
+            });
+        });
+
+        // 今日の日付を最小値として設定
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('preferred-date').setAttribute('min', today);
+
+        // フォーム送信処理
+        document.getElementById('contactForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('submitBtn');
+            const responseMessage = document.getElementById('responseMessage');
+            
+            // ボタンを無効化
+            submitBtn.disabled = true;
+            submitBtn.textContent = '送信中...';
+            
+            // フォームデータを収集
+            const formElement = new FormData(this);
+            const data = Object.fromEntries(formElement.entries());
+            
+            try {
+                // Loading state
+                responseMessage.innerHTML = '<div style="text-align: center; color: #5b52ff;">送信中...</div>';
+                
+                // Collect form data for emails
+                const planNames = {
+                    manabi2: 'まなび2（45分×月2回／5,000円）',
+                    manabi4: 'まなび4（45分×月4回／8,000円）',
+                    terako2: 'てらこ2（90分×月2回／8,000円）',
+                    terako4: 'てらこ4（90分×月4回／12,000円）'
+                };
+                
+                // デバッグ用ログ
+                console.log('取得したフォームデータ:', data);
+                console.log('希望日程:', data['preferred-date']);
+                console.log('選択プラン:', data.plan);
+                console.log('プラン名:', planNames[data.plan]);
+                
+                // EmailJSテンプレート用データ（デバッグ版）
+                const emailData = {
+                    // 基本情報
+                    name: data.name,
+                    email: data.email,
+                    phone: data.phone || '未記入',
+                    
+                    // サービス情報
+                    service_name: 'スマホ教室',
+                    services: 'スマホ教室',  // 後方互換
+                    plan: planNames[data.plan] || '未選択',
+                    
+                    // 日程情報 - テンプレート変数名を確認  
+                    preferred_date: data['preferred-date'] || '未記入',
+                    request_date: data['preferred-date'] || '未記入',  // 後方互換
+                    
+                    // その他
+                    message: data.message || '特になし',
+                    submission_date: new Date().toLocaleString('ja-JP')
+                };
+                
+                // デバッグ用ログ（詳細）
+                console.log('送信するemailData:', emailData);
+                console.log('テンプレート変数チェック:');
+                console.log('- service_name:', emailData.service_name);
+                console.log('- plan:', emailData.plan);
+                console.log('- preferred_date:', emailData.preferred_date);
+                
+                
+                
+                // 1. 管理者宛メール送信
+                const EMAIL_SERVICE_ID = window.EMAILJS_SERVICE_ID || 'TERACO_Gmail';
+                await emailjs.send(EMAIL_SERVICE_ID, 'template_6838gcg', emailData);
+                console.log('管理者メール送信成功');
+                
+                // 2. ユーザー自動返信メール送信
+                await emailjs.send(EMAIL_SERVICE_ID, 'template_ww2xoao', emailData);
+                console.log('ユーザー自動返信メール送信成功');
+                
+                // 成功メッセージを表示
+                responseMessage.innerHTML = `
+                    <div class="success-message">
+                        お問い合わせありがとうございます。確認メールをお送りしました。24時間以内にご連絡いたします。
+                    </div>
+                `;
+                
+                // フォームをリセット
+                this.reset();
+                document.querySelectorAll('.plan-option').forEach(option => {
+                    option.classList.remove('selected');
+                });
+                
+                // Also send to management app if available
+                try {
+                    await sendToManagementApp(data);
+                } catch (mgmtError) {
+                    console.log('Management app offline (normal)');
+                }
+                
+            } catch (error) {
+                console.error('送信エラー:', error);
+                // エラーメッセージを表示
+                responseMessage.innerHTML = `
+                    <div class="error-message">
+                        送信に失敗しました。お手数ですが、直接お電話でお問い合わせください。<br>TEL: 090-6738-1469
+                    </div>
+                `;
+            } finally {
+                // Always restore button state
+                setTimeout(() => {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'お問い合わせを送信';
+                }, 2000);
+            }
+        });
+        
+
+        // 管理アプリへ予約データを送信する関数
+        async function sendToManagementApp(data) {
+            const planNames = {
+                manabi2: 'まなび2',
+                manabi4: 'まなび4',
+                terako2: 'てらこ2',
+                terako4: 'てらこ4'
+            };
+
+            const reservationData = {
+                name: data.name,
+                phone: data.phone,
+                email: data.email,
+                course: planNames[data.plan],
+                preferredDate: data['preferred-date'],
+                notes: data.message || '',
+                source: 'website',
+                status: 'web-reservation',
+                submittedAt: new Date().toISOString()
+            };
+
+            try {
+                // Try hosted API first (Vercel /api/*), fall back to local dev
+                const targetUrl = '/api/web-reservations';
+                const response = await fetch(targetUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(reservationData)
+                });
+
+                if (response.ok) {
+                    console.log('管理アプリに予約データを送信しました');
+                } else {
+                    console.log('管理アプリはオフラインです（問題ありません）');
+                }
+            } catch (error) {
+                console.log('管理アプリ連携: オフライン状態（正常）');
+            }
+        }
+        
+        // SMS送信関数（実際の実装ではTwilio等のサービスを使用）
+        async function sendSMS(phoneNumber, message) {
+            // 実際の実装では、Twilio APIなどを使用
+            /*
+            const response = await fetch('/api/send-sms', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    to: phoneNumber,
+                    message: message
+                })
+            });
+            
+            if (!response.ok) {
+                throw new Error('SMS送信に失敗しました');
+            }
+            */
+            
+            console.log(`SMS送信（シミュレート）: ${phoneNumber} - ${message}`);
+        }
+    </script>
+    <script>
+        // ハンバーガーメニューの開閉
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
+            const navMenu = document.querySelector('.nav-menu');
+            
+            if (mobileMenuToggle && navMenu) {
+                mobileMenuToggle.addEventListener('click', function() {
+                    this.classList.toggle('active');
+                    navMenu.classList.toggle('active');
+                });
+                
+                // メニュー項目をクリックしたときにメニューを閉じる
+                const menuLinks = navMenu.querySelectorAll('a');
+                menuLinks.forEach(link => {
+                    link.addEventListener('click', function() {
+                        mobileMenuToggle.classList.remove('active');
+                        navMenu.classList.remove('active');
+                    });
+                });
+                
+                // モバイルメニュー外をクリックしたときに閉じる
+                document.addEventListener('click', function(e) {
+                    if (!mobileMenuToggle.contains(e.target) && !navMenu.contains(e.target)) {
+                        mobileMenuToggle.classList.remove('active');
+                        navMenu.classList.remove('active');
+                    }
+                });
+                
+                // ESCキーでメニューを閉じる
+                document.addEventListener('keydown', function(e) {
+                    if (e.key === 'Escape') {
+                        mobileMenuToggle.classList.remove('active');
+                        navMenu.classList.remove('active');
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,4 +1,4 @@
-const API_BASE = 'https://script.google.com/a/macros/teraco-labo.com/s/AKfycbwPwWN7BcggcZ33ajLsobq3xY82NT8mGtXuxN86AO5PbxFEQzD-G-BskrrtlLtz_Zs/exec';
+const API_BASE = 'https://script.google.com/macros/s/AKfycbwPwWN7BcggcZ33ajLsobq3xY82NT8mGtXuxN86AO5PbxFEQzD-G-BskrrtlLtz_Zs/exec';
 
 const nameInput = document.getElementById('nameInput');
 const calendarWrap = document.getElementById('calendarWrap');
