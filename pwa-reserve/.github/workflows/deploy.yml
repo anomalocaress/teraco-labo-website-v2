@@ -21,11 +21,11 @@ jobs:
       - uses: actions/checkout@v4
       - name: Prepare site
         run: |
-          mkdir -p dist
-          cp -a index.html main.js manifest.json sw.js dist/
-          if [ -d gas ]; then cp -a gas dist/; fi
+          mkdir -p dist/reserve
+          cp -a index.html main.js manifest.json sw.js dist/reserve/
+          if [ -d gas ]; then cp -a gas dist/reserve/; fi
           if [ -n "${{ secrets.GAS_ENDPOINT }}" ]; then
-            sed -i "s#<<PUT_YOUR_GAS_WEBAPP_URL_HERE>>#${{ secrets.GAS_ENDPOINT }}#g" dist/main.js
+            sed -i "s#<<PUT_YOUR_GAS_WEBAPP_URL_HERE>>#${{ secrets.GAS_ENDPOINT }}#g" dist/reserve/main.js
           fi
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
