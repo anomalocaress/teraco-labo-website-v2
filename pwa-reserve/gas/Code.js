@@ -14,10 +14,12 @@ function doGet(e) {
         const desc = ev.getDescription();
         const slotId = ev.getStartTime().getTime().toString();
 
-        // 予約人数の計算: 説明文の行数（空行を除く）をカウント
+        // 予約人数の計算: 説明文から名前を抽出してカウント
+        // 改行、カンマ、スペースなどで区切って人数を数える
         let count = 0;
         if (desc) {
-            count = desc.split('\n').filter(line => line.trim() !== '').length;
+            const tokens = desc.split(/[\n\r、,，\/\s　]+/);
+            count = tokens.filter(t => t.trim() !== '').length;
         }
 
         // 同じ時間枠（slotId）に複数のイベント（別コースなど）がある場合を考慮して加算する

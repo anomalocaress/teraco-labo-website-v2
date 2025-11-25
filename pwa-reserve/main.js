@@ -545,25 +545,44 @@ function getRegularLimit() {
   return parseInt(state.classSelection.frequency, 10) || 4;
 }
 
+function detectCategory(title) {
+  if (!title) return 'unknown';
+  if (title.includes('スマホ')) return 'smartphone';
+  if (title.includes('パソコン') || title.includes('PC')) return 'pc_ai';
+  return 'unknown';
+}
+
 function addSlot(slot) {
-  // Check limits based on frequency
+  // Check limits based on frequency AND category
   const monthKey = slot.month_key;
+  const currentCategory = state.classSelection.category; // 'smartphone' or 'pc_ai'
   const limitRegular = getRegularLimit();
-  const limitService = 4; // Service slots are always 4 (implied rule, or could be dynamic too)
+  const limitService = 4;
   const limitTotal = limitRegular + limitService;
 
-  // Count existing reservations for this month
+  // Count existing reservations for this month AND this category
   const existingInMonth = state.existing.filter(ev => {
     const evSlot = state.slotIndex.get(ev.slot_id);
-    return evSlot && evSlot.month_key === monthKey;
+    if (!evSlot || evSlot.month_key !== monthKey) return false;
+
+    // Check category of existing event
+    // If it's a legacy event (TERACO予約...), we might not know. 
+    // Assuming new events have "Category Course" title.
+    let cat = detectCategory(ev.label);
+    // If unknown, maybe treat as current category? Or ignore?
+    // Let's treat unknown as current category to be safe (prevent overbooking if unsure)
+    if (cat === 'unknown') cat = currentCategory;
+
+    return cat === currentCategory;
   }).length;
 
-  // Count currently selected for this month
+  // Count currently selected for this month AND this category
+  // All items in state.selected are for the CURRENT category being booked
   const selectedCounts = countSelectedByMonth();
   const selectedInMonth = selectedCounts[monthKey] || 0;
 
   if (existingInMonth + selectedInMonth + 1 > limitTotal) {
-    alert(`${monthKey}の予約上限（通常${limitRegular}枠＋サービス${limitService}枠）に達しています。`);
+    alert(`${monthKey}の${currentCategory === 'smartphone' ? 'スマホ' : 'パソコンAI'}クラス予約上限（通常${limitRegular}枠＋サービス${limitService}枠）に達しています。`);
     return;
   }
 
@@ -574,7 +593,6 @@ function addSlot(slot) {
 
 function renderSelected() {
   selectedList.innerHTML = '';
-  // Sort by date/time
   const sorted = Array.from(state.selected.values()).sort((a, b) => Number(a.slot_id) - Number(b.slot_id));
 
   if (!sorted.length) {
@@ -583,17 +601,22 @@ function renderSelected() {
     return;
   }
 
-  // Calculate slot types (Regular vs Service) dynamically
   const limitRegular = getRegularLimit();
   const limitService = 4;
   const limitTotal = limitRegular + limitService;
+  const currentCategory = state.classSelection.category;
 
-  // We need to know how many existing reservations are in each month to assign types correctly
+  // Count existing reservations by month for the CURRENT category
   const monthCounts = {};
   state.existing.forEach(ev => {
     const s = state.slotIndex.get(ev.slot_id);
     if (s) {
-      monthCounts[s.month_key] = (monthCounts[s.month_key] || 0) + 1;
+      let cat = detectCategory(ev.label);
+      if (cat === 'unknown') cat = currentCategory;
+
+      if (cat === currentCategory) {
+        monthCounts[s.month_key] = (monthCounts[s.month_key] || 0) + 1;
+      }
     }
   });
 
@@ -608,12 +631,11 @@ function renderSelected() {
       typeColor = 'var(--green-deep)';
     } else if (currentCount <= limitTotal) {
       typeLabel = 'サービス枠';
-      typeColor = '#ff9800'; // Orange for service
+      typeColor = '#ff9800';
     } else {
-      typeLabel = '枠外'; // Should not happen due to addSlot check
+      typeLabel = '枠外';
     }
 
-    // Get current class selection details for display
     const { category, course, frequency } = state.classSelection;
     const categoryLabel = category === 'smartphone' ? 'スマホ' : 'パソコンAI';
     let courseLabel = '';
@@ -632,7 +654,7 @@ function renderSelected() {
           <span style="font-weight:700;">${slot.day_label}</span>
           <span style="font-size:12px;background:${typeColor};color:#fff;padding:2px 6px;border-radius:4px;">${typeLabel}</span>
         </div>
-        <div style="font-size:20px;color:var(--green-deep);margin-bottom:4px;">${slot.start_time} 〜 ${slot.end_time}</div>
+        <div style="font-size:20px;color:var(--green-deep);margin-bottom:4px;">${slot.start_time}~</div>
         <div style="font-size:14px;color:#666;">
           ${categoryLabel} / ${courseLabel} / ${freqLabel}
         </div>
@@ -672,14 +694,17 @@ function renderExisting() {
 
   existingPanel.classList.remove('hidden');
 
-  // Sort existing
   const sortedExisting = state.existing.slice().sort((a, b) => Number(a.slot_id || 0) - Number(b.slot_id || 0));
 
-  // Track counts for labels
-  const monthCounts = {};
-  const limitRegular = getRegularLimit();
-  const limitService = 4;
-  const limitTotal = limitRegular + limitService;
+  // Track counts by (Month + Category)
+  const countsMap = {}; // Key: "YYYY-MM_category"
+
+  // We need to know the limit for each category.
+  // For the CURRENT category, we use state.classSelection.frequency.
+  // For the OTHER category, we don't know the user's contract. Default to 4?
+  // Or, if the user has mixed reservations, maybe we should just use 4 as default for non-selected categories.
+  const currentCategory = state.classSelection.category;
+  const currentLimit = getRegularLimit();
 
   sortedExisting.forEach(ev => {
     const slot = state.slotIndex.get(ev.slot_id);
@@ -687,8 +712,23 @@ function renderExisting() {
     let typeColor = '#999';
 
     if (slot) {
-      const currentCount = (monthCounts[slot.month_key] || 0) + 1;
-      monthCounts[slot.month_key] = currentCount;
+      let cat = detectCategory(ev.label);
+      // If unknown, assume it belongs to the current category context if we are strict, 
+      // but for display, maybe just 'unknown'? 
+      // Let's map unknown to current for counting safety.
+      if (cat === 'unknown') cat = currentCategory;
+
+      const key = `${slot.month_key}_${cat}`;
+      const currentCount = (countsMap[key] || 0) + 1;
+      countsMap[key] = currentCount;
+
+      // Determine limit for this category
+      let limitRegular = 4; // Default
+      if (cat === currentCategory) {
+        limitRegular = currentLimit;
+      }
+      const limitService = 4;
+      const limitTotal = limitRegular + limitService;
 
       if (currentCount <= limitRegular) {
         typeLabel = '通常枠';
@@ -697,18 +737,6 @@ function renderExisting() {
       }
     }
 
-    // Parse description to extract class details if available
-    let details = '';
-    if (ev.description) {
-      const lines = ev.description.split('\n');
-      // Assuming format: "お名前: ...", "カテゴリ: ...", "コース: ...", "頻度: ..."
-      // But since we changed logic to just append names, we might not have this metadata in description anymore for shared events.
-      // However, the TITLE now contains "Category Course".
-      // Let's use the title for basic info.
-    }
-
-    // Title format is expected to be "Category Course" (e.g. "スマホ 入門まなび(45分)")
-    // or old format "TERACO予約: Name"
     let displayTitle = ev.label;
     if (displayTitle.startsWith('TERACO予約')) {
       displayTitle = '旧形式の予約';
@@ -728,7 +756,7 @@ function renderExisting() {
           <span style="font-size:12px;background:#999;color:#fff;padding:2px 6px;border-radius:4px;">${typeLabel}</span>
         </div>
         <div style="font-size:18px;color:#333;margin-bottom:4px;">
-          ${fmtTime_(new Date(ev.start))} 〜 ${fmtTime_(new Date(ev.end))}
+          ${fmtTime_(new Date(ev.start))}~
         </div>
         <div style="font-size:14px;color:#666;">
           ${displayTitle}
@@ -741,7 +769,6 @@ function renderExisting() {
     btn.textContent = '選択';
     btn.style.minWidth = '60px';
 
-    // Toggle selection logic
     btn.addEventListener('click', () => {
       const isSelected = row.classList.toggle('to-be-cancelled');
       if (isSelected) {
@@ -749,7 +776,7 @@ function renderExisting() {
         btn.style.background = 'var(--error)';
         btn.style.color = '#fff';
         btn.style.borderColor = 'var(--error)';
-        row.style.background = '#ffebee'; // Light red background
+        row.style.background = '#ffebee';
       } else {
         btn.textContent = '選択';
         btn.style.background = '';
@@ -764,7 +791,6 @@ function renderExisting() {
     existingList.appendChild(row);
   });
 
-  // Initialize button state
   updateBatchCancelButton();
 }
 
@@ -993,5 +1019,5 @@ function buildMockSlots(days) {
 }
 
 // Initial Load
-checkSavedSession();
+// checkSavedSession();
 loadOverview({ preserveSelection: false });
