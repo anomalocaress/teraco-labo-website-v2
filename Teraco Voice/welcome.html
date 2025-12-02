@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teraco Voice - ようこそ</title>
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%);
+            --bg-color: #121212;
+            --card-bg: rgba(30, 30, 30, 0.6);
+            --text-main: #ffffff;
+            --text-sub: #b0b0b0;
+            --accent-color: #66a6ff;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            background-image:
+                radial-gradient(circle at 10% 20%, rgba(102, 166, 255, 0.1) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(137, 247, 254, 0.1) 0%, transparent 20%);
+            color: var(--text-main);
+            font-family: 'Helvetica Neue', 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .welcome-container {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 48px;
+            max-width: 640px;
+            width: 90%;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            margin-bottom: 40px;
+        }
+
+        .logo {
+            font-size: 48px;
+            margin-bottom: 16px;
+            display: inline-block;
+            filter: drop-shadow(0 0 10px rgba(102, 166, 255, 0.3));
+        }
+
+        h1 {
+            font-size: 28px;
+            margin: 0 0 8px;
+            font-weight: 700;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            color: var(--text-sub);
+            font-size: 14px;
+            letter-spacing: 0.05em;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 40px;
+            text-align: left;
+        }
+
+        .info-card {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: transform 0.3s ease;
+        }
+
+        .info-card:hover {
+            transform: translateY(-2px);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .info-card h2 {
+            color: var(--accent-color);
+            font-size: 16px;
+            margin: 0 0 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .step-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .step-list li {
+            margin-bottom: 12px;
+            font-size: 13px;
+            color: var(--text-sub);
+            padding-left: 20px;
+            position: relative;
+            line-height: 1.6;
+        }
+
+        .step-list li::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 8px;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--accent-color);
+            opacity: 0.7;
+        }
+
+        .highlight {
+            color: #fff;
+            font-weight: 600;
+            background: rgba(102, 166, 255, 0.15);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .footer {
+            margin-top: 32px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .button {
+            background: var(--primary-gradient);
+            color: #fff;
+            border: none;
+            padding: 14px 48px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 166, 255, 0.3);
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 166, 255, 0.4);
+            filter: brightness(1.1);
+        }
+
+        .button:active {
+            transform: translateY(0);
+        }
+
+        .checkbox-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-sub);
+            font-size: 13px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .checkbox-wrapper input {
+            accent-color: var(--accent-color);
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+
+        /* Scrollbar aesthetics */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="welcome-container">
+        <div class="header">
+            <div class="logo">🎙️</div>
+            <h1>Teraco Voice</h1>
+            <p class="subtitle">あなたの声を、そのまま文字に。</p>
+        </div>
+
+        <div class="content-grid">
+            <div class="info-card">
+                <h2>使い方</h2>
+                <ul class="step-list">
+                    <li><span class="highlight">Shiftキー</span>を長押しして話す</li>
+                    <li>話し終わったらキーを離す</li>
+                    <li>自動で文字が入力されます</li>
+                </ul>
+            </div>
+
+            <div class="info-card">
+                <h2>設定とヒント</h2>
+                <ul class="step-list">
+                    <li>マイク許可は<span class="highlight">OK</span>を選択</li>
+                    <li>インジケーターは移動可能</li>
+                    <li>自然な会話として認識します</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer">
+            <button class="button" onclick="closeWelcome()">はじめる</button>
+
+            <label class="checkbox-wrapper">
+                <input type="checkbox" id="dontShowAgain">
+                次回から表示しない
+            </label>
+        </div>
+    </div>
+
+    <script>
+        const { ipcRenderer } = require('electron');
+
+        function closeWelcome() {
+            const dontShow = document.getElementById('dontShowAgain').checked;
+            ipcRenderer.send('close-welcome', dontShow);
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeWelcome();
+            }
+        });
+    </script>
+</body>
+
+</html>

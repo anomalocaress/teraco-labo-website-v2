@@ -1,0 +1,51 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+out/
+
+# Python
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Whisper models
+whisper.cpp/models/*.bin
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Environment
+.env
+.env.local
+
+# Temporary files
+*.tmp
+*.temp
+/tmp/
+
+# ffmpeg binary (will be downloaded)
+ffmpeg
+ffmpeg.zip
+
+# Build artifacts
+*.dmg
+*.exe
+*.zip
+*.pkg
+*.deb
+*.rpm
+*.AppImage

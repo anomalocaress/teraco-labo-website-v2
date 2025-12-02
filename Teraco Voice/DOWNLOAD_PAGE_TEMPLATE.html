@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teraco Voice - ダウンロード</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Hiragino Sans', 'Yu Gothic UI', sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            color: #ffffff;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .logo {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 20px;
+        }
+
+        h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #4bff88 0%, #3dd174 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 1.2em;
+            color: #aaa;
+        }
+
+        .download-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 40px;
+            border: 1px solid rgba(75, 255, 136, 0.2);
+        }
+
+        .platform {
+            margin-bottom: 40px;
+        }
+
+        .platform h2 {
+            font-size: 2em;
+            margin-bottom: 20px;
+            color: #4bff88;
+        }
+
+        .download-buttons {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .download-btn {
+            flex: 1;
+            min-width: 250px;
+            padding: 20px 30px;
+            background: linear-gradient(135deg, #4bff88 0%, #3dd174 100%);
+            color: #000;
+            text-decoration: none;
+            border-radius: 12px;
+            font-size: 1.1em;
+            font-weight: bold;
+            text-align: center;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 15px rgba(75, 255, 136, 0.3);
+        }
+
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(75, 255, 136, 0.5);
+        }
+
+        .download-btn .size {
+            display: block;
+            font-size: 0.8em;
+            font-weight: normal;
+            margin-top: 5px;
+            opacity: 0.8;
+        }
+
+        .info-box {
+            background: rgba(75, 159, 255, 0.1);
+            border-left: 4px solid #4b9fff;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .warning-box {
+            background: rgba(255, 193, 7, 0.1);
+            border-left: 4px solid #ffc107;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 40px;
+        }
+
+        .feature {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .feature h3 {
+            color: #4bff88;
+            margin-bottom: 10px;
+        }
+
+        .checksum {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85em;
+            overflow-x: auto;
+            margin-top: 10px;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 60px;
+            padding-top: 40px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: #888;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <!-- アイコン画像をここに配置 -->
+                <img src="icon.png" alt="Teraco Voice" style="width: 100%; border-radius: 20px;">
+            </div>
+            <h1>Teraco Voice</h1>
+            <p class="subtitle">高速・高精度な音声入力ツール</p>
+        </header>
+
+        <div class="download-section">
+            <div class="platform">
+                <h2>🍎 macOS</h2>
+
+                <div class="warning-box">
+                    <strong>⚠️ 初回起動時の重要な注意事項</strong><br>
+                    インストール後、アプリを<strong>右クリック→「開く」</strong>で起動してください。<br>
+                    詳しくは<a href="#install-guide" style="color: #4bff88;">インストールガイド</a>をご覧ください。
+                </div>
+
+                <div class="download-buttons">
+                    <a href="TeracoVoice-macOS-AppleSilicon-1.0.0.dmg" class="download-btn">
+                        Apple Silicon (M1/M2/M3)
+                        <span class="size">432 MB</span>
+                    </a>
+                    <a href="TeracoVoice-macOS-Intel-1.0.0.dmg" class="download-btn">
+                        Intel Mac
+                        <span class="size">433 MB</span>
+                    </a>
+                </div>
+
+                <div class="info-box">
+                    <strong>💡 どちらをダウンロードすればいい？</strong><br>
+                    • 2020年以降のMac → Apple Silicon版<br>
+                    • 2019年以前のMac → Intel版<br>
+                    • 不明な場合 → Appleメニュー「このMacについて」で確認
+                </div>
+
+                <details style="margin-top: 20px;">
+                    <summary style="cursor: pointer; color: #4bff88;">チェックサム（SHA-256）を表示</summary>
+                    <div class="checksum">
+                        0ec3cfc6bbc16b9266d143212287be0ca4efb1624a8e65a32d051943872b7815
+                        TeracoVoice-macOS-AppleSilicon-1.0.0.dmg<br>
+                        e1e24d321b8bf462adfbb6518b9c7f44dafd64c120d071523b53dd3de87265ca
+                        TeracoVoice-macOS-Intel-1.0.0.dmg
+                    </div>
+                </details>
+            </div>
+
+            <div class="platform">
+                <h2>🪟 Windows</h2>
+                <p style="color: #888; margin-bottom: 20px;">Windows版は準備中です。しばらくお待ちください。</p>
+            </div>
+        </div>
+
+        <div class="download-section" id="install-guide">
+            <h2 style="color: #4bff88; margin-bottom: 20px;">📖 インストールガイド</h2>
+
+            <h3 style="margin-top: 30px; margin-bottom: 15px;">macOS - 初回起動手順</h3>
+            <ol style="line-height: 2; padding-left: 20px;">
+                <li>ダウンロードしたDMGファイルをダブルクリック</li>
+                <li>Teraco Voiceアイコンを「Applications」フォルダにドラッグ&ドロップ</li>
+                <li><strong>Finderでアプリケーションフォルダを開く</strong></li>
+                <li><strong>「Teraco Voice」を右クリック（Control + クリック）</strong></li>
+                <li><strong>メニューから「開く」を選択</strong></li>
+                <li><strong>ダイアログで「開く」ボタンをクリック</strong></li>
+                <li>マイクへのアクセス許可を「OK」</li>
+            </ol>
+
+            <div class="warning-box" style="margin-top: 20px;">
+                <strong>なぜこの手順が必要？</strong><br>
+                Teraco Voiceは個人開発者によって作成されており、Appleのコード署名を取得していません。
+                そのため、初回起動時のみ「右クリック→開く」の手順が必要です。
+                アプリ自体は安全ですので、ご安心ください。<br>
+                <strong>2回目以降は通常通りダブルクリックで起動できます。</strong>
+            </div>
+        </div>
+
+        <div class="features">
+            <div class="feature">
+                <h3>🎤 簡単操作</h3>
+                <p>Shiftキーを押しながら話すだけで音声入力</p>
+            </div>
+            <div class="feature">
+                <h3>🚀 高速処理</h3>
+                <p>ローカルで動作、インターネット接続不要</p>
+            </div>
+            <div class="feature">
+                <h3>🎯 高精度</h3>
+                <p>Whisper AIによる高精度な日本語認識</p>
+            </div>
+            <div class="feature">
+                <h3>🔒 プライバシー</h3>
+                <p>音声データは外部に送信されません</p>
+            </div>
+        </div>
+
+        <footer>
+            <p>&copy; 2024 TERACO.LABO - All rights reserved.</p>
+            <p style="margin-top: 10px;">
+                <a href="mailto:support@teraco.labo" style="color: #4bff88; text-decoration: none;">お問い合わせ</a>
+            </p>
+        </footer>
+    </div>
+</body>
+
+</html>
