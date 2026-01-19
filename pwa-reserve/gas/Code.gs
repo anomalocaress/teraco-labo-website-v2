@@ -58,13 +58,17 @@ function doPost(e) {
   if (action === 'batch_reserve') {
     const name = String(body.name || '').trim();
     const slots = Array.isArray(body.slots) ? body.slots : [];
-    const res = batchReserve_(name, slots);
+    const classDetails = body.class_details || {};
+    const userEmail = body.email || null;
+    const addToCalendar = body.add_to_calendar || false;
+    const res = batchReserve_(name, slots, classDetails, userEmail, addToCalendar);
     return jsonOutput(res);
   }
   if (action === 'batch_cancel') {
     const name = String(body.name || '').trim();
     const eventIds = Array.isArray(body.event_ids) ? body.event_ids : [];
-    const res = batchCancel_(name, eventIds);
+    const userEmail = body.email || null;
+    const res = batchCancel_(name, eventIds, userEmail);
     return jsonOutput(res);
   }
   return jsonOutput({ ok: false, message: '未対応の操作です。' });
@@ -107,7 +111,7 @@ function overview_(displayName, days) {
 }
 
 // 一括予約
-function batchReserve_(displayName, slotIdList) {
+function batchReserve_(displayName, slotIdList, classDetails, userEmail, addToCalendar) {
   const trimmedName = String(displayName || '').trim();
   if (!trimmedName) return { ok: false, message: 'お名前を入力してください。' };
   const normalized = normalizeName_(trimmedName);
@@ -133,6 +137,16 @@ function batchReserve_(displayName, slotIdList) {
     const limitOverrides = fetchLimitOverrides_(nameKey);
     const prepared = [];
     const seen = {};
+
+    // Generate rich title
+    let eventTitle = CONFIG.TITLE_PREFIX + ' ' + trimmedName;
+    if (classDetails && classDetails.category) {
+      if (classDetails.course) {
+        eventTitle = `【${classDetails.category} / ${classDetails.course}】${trimmedName}`;
+      } else {
+        eventTitle = `【${classDetails.category}】${trimmedName}`;
+      }
+    }
 
     for (var i = 0; i < slotIds.length; i++) {
       var slotId = slotIds[i];
@@ -184,12 +198,15 @@ function batchReserve_(displayName, slotIdList) {
     var created = [];
     try {
       prepared.forEach(function(item){
-        var title = CONFIG.TITLE_PREFIX + ' ' + trimmedName;
-        var desc = buildDescription_(trimmedName, normalized, nameKey);
-        var ev = cal.createEvent(title, item.start, item.end, {
+        var desc = buildDescription_(trimmedName, normalized, nameKey, classDetails);
+        var options = {
           description: desc,
           location: CONFIG.LOCATION
-        });
+        };
+        if (addToCalendar && userEmail) {
+          options.guests = userEmail;
+        }
+        var ev = cal.createEvent(eventTitle, item.start, item.end, options);
         created.push({ event: ev, info: item });
       });
     } catch (err) {
@@ -200,7 +217,7 @@ function batchReserve_(displayName, slotIdList) {
 
     sendSummaryMail_('予約', trimmedName, created.map(function(row){
       return formatSlotLabel_(row.info.start);
-    }));
+    }), eventTitle, userEmail);
 
     var overview = overview_(trimmedName, CONFIG.OVERVIEW_DAYS);
     overview.message = created.length + '件の予約を登録しました。';
@@ -214,7 +231,7 @@ function batchReserve_(displayName, slotIdList) {
 }
 
 // 一括取消
-function batchCancel_(displayName, eventIdList) {
+function batchCancel_(displayName, eventIdList, userEmail) {
   const trimmedName = String(displayName || '').trim();
   if (!trimmedName) return { ok:false, message:'お名前を入力してください。' };
   const normalized = normalizeName_(trimmedName);
@@ -225,11 +242,17 @@ function batchCancel_(displayName, eventIdList) {
   try {
     lock.waitLock(30000);
     const removedLabels = [];
+    let representativeTitle = '';
+
     (eventIdList || []).forEach(function(eventId){
       if (!eventId) return;
       var ev = cal.getEventById(String(eventId));
       if (!ev) return;
       if (!eventMatchesName_(ev, trimmedName, normalized, nameKey)) return;
+      
+      if (!representativeTitle) {
+        representativeTitle = ev.getTitle();
+      }
       removedLabels.push(formatSlotLabel_(ev.getStartTime()));
       ev.deleteEvent();
     });
@@ -238,7 +261,7 @@ function batchCancel_(displayName, eventIdList) {
       return { ok:false, message:'取消できる予約が見つかりませんでした。' };
     }
 
-    sendSummaryMail_('取消', trimmedName, removedLabels);
+    sendSummaryMail_('取消', trimmedName, removedLabels, representativeTitle, userEmail);
     var overview = overview_(trimmedName, CONFIG.OVERVIEW_DAYS);
     overview.message = removedLabels.length + '件の予約を取り消しました。';
     return overview;
@@ -318,12 +341,19 @@ function eventMatchesName_(ev, displayName, normalized, nameKey) {
   return false;
 }
 
-function buildDescription_(displayName, normalized, nameKey) {
-  return [
+function buildDescription_(displayName, normalized, nameKey, classDetails) {
+  var details = [
     CONFIG.NAME_KEY_PREFIX + nameKey,
     '予約者: ' + displayName,
     '登録: ' + fmtJP_(new Date())
-  ].join('\n');
+  ];
+  if (classDetails) {
+    details.push('---');
+    if (classDetails.category) details.push('カテゴリ: ' + classDetails.category);
+    if (classDetails.course) details.push('コース: ' + classDetails.course);
+    if (classDetails.frequency) details.push('頻度: ' + classDetails.frequency);
+  }
+  return details.join('\n');
 }
 
 function buildMonthSkeleton_(startDate, rangeDays) {
@@ -402,17 +432,38 @@ function fetchLimitOverrides_(nameKey) {
   }
 }
 
-function sendSummaryMail_(type, displayName, labels) {
+function sendSummaryMail_(type, displayName, labels, eventTitle, userEmail) {
   if (!CONFIG.TEACHER_EMAIL) return;
-  const subj = `【${type}】${displayName} ${labels.length}件`;
-  const body = [
+
+  const subject = `【TERACO予約】${type}確定のお知らせ (${displayName}様)`;
+
+  // Notify teacher
+  const teacherBody = [
     `${displayName} さんの予約が${type}されました。`,
     '',
+    `件名: ${eventTitle}`,
+    '日時:',
     labels.map(function(t){ return '・' + t; }).join('\n'),
     '',
     'カレンダー: ' + CONFIG.CALENDAR_ID
   ].join('\n');
-  GmailApp.sendEmail(CONFIG.TEACHER_EMAIL, subj, body, { name: 'TERACO予約' });
+  GmailApp.sendEmail(CONFIG.TEACHER_EMAIL, subject, teacherBody, { name: 'TERACO予約' });
+
+  // Notify user if email is available
+  if (userEmail) {
+    const userBody = [
+      `${displayName}様`,
+      '',
+      `TERACOラボのご予約が${type}されましたので、お知らせいたします。`,
+      '',
+      `件名: ${eventTitle}`,
+      '日時:',
+      labels.map(function(t){ return '・' + t; }).join('\n'),
+      '',
+      'ご不明な点がございましたら、お気軽にお問い合わせください。'
+    ].join('\n');
+    GmailApp.sendEmail(userEmail, subject, userBody, { name: 'TERACO予約' });
+  }
 }
 
 // Utility functions
