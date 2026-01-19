@@ -462,6 +462,8 @@ function buildMonthCalendar(monthKey) {
 
     if (!slots.length || date < today) {
       cell.classList.add('disabled');
+    } else if (date.getDay() === 0 || date.getDay() === 6) { // Disable weekends
+      cell.classList.add('disabled');
     } else if (!hasSelectable) {
       cell.classList.add('full');
     } else {
@@ -1032,5 +1034,5 @@ function buildMockSlots(days) {
 }
 
 // Initial Load
-// checkSavedSession();
+checkSavedSession();
 loadOverview({ preserveSelection: false });
