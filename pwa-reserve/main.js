@@ -192,6 +192,7 @@ function initClassSelection() {
     btn.addEventListener('click', () => {
       updateToggleUI(document.getElementById('courseSmartphone'), btn.dataset.value);
       updateCourseSelection(btn.dataset.value);
+      renderAll();
     });
   });
 
@@ -200,6 +201,7 @@ function initClassSelection() {
     btn.addEventListener('click', () => {
       updateToggleUI(document.getElementById('coursePcAi'), btn.dataset.value);
       updateCourseSelection(btn.dataset.value);
+      renderAll();
     });
   });
 
@@ -441,6 +443,16 @@ function buildMonthCalendar(monthKey) {
     const dayKey = formatDayKey(date);
     const cell = document.createElement('td');
     cell.textContent = String(day);
+
+    // Add restriction for private lessons (Mon, Tue, Thu only)
+    if (state.classSelection.course === 'private') {
+      const dayOfWeek = date.getDay(); // 0=Sun, 1=Mon, 2=Tue, 3=Wed, 4=Thu, 5=Fri, 6=Sat
+      if (![1, 2, 4].includes(dayOfWeek)) {
+        cell.classList.add('disabled');
+        row.appendChild(cell);
+        continue;
+      }
+    }
 
     const slots = state.daySlots.get(dayKey) || [];
     // Check if there are any available slots for this day
@@ -850,15 +862,16 @@ async function submitSelection() {
 
   // Get class selection details
   const { category, course, frequency } = state.classSelection;
-  const categoryLabel = category === 'smartphone' ? 'スマホ' : 'パソコンAI';
-  let courseLabel = '';
-  if (category === 'smartphone') {
-    courseLabel = course === 'intro' ? '入門まなび(45分)' : '応用てらこ(90分)';
-  } else {
-    courseLabel = course === 'basic' ? '基礎ベーシック(45分)' : '実践アドバンス(90分)';
-  }
-  const freqLabel = `月${frequency}回`;
-
+      const categoryLabel = category === 'smartphone' ? 'スマホ' : 'パソコンAI';
+      let courseLabel = '';
+      if (course === 'private') {
+        courseLabel = '個人レッスン(50分)';
+      } else if (category === 'smartphone') {
+        courseLabel = course === 'intro' ? '入門まなび(45分)' : '応用てらこ(90分)';
+      } else {
+        courseLabel = course === 'basic' ? '基礎ベーシック(45分)' : '実践アドバンス(90分)';
+      }
+      const freqLabel = `月${frequency}回`;
   const confirmMsg = `${state.displayName}様\n\n` +
     `【選択クラス】\n${categoryLabel} / ${courseLabel} / ${freqLabel}\n\n` +
     `${count}件の予約を確定します。よろしいですか？`;
