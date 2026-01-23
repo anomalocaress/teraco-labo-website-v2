@@ -1,4 +1,4 @@
-const API_BASE = 'https://script.google.com/macros/s/AKfycbyPKTDUEEDBQU4jYRVFK5jNgJ6LOWlQKUn4M0pWmEkBvV1BjjJ7OYRiuC6TM1s7g_Ut/exec';
+const API_BASE = 'https://script.google.com/macros/s/AKfycbwtnf3Q_DaXcDb4MfJjha6gjJKOM-uK4e_Vc9p5_8AsMThVdY1Dm1zB7vbaUFREzH1u/exec';
 
 const nameInput = document.getElementById('nameInput');
 const calendarWrap = document.getElementById('calendarWrap');
