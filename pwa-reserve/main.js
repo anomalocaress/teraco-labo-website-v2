@@ -311,6 +311,11 @@ async function loadOverview({ preserveSelection }) {
     applySlotList(buildMockSlots(90));
   }
 
+  // Render calendar first for better UX
+  if (!state.slots[0]?.reserved_count_updated) {
+    renderAll();
+  }
+
   // 2. Fetch Data from GAS (Always fetch to get slot counts)
   try {
     const url = new URL(API_BASE);
@@ -318,14 +323,19 @@ async function loadOverview({ preserveSelection }) {
       url.searchParams.append('name', state.displayName);
     }
 
-    // Show loading if it's the first load or explicit check
-    // We check a flag on the first slot to see if we've updated counts yet
+    // Show loading only on first load
     const firstSlot = state.slots[0];
-    if (firstSlot && !firstSlot.reserved_count_updated) {
-      setLoading(true, '最新の予約状況を読み込んでいます...');
+    const isFirstLoad = firstSlot && !firstSlot.reserved_count_updated;
+    if (isFirstLoad) {
+      setLoading(true, '予約状況を確認しています...');
     }
 
-    const res = await fetch(url.toString());
+    // Add timeout to prevent infinite loading
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+
+    const res = await fetch(url.toString(), { signal: controller.signal });
+    clearTimeout(timeoutId);
     const data = await res.json();
 
     if (data.existing) {
@@ -358,7 +368,11 @@ async function loadOverview({ preserveSelection }) {
     }
   } catch (e) {
     console.error("Failed to fetch reservations:", e);
-    // showMessage('予約情報の取得に失敗しました。');
+    if (e.name === 'AbortError') {
+      console.warn('Request timeout after 10 seconds');
+      showMessage('通信がタイムアウトしました。再読み込みしてください。');
+    }
+    // Continue to render with mock data
   } finally {
     setLoading(false);
   }
