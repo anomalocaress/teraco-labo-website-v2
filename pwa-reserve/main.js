@@ -922,12 +922,24 @@ async function submitSelection() {
     // Real API Call
     const res = await fetch(API_BASE, {
       method: 'POST',
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // GAS requires text/plain for CORS sometimes
-      body: JSON.stringify(payload)
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(payload),
+      redirect: 'follow' // Explicitly follow redirects
     });
+
+    // Check response status
+    if (!res.ok) {
+      console.error('HTTP Error:', res.status, res.statusText);
+      const text = await res.text();
+      console.error('Response body:', text.substring(0, 500));
+      alert(`サーバーエラーが発生しました（ステータス: ${res.status}）。詳細はコンソールを確認してください。`);
+      return;
+    }
+
     const data = await res.json();
 
     if (!data.ok) {
+      console.error('API Error:', data);
       alert(data.message || '予約の登録に失敗しました。');
       return;
     }
@@ -955,33 +967,38 @@ async function batchCancelReservations(items) {
   try {
     setLoading(true, '予約を取り消しています...');
 
-    // Process sequentially or parallel? Parallel is faster but might hit rate limits.
-    // Let's do parallel for better UX, GAS should handle it with lock (wait).
-    // Or we can update GAS to handle batch cancel, but for now let's loop fetch.
+    // Use batch_cancel action
+    const eventIds = items.map(item => item.event_id);
 
-    const promises = items.map(item => {
-      return fetch(API_BASE, {
-        method: 'POST',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify({
-          action: 'cancel',
-          slot_id: item.slot_id,
-          event_id: item.event_id,
-          name: state.displayName
-        })
-      }).then(res => res.json());
+    const res = await fetch(API_BASE, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({
+        action: 'batch_cancel',
+        name: state.displayName,
+        email: state.googleUser ? state.googleUser.email : null,
+        event_ids: eventIds
+      }),
+      redirect: 'follow'
     });
 
-    const results = await Promise.all(promises);
-
-    // Check results
-    const failures = results.filter(r => !r.ok);
-    if (failures.length > 0) {
-      console.error("Some cancellations failed", failures);
-      alert('一部の予約の取り消しに失敗しました。');
-    } else {
-      alert('予約を取り消しました。');
+    if (!res.ok) {
+      console.error('HTTP Error:', res.status, res.statusText);
+      const text = await res.text();
+      console.error('Response body:', text.substring(0, 500));
+      alert(`サーバーエラーが発生しました（ステータス: ${res.status}）`);
+      return;
     }
+
+    const data = await res.json();
+
+    if (!data.ok) {
+      console.error('API Error:', data);
+      alert(data.message || '予約の取り消しに失敗しました。');
+      return;
+    }
+
+    alert(data.message || '予約を取り消しました。');
 
     // Reload
     await loadOverview({ preserveSelection: true });

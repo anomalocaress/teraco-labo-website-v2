@@ -41,6 +41,13 @@ function doGet(e) {
 
 function doPost(e) {
   setScriptTZ();
+
+  // Handle OPTIONS request for CORS preflight
+  if (e && e.parameter && e.parameter.method === 'OPTIONS') {
+    return ContentService.createTextOutput('')
+      .setMimeType(ContentService.MimeType.TEXT);
+  }
+
   let body = {};
   try {
     if (e && e.postData && e.postData.contents) {
@@ -477,7 +484,8 @@ function sendSummaryMail_(type, displayName, labels, eventTitle, userEmail) {
 
 // Utility functions
 function jsonOutput(obj) {
-  return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(ContentService.MimeType.JSON);
+  return ContentService.createTextOutput(JSON.stringify(obj))
+    .setMimeType(ContentService.MimeType.JSON);
 }
 
 function setScriptTZ() {
