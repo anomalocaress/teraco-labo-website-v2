@@ -13,7 +13,7 @@ const CONFIG = {
   CAPACITY: 8,
   FIXED_TIMES: ['10:00','14:00','16:00','18:00'],
   ALLOWED_WEEKDAYS: [0,1,2,3,4,5,6],
-  OVERVIEW_DAYS: 60,      // 何日先まで表示するか
+  OVERVIEW_DAYS: 30,      // 何日先まで表示するか（パフォーマンス改善）
   MONTHLY_LIMIT: 8,        // 1か月あたりの予約上限
   NAME_KEY_PREFIX: 'NameKey:',
   LIMIT_SHEET_ID: '',      // 任意：個別上限管理用スプレッドシート

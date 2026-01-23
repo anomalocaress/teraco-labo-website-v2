@@ -308,7 +308,7 @@ async function checkReservations() {
 async function loadOverview({ preserveSelection }) {
   // 1. Initialize Slots (Local Mock for Grid)
   if (!state.slots.length) {
-    applySlotList(buildMockSlots(90));
+    applySlotList(buildMockSlots(30));
   }
 
   // Render calendar first for better UX
@@ -330,12 +330,21 @@ async function loadOverview({ preserveSelection }) {
       setLoading(true, '予約状況を確認しています...');
     }
 
-    // Add timeout to prevent infinite loading
+    // Add timeout to prevent infinite loading (30 seconds for GAS cold start)
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+    const timeoutId = setTimeout(() => controller.abort(), 30000);
 
-    const res = await fetch(url.toString(), { signal: controller.signal });
+    const res = await fetch(url.toString(), {
+      signal: controller.signal,
+      mode: 'cors',
+      cache: 'no-cache'
+    });
     clearTimeout(timeoutId);
+
+    if (!res.ok) {
+      throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+    }
+
     const data = await res.json();
 
     if (data.existing) {
@@ -369,10 +378,12 @@ async function loadOverview({ preserveSelection }) {
   } catch (e) {
     console.error("Failed to fetch reservations:", e);
     if (e.name === 'AbortError') {
-      console.warn('Request timeout after 10 seconds');
-      showMessage('通信がタイムアウトしました。再読み込みしてください。');
+      console.warn('Request timeout after 30 seconds');
+      showMessage('サーバーへの接続がタイムアウトしました。Google Apps Scriptの初回起動には時間がかかることがあります。');
+    } else {
+      showMessage('予約データの読み込みに失敗しました: ' + e.message);
     }
-    // Continue to render with mock data
+    // Continue to render with mock data even on error
   } finally {
     setLoading(false);
   }
@@ -383,7 +394,7 @@ async function loadOverview({ preserveSelection }) {
 function applySlotList(slots) {
   let list = Array.isArray(slots) ? slots : [];
   if (!list.length) {
-    list = buildMockSlots(90);
+    list = buildMockSlots(30);
   }
   state.slots = list;
   state.slotIndex = new Map(state.slots.map(slot => [slot.slot_id, slot]));
