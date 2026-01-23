@@ -1,4 +1,4 @@
-const API_BASE = 'https://script.google.com/macros/s/AKfycbwPwWN7BcggcZ33ajLsobq3xY82NT8mGtXuxN86AO5PbxFEQzD-G-BskrrtlLtz_Zs/exec';
+const API_BASE = 'https://script.google.com/macros/s/AKfycbxFZ0vuPIXYkiL5CeXem3VtjMOGCf9szefIlX5xcHrzrzrN3M1KgxOzh849Nx0B43ka/exec';
 
 const nameInput = document.getElementById('nameInput');
 const calendarWrap = document.getElementById('calendarWrap');
@@ -386,6 +386,20 @@ function renderAll() {
   renderExisting();
 }
 
+function renderCurrentDate() {
+  const el = document.getElementById('current-date-display');
+  if (!el) return;
+  const today = new Date();
+  const seconds = today.getSeconds();
+  const colonVisible = (seconds % 2 === 0); // true for visible, false for hidden
+
+  const datePart = `${today.getFullYear()}年${today.getMonth() + 1}月${today.getDate()}日(${['日', '月', '火', '水', '木', '金', '土'][today.getDay()]})`;
+  const hours = String(today.getHours()).padStart(2, '0');
+  const minutes = String(today.getMinutes()).padStart(2, '0');
+
+  el.innerHTML = `現在日時: ${datePart} ${hours}<span style="visibility: ${colonVisible ? 'visible' : 'hidden'};">:</span>${minutes}`;
+}
+
 function renderCalendar() {
   // Ensure slots exist
   if (!state.slots.length) {
@@ -460,8 +474,11 @@ function buildMonthCalendar(monthKey) {
     const hasSelected = Array.from(state.selected.values()).some(slot => slot.day_key === dayKey);
     const hasReservation = state.existing.some(ev => (state.slotIndex.get(ev.slot_id)?.day_key || ev.iso.slice(0, 10)) === dayKey);
 
-    if (!slots.length || date < today) {
+    if (!slots.length || date <= today) {
       cell.classList.add('disabled');
+      cell.addEventListener('click', () => {
+        alert('予約・修正は講座前日の17:00までにお願いいたします。なお当日の変更はお受け付けできません。お急ぎの場合は教室管理者に直接ご連絡ください。');
+      });
     } else if (date.getDay() === 0 || date.getDay() === 6) { // Disable weekends
       cell.classList.add('disabled');
     } else if (!hasSelectable) {
@@ -491,19 +508,18 @@ function buildMonthCalendar(monthKey) {
 
         if (state.existingSet.has(slot.slot_id)) {
           // Already reserved by this user
-          text += ` (済) (あと${remaining}人)`;
+          text += ` (済) (${slot.reserved_count}人)`;
           disabled = true;
         } else if (slot.reserved_count >= slot.capacity) {
           text += ' (満)';
           disabled = true;
         } else if (state.selected.has(slot.slot_id)) {
           // Selected by user currently
-          // Show remaining count AFTER this user's potential reservation
-          const remainingAfter = Math.max(0, remaining - 1);
-          text += ` (選) (あと${remainingAfter}人)`;
+          // Show reserved count
+          text += ` (選) (${slot.reserved_count}人)`;
           disabled = true;
         } else {
-          text += ` (あと${remaining}人)`;
+          text += ` (${slot.reserved_count}人)`;
         }
 
         option.textContent = text;
@@ -1036,3 +1052,5 @@ function buildMockSlots(days) {
 // Initial Load
 checkSavedSession();
 loadOverview({ preserveSelection: false });
+renderCurrentDate(); // Initial call
+setInterval(renderCurrentDate, 1000);
