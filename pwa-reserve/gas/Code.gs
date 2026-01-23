@@ -147,6 +147,7 @@ function batchReserve_(displayName, slotIdList, classDetails, userEmail, addToCa
     const limitOverrides = fetchLimitOverrides_(nameKey);
     const prepared = [];
     const seen = {};
+    const skipped = []; // Track skipped slots for debugging
 
     // Generate rich title
     let eventTitle = CONFIG.TITLE_PREFIX + ' ' + trimmedName;
@@ -157,6 +158,8 @@ function batchReserve_(displayName, slotIdList, classDetails, userEmail, addToCa
         eventTitle = `【${classDetails.category}】${trimmedName}`;
       }
     }
+
+    Logger.log('予約処理開始: ' + trimmedName + ', スロット数: ' + slotIds.length);
 
     for (var i = 0; i < slotIds.length; i++) {
       var slotId = slotIds[i];
@@ -178,6 +181,8 @@ function batchReserve_(displayName, slotIdList, classDetails, userEmail, addToCa
       // 既に同じ日時が予約済みならスキップ
       var already = existing.find(function(ev){ return ev.slot_id === String(slotId); });
       if (already) {
+        skipped.push({ slot_id: String(slotId), reason: '既に予約済み', event_id: already.event_id });
+        Logger.log('スキップ: ' + formatSlotLabel_(startTime) + ' - 既に予約済み');
         continue;
       }
 
@@ -188,7 +193,10 @@ function batchReserve_(displayName, slotIdList, classDetails, userEmail, addToCa
 
       var endTime = new Date(startTime.getTime() + CONFIG.SLOT_MINUTES * 60 * 1000);
       var reservedCount = countOverlaps_(cal, startTime, endTime);
+      Logger.log('スロット確認: ' + formatSlotLabel_(startTime) + ' - 予約数: ' + reservedCount + '/' + CONFIG.CAPACITY);
       if (reservedCount >= CONFIG.CAPACITY) {
+        skipped.push({ slot_id: String(slotId), reason: '満席', reserved: reservedCount, capacity: CONFIG.CAPACITY });
+        Logger.log('スキップ: ' + formatSlotLabel_(startTime) + ' - 満席');
         return { ok:false, message: formatSlotLabel_(startTime) + 'は満席になりました。' };
       }
 
@@ -202,7 +210,13 @@ function batchReserve_(displayName, slotIdList, classDetails, userEmail, addToCa
     }
 
     if (!prepared.length) {
-      return { ok:false, message:'新しく予約できる枠がありません（すでに予約済みの可能性があります）。' };
+      Logger.log('予約できる枠がありません。スキップ数: ' + skipped.length);
+      skipped.forEach(function(s) {
+        Logger.log('  - ' + s.slot_id + ': ' + s.reason);
+      });
+      var detailMsg = skipped.length > 0 ?
+        ' (理由: ' + skipped.map(function(s){ return s.reason; }).join(', ') + ')' : '';
+      return { ok:false, message:'新しく予約できる枠がありません' + detailMsg };
     }
 
     var created = [];

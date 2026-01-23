@@ -931,18 +931,25 @@ async function submitSelection() {
 
     const addToCalendar = document.getElementById('addToCalendar').checked;
 
+    const selectedSlots = Array.from(state.selected.keys());
+    console.log('🔍 予約しようとしているスロット:', selectedSlots);
+    console.log('🔍 既存の予約:', Array.from(state.existingSet));
+    console.log('🔍 名前:', state.displayName);
+
     const payload = {
       action: 'batch_reserve',
       name: state.displayName,
       email: state.googleUser ? state.googleUser.email : null, // Send email if logged in
       add_to_calendar: addToCalendar, // User preference
-      slots: Array.from(state.selected.keys()),
+      slots: selectedSlots,
       class_details: {
         category: categoryLabel,
         course: courseLabel,
         frequency: freqLabel
       }
     };
+
+    console.log('📤 送信するペイロード:', payload);
 
     // Real API Call
     const res = await fetch(API_BASE, {
@@ -963,8 +970,15 @@ async function submitSelection() {
 
     const data = await res.json();
 
+    console.log('📥 GASからのレスポンス:', data);
+
     if (!data.ok) {
-      console.error('API Error:', data);
+      console.error('❌ API Error:', data);
+      console.error('エラー詳細:', {
+        message: data.message,
+        existing: data.existing?.length || 0,
+        slots: data.slots?.length || 0
+      });
       alert(data.message || '予約の登録に失敗しました。');
       return;
     }
