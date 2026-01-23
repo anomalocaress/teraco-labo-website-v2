@@ -44,9 +44,11 @@ function doPost(e) {
   let body = {};
   try {
     if (e && e.postData && e.postData.contents) {
-      if (/application\/json/i.test(e.postData.type)) {
+      // Try to parse as JSON first (works for both application/json and text/plain with JSON content)
+      try {
         body = JSON.parse(e.postData.contents);
-      } else {
+      } catch (parseErr) {
+        // If JSON parse fails, try to use parameters
         body = Object.assign({}, e.parameter || {});
       }
     }
@@ -127,6 +129,7 @@ function batchReserve_(displayName, slotIdList, classDetails, userEmail, addToCa
     lock.waitLock(30000);
 
     const start = startOfDay_(new Date());
+    const tomorrow = addDays_(start, 1);
     const searchEnd = addDays_(start, CONFIG.OVERVIEW_DAYS + 31);
     const existing = getReservationsByName_(cal, trimmedName, normalized, nameKey, start, searchEnd);
     const countsByMonth = {};
@@ -157,8 +160,8 @@ function batchReserve_(displayName, slotIdList, classDetails, userEmail, addToCa
       if (isNaN(startTime.getTime())) {
         return { ok:false, message:'日時の指定に誤りがあります。' };
       }
-      if (startTime < start) {
-        return { ok:false, message:'過去の日時は選択できません。' };
+      if (startTime < tomorrow) {
+        return { ok:false, message:'当日および過去の講座は予約できません。' };
       }
 
       var monthKey = monthKey_(startTime);
@@ -438,15 +441,21 @@ function sendSummaryMail_(type, displayName, labels, eventTitle, userEmail) {
   const subject = `【TERACO予約】${type}確定のお知らせ (${displayName}様)`;
 
   // Notify teacher
-  const teacherBody = [
+  const teacherBodyParts = [
     `${displayName} さんの予約が${type}されました。`,
-    '',
+    ''
+  ];
+  if (userEmail) {
+    teacherBodyParts.push(`連絡先: ${userEmail}`, '');
+  }
+  teacherBodyParts.push(
     `件名: ${eventTitle}`,
     '日時:',
     labels.map(function(t){ return '・' + t; }).join('\n'),
     '',
     'カレンダー: ' + CONFIG.CALENDAR_ID
-  ].join('\n');
+  );
+  const teacherBody = teacherBodyParts.join('\n');
   GmailApp.sendEmail(CONFIG.TEACHER_EMAIL, subject, teacherBody, { name: 'TERACO予約' });
 
   // Notify user if email is available
