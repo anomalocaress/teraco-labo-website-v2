@@ -1,582 +1,418 @@
-// TERACO 予約 PWA 用 Google Apps Script バックエンド（多枠対応版）
-//  - 一覧:        doGet?action=overview&name=藤崎
-//  - 予約まとめ:  POST action=batch_reserve  { name, slots: [slot_id,...] }
-//  - 取消まとめ:  POST action=batch_cancel  { name, event_ids: [id,...] }
+// TERACO予約システム v28
 
-const CONFIG = {
+var CONFIG = {
   TIMEZONE: 'Asia/Tokyo',
-  CALENDAR_ID: 'primary', // 先生の予定を入れるカレンダー
+  CALENDAR_ID: 'primary',
   TEACHER_EMAIL: 'fujisaki@teraco-labo.com',
   TITLE_PREFIX: 'TERACO予約',
   LOCATION: 'TERACOラボ',
   SLOT_MINUTES: 45,
   CAPACITY: 8,
-  FIXED_TIMES: ['10:00','14:00','16:00','18:00'],
-  ALLOWED_WEEKDAYS: [0,1,2,3,4,5,6],
-  OVERVIEW_DAYS: 30,      // 何日先まで表示するか（パフォーマンス改善）
-  MONTHLY_LIMIT: 8,        // 1か月あたりの予約上限
-  NAME_KEY_PREFIX: 'NameKey:',
-  LIMIT_SHEET_ID: '',      // 任意：個別上限管理用スプレッドシート
-  LIMIT_RANGE: 'Limits!A:C'
+  FIXED_TIMES: ['10:00', '14:00', '16:00', '18:00'],
+  OVERVIEW_DAYS: 60,
+  MONTHLY_LIMIT: 8
 };
 
 function doGet(e) {
-  setScriptTZ();
-  const p = (e && e.parameter) || {};
-  const action = p.action || 'overview';
-  const nameInput = p.name || '';
-  const days = Number(p.days || CONFIG.OVERVIEW_DAYS);
+  var p = (e && e.parameter) || {};
+  var action = p.action || 'overview';
+
+  if (action === 'version') {
+    return jsonOut({ok: true, version: 'v28', timestamp: new Date().toISOString()});
+  }
   if (action === 'overview') {
-    const overview = overview_(nameInput, days);
-    return jsonOutput(overview);
+    return jsonOut(getOverview(p.name || '', Number(p.days) || CONFIG.OVERVIEW_DAYS));
   }
-  if (action === 'list') {
-    const cal = CalendarApp.getCalendarById(CONFIG.CALENDAR_ID);
-    const start = startOfDay_(new Date());
-    const slots = buildSlots_(cal, start, days);
-    return jsonOutput({ ok: true, slots: slots });
+  if (action === 'test_email') {
+    return jsonOut(testEmail());
   }
-  return jsonOutput({ ok: true, message: 'ok' });
+  return jsonOut({ok: true});
 }
 
 function doPost(e) {
-  setScriptTZ();
-
-  // Handle OPTIONS request for CORS preflight
-  if (e && e.parameter && e.parameter.method === 'OPTIONS') {
-    return ContentService.createTextOutput('')
-      .setMimeType(ContentService.MimeType.TEXT);
-  }
-
-  let body = {};
+  var body = {};
   try {
-    if (e && e.postData && e.postData.contents) {
-      // Try to parse as JSON first (works for both application/json and text/plain with JSON content)
-      try {
-        body = JSON.parse(e.postData.contents);
-      } catch (parseErr) {
-        // If JSON parse fails, try to use parameters
-        body = Object.assign({}, e.parameter || {});
-      }
-    }
+    body = JSON.parse(e.postData.contents);
   } catch (err) {
-    return jsonOutput({ ok: false, message: 'リクエスト形式が正しくありません。' });
+    return jsonOut({ok: false, message: 'JSONエラー'});
   }
 
-  const action = body.action || (e && e.parameter && e.parameter.action);
-  if (action === 'batch_reserve') {
-    const name = String(body.name || '').trim();
-    const slots = Array.isArray(body.slots) ? body.slots : [];
-    const classDetails = body.class_details || {};
-    const userEmail = body.email || null;
-    const addToCalendar = body.add_to_calendar || false;
-    const res = batchReserve_(name, slots, classDetails, userEmail, addToCalendar);
-    return jsonOutput(res);
+  if (body.action === 'batch_reserve') {
+    return jsonOut(reserve(body.name, body.slots, body.class_details, body.email));
   }
-  if (action === 'batch_cancel') {
-    const name = String(body.name || '').trim();
-    const eventIds = Array.isArray(body.event_ids) ? body.event_ids : [];
-    const userEmail = body.email || null;
-    const res = batchCancel_(name, eventIds, userEmail);
-    return jsonOutput(res);
+  if (body.action === 'batch_cancel') {
+    return jsonOut(cancel(body.name, body.event_ids, body.email));
   }
-  return jsonOutput({ ok: false, message: '未対応の操作です。' });
+  return jsonOut({ok: false, message: '不明なアクション'});
 }
 
-// 概要取得
-function overview_(displayName, days) {
-  const cal = CalendarApp.getCalendarById(CONFIG.CALENDAR_ID);
-  const start = startOfDay_(new Date());
-  const rangeDays = Math.max(1, days || CONFIG.OVERVIEW_DAYS);
-  const slots = buildSlots_(cal, start, rangeDays);
+function testEmail() {
+  try {
+    GmailApp.sendEmail(CONFIG.TEACHER_EMAIL, 'テスト', 'テストメール\n' + new Date());
+    return {ok: true, message: 'メール送信成功'};
+  } catch (err) {
+    return {ok: false, message: err.message};
+  }
+}
 
-  const trimmedName = String(displayName || '').trim();
-  if (!trimmedName) {
-    return {
-      ok: true,
-      name: '',
-      months: buildMonthSkeleton_(start, rangeDays),
-      slots: slots,
-      existing: []
-    };
+function getOverview(name, days) {
+  var cal = CalendarApp.getCalendarById(CONFIG.CALENDAR_ID);
+  var start = todayStart();
+  var slots = buildSlots(cal, start, days);
+
+  if (!name || !name.trim()) {
+    return {ok: true, name: '', slots: slots, existing: [], months: getMonths(start, days)};
   }
 
-  const normalized = normalizeName_(trimmedName);
-  const nameKey = getNameKey_(normalized);
-  const searchEnd = addDays_(start, rangeDays + 31); // 翌月分もカバー
-  const existing = getReservationsByName_(cal, trimmedName, normalized, nameKey, start, searchEnd);
-  const months = buildMonthSummary_(start, rangeDays, existing, nameKey);
+  var trimmed = name.trim();
+  var end = addDays(start, days + 31);
+  var existing = findUserEvents(cal, trimmed, start, end);
 
   return {
     ok: true,
-    name: trimmedName,
-    normalized_name: normalized,
-    name_key: nameKey,
-    months: months,
+    name: trimmed,
     slots: slots,
     existing: existing,
-    limit_default: CONFIG.MONTHLY_LIMIT
+    months: getMonthsWithCount(start, days, existing)
   };
 }
 
-// 一括予約
-function batchReserve_(displayName, slotIdList, classDetails, userEmail, addToCalendar) {
-  const trimmedName = String(displayName || '').trim();
-  if (!trimmedName) return { ok: false, message: 'お名前を入力してください。' };
-  const normalized = normalizeName_(trimmedName);
-  const nameKey = getNameKey_(normalized);
+function reserve(name, slotIds, classDetails, email) {
+  if (!name || !name.trim()) {
+    return {ok: false, message: 'お名前を入力してください'};
+  }
+  if (!slotIds || !slotIds.length) {
+    return {ok: false, message: '日時を選択してください'};
+  }
 
-  const slotIds = (slotIdList || []).map(function(id){ return Number(id); })
-    .filter(function(n){ return !isNaN(n); });
-  if (!slotIds.length) return { ok: false, message: '予約したい日時を選択してください。' };
+  var userName = name.trim();
+  var cal = CalendarApp.getCalendarById(CONFIG.CALENDAR_ID);
+  var lock = LockService.getScriptLock();
 
-  const cal = CalendarApp.getCalendarById(CONFIG.CALENDAR_ID);
-  const lock = LockService.getScriptLock();
+  if (!lock.tryLock(30000)) {
+    return {ok: false, message: 'サーバー混雑中'};
+  }
+
   try {
-    lock.waitLock(30000);
-
-    const start = startOfDay_(new Date());
-    const tomorrow = addDays_(start, 1);
-    const searchEnd = addDays_(start, CONFIG.OVERVIEW_DAYS + 31);
-    const existing = getReservationsByName_(cal, trimmedName, normalized, nameKey, start, searchEnd);
-    const countsByMonth = {};
-    existing.forEach(function(ev){
-      countsByMonth[ev.month_key] = (countsByMonth[ev.month_key] || 0) + 1;
-    });
-
-    const limitOverrides = fetchLimitOverrides_(nameKey);
-    const prepared = [];
-    const seen = {};
-    const skipped = []; // Track skipped slots for debugging
-
-    // Generate rich title
-    let eventTitle = CONFIG.TITLE_PREFIX + ' ' + trimmedName;
-    if (classDetails && classDetails.category) {
-      if (classDetails.course) {
-        eventTitle = `【${classDetails.category} / ${classDetails.course}】${trimmedName}`;
-      } else {
-        eventTitle = `【${classDetails.category}】${trimmedName}`;
-      }
-    }
-
-    Logger.log('予約処理開始: ' + trimmedName + ', スロット数: ' + slotIds.length);
+    var title = makeTitle(classDetails);
+    var minutes = getMinutes(classDetails);
+    var created = [];
 
     for (var i = 0; i < slotIds.length; i++) {
-      var slotId = slotIds[i];
-      if (seen[slotId]) continue; // 重複選択は無視
-      seen[slotId] = true;
+      var startTime = new Date(Number(slotIds[i]));
+      if (isNaN(startTime.getTime())) continue;
+      if (startTime <= addDays(todayStart(), 1)) continue;
 
-      var startTime = new Date(slotId);
-      if (isNaN(startTime.getTime())) {
-        return { ok:false, message:'日時の指定に誤りがあります。' };
-      }
-      if (startTime < tomorrow) {
-        return { ok:false, message:'当日および過去の講座は予約できません。' };
-      }
+      var endTime = new Date(startTime.getTime() + minutes * 60000);
+      var existing = findEventAt(cal, startTime, title);
 
-      var monthKey = monthKey_(startTime);
-      var limit = limitOverrides[monthKey] || CONFIG.MONTHLY_LIMIT;
-      var currentCount = countsByMonth[monthKey] || 0;
-
-      // 既に同じ日時が予約済みならスキップ
-      var already = existing.find(function(ev){ return ev.slot_id === String(slotId); });
-      if (already) {
-        skipped.push({ slot_id: String(slotId), reason: '既に予約済み', event_id: already.event_id });
-        Logger.log('スキップ: ' + formatSlotLabel_(startTime) + ' - 既に予約済み');
-        continue;
-      }
-
-      if (currentCount + 1 > limit) {
-        var remain = Math.max(0, limit - currentCount);
-        return { ok:false, message: formatMonthLabel_(monthKey) + 'はあと' + remain + '件まで予約できます。' };
-      }
-
-      var endTime = new Date(startTime.getTime() + CONFIG.SLOT_MINUTES * 60 * 1000);
-      var reservedCount = countOverlaps_(cal, startTime, endTime);
-      Logger.log('スロット確認: ' + formatSlotLabel_(startTime) + ' - 予約数: ' + reservedCount + '/' + CONFIG.CAPACITY);
-      if (reservedCount >= CONFIG.CAPACITY) {
-        skipped.push({ slot_id: String(slotId), reason: '満席', reserved: reservedCount, capacity: CONFIG.CAPACITY });
-        Logger.log('スキップ: ' + formatSlotLabel_(startTime) + ' - 満席');
-        return { ok:false, message: formatSlotLabel_(startTime) + 'は満席になりました。' };
-      }
-
-      prepared.push({
-        slot_id: String(slotId),
-        start: startTime,
-        end: endTime,
-        month_key: monthKey
-      });
-      countsByMonth[monthKey] = currentCount + 1;
-    }
-
-    if (!prepared.length) {
-      Logger.log('予約できる枠がありません。スキップ数: ' + skipped.length);
-      skipped.forEach(function(s) {
-        Logger.log('  - ' + s.slot_id + ': ' + s.reason);
-      });
-      var detailMsg = skipped.length > 0 ?
-        ' (理由: ' + skipped.map(function(s){ return s.reason; }).join(', ') + ')' : '';
-      return { ok:false, message:'新しく予約できる枠がありません' + detailMsg };
-    }
-
-    var created = [];
-    try {
-      prepared.forEach(function(item){
-        var desc = buildDescription_(trimmedName, normalized, nameKey, classDetails);
-        var options = {
-          description: desc,
-          location: CONFIG.LOCATION
-        };
-        if (addToCalendar && userEmail) {
-          options.guests = userEmail;
+      if (existing) {
+        var desc = existing.getDescription() || '';
+        Logger.log('v28: 既存イベント発見, 現在の説明: ' + desc);
+        if (!hasName(desc, userName)) {
+          var newDesc = addName(desc, userName);
+          Logger.log('v28: 新しい説明: ' + newDesc);
+          existing.setDescription(newDesc);
         }
-        var ev = cal.createEvent(eventTitle, item.start, item.end, options);
-        created.push({ event: ev, info: item });
-      });
-    } catch (err) {
-      // 差し戻し
-      created.forEach(function(row){ try { row.event.deleteEvent(); } catch (e) {} });
-      return { ok:false, message:'予約の作成に失敗しました。時間をおいて再度お試しください。' };
-    }
-
-    sendSummaryMail_('予約', trimmedName, created.map(function(row){
-      return formatSlotLabel_(row.info.start);
-    }), eventTitle, userEmail);
-
-    var overview = overview_(trimmedName, CONFIG.OVERVIEW_DAYS);
-    overview.message = created.length + '件の予約を登録しました。';
-    return overview;
-
-  } catch (err) {
-    return { ok:false, message:'処理中にエラーが発生しました。' };
-  } finally {
-    try { lock.releaseLock(); } catch (e) {}
-  }
-}
-
-// 一括取消
-function batchCancel_(displayName, eventIdList, userEmail) {
-  const trimmedName = String(displayName || '').trim();
-  if (!trimmedName) return { ok:false, message:'お名前を入力してください。' };
-  const normalized = normalizeName_(trimmedName);
-  const nameKey = getNameKey_(normalized);
-
-  const cal = CalendarApp.getCalendarById(CONFIG.CALENDAR_ID);
-  const lock = LockService.getScriptLock();
-  try {
-    lock.waitLock(30000);
-    const removedLabels = [];
-    let representativeTitle = '';
-
-    (eventIdList || []).forEach(function(eventId){
-      if (!eventId) return;
-      var ev = cal.getEventById(String(eventId));
-      if (!ev) return;
-      if (!eventMatchesName_(ev, trimmedName, normalized, nameKey)) return;
-      
-      if (!representativeTitle) {
-        representativeTitle = ev.getTitle();
+        created.push({event_id: existing.getId(), slot_id: String(slotIds[i]), start: startTime.toISOString()});
+      } else {
+        Logger.log('v28: 新規イベント作成, 説明: ' + userName);
+        var ev = cal.createEvent(title, startTime, endTime, {
+          description: userName,
+          location: CONFIG.LOCATION
+        });
+        created.push({event_id: ev.getId(), slot_id: String(slotIds[i]), start: startTime.toISOString()});
       }
-      removedLabels.push(formatSlotLabel_(ev.getStartTime()));
-      ev.deleteEvent();
-    });
-
-    if (!removedLabels.length) {
-      return { ok:false, message:'取消できる予約が見つかりませんでした。' };
     }
 
-    sendSummaryMail_('取消', trimmedName, removedLabels, representativeTitle, userEmail);
-    var overview = overview_(trimmedName, CONFIG.OVERVIEW_DAYS);
-    overview.message = removedLabels.length + '件の予約を取り消しました。';
-    return overview;
+    if (created.length > 0) {
+      sendNotification('予約', userName, created, title, email);
+    }
 
-  } catch (err) {
-    return { ok:false, message:'取消処理中にエラーが発生しました。' };
+    return {ok: true, message: created.length + '件予約しました', created: created};
+
   } finally {
-    try { lock.releaseLock(); } catch (e) {}
+    lock.releaseLock();
   }
 }
 
-// 空き枠一覧を生成
-function buildSlots_(cal, startDate, rangeDays) {
-  const results = [];
-  const today = new Date();
-  const days = Math.max(1, rangeDays);
-  for (var i = 0; i < days; i++) {
-    var day = addDays_(startDate, i);
-    if (CONFIG.ALLOWED_WEEKDAYS && CONFIG.ALLOWED_WEEKDAYS.indexOf(day.getDay()) === -1) {
-      continue;
+function cancel(name, eventIds, email) {
+  if (!name || !name.trim()) {
+    return {ok: false, message: 'お名前を入力してください'};
+  }
+
+  var userName = name.trim();
+  var cal = CalendarApp.getCalendarById(CONFIG.CALENDAR_ID);
+  var lock = LockService.getScriptLock();
+
+  if (!lock.tryLock(30000)) {
+    return {ok: false, message: 'サーバー混雑中'};
+  }
+
+  try {
+    var removed = [];
+    var title = '';
+
+    for (var i = 0; i < eventIds.length; i++) {
+      var ev = cal.getEventById(eventIds[i]);
+      if (!ev) continue;
+
+      var desc = ev.getDescription() || '';
+      if (!hasName(desc, userName)) continue;
+
+      if (!title) title = ev.getTitle();
+      removed.push({slot_id: String(ev.getStartTime().getTime()), start: ev.getStartTime().toISOString()});
+
+      var newDesc = removeName(desc, userName);
+      if (newDesc.trim()) {
+        ev.setDescription(newDesc);
+      } else {
+        ev.deleteEvent();
+      }
     }
-    CONFIG.FIXED_TIMES.forEach(function(time){
-      var startTime = atTime_(day, time);
-      if (startTime <= today) return; // 過去は除外
-      var endTime = new Date(startTime.getTime() + CONFIG.SLOT_MINUTES * 60 * 1000);
-      var reserved = countOverlaps_(cal, startTime, endTime);
-      results.push({
-        slot_id: String(startTime.getTime()),
-        iso: startTime.toISOString(),
-        day_key: Utilities.formatDate(startTime, CONFIG.TIMEZONE, 'yyyy-MM-dd'),
-        day_label: formatDayLabel_(startTime),
-        start_time: time,
-        end_time: fmtTime_(endTime),
-        month_key: monthKey_(startTime),
-        capacity: CONFIG.CAPACITY,
-        reserved_count: reserved
-      });
-    });
+
+    if (removed.length > 0) {
+      sendNotification('取消', userName, removed, title, email);
+    }
+
+    return {ok: true, message: removed.length + '件取り消しました'};
+
+  } finally {
+    lock.releaseLock();
   }
-  results.sort(function(a,b){ return Number(a.slot_id) - Number(b.slot_id); });
-  return results;
 }
 
-function getReservationsByName_(cal, displayName, normalized, nameKey, start, end) {
-  const events = cal.getEvents(start, end);
-  const list = [];
+function makeTitle(details) {
+  if (!details || !details.category) return CONFIG.TITLE_PREFIX;
+  if (details.course) return details.category + ' ' + details.course;
+  return details.category;
+}
+
+function getMinutes(details) {
+  if (!details || !details.course) return 45;
+  var c = details.course;
+  if (c.indexOf('90') >= 0 || c.indexOf('応用') >= 0 || c.indexOf('アドバンス') >= 0) return 90;
+  if (c.indexOf('50') >= 0 || c.indexOf('個人') >= 0) return 50;
+  return 45;
+}
+
+function findEventAt(cal, startTime, title) {
+  var events = cal.getEvents(new Date(startTime.getTime() - 60000), new Date(startTime.getTime() + 60000));
+  for (var i = 0; i < events.length; i++) {
+    if (events[i].getTitle() === title && events[i].getStartTime().getTime() === startTime.getTime()) {
+      return events[i];
+    }
+  }
+  return null;
+}
+
+function findUserEvents(cal, userName, start, end) {
+  var events = cal.getEvents(start, end);
+  var result = [];
+  var search = normalize(userName);
+
   for (var i = 0; i < events.length; i++) {
     var ev = events[i];
-    if (!eventMatchesName_(ev, displayName, normalized, nameKey)) continue;
-    var st = ev.getStartTime();
-    list.push({
-      event_id: ev.getId(),
-      slot_id: String(st.getTime()),
-      iso: st.toISOString(),
-      label: formatSlotLabel_(st),
-      month_key: monthKey_(st),
-      month_label: formatMonthLabel_(monthKey_(st))
-    });
+    var desc = ev.getDescription() || '';
+    var title = ev.getTitle() || '';
+
+    if (hasName(desc, userName) || normalize(title).indexOf(search) >= 0) {
+      var st = ev.getStartTime();
+      result.push({
+        event_id: ev.getId(),
+        slot_id: String(st.getTime()),
+        start: st.toISOString(),
+        label: formatSlot(st),
+        month_key: monthKey(st)
+      });
+    }
   }
-  list.sort(function(a,b){ return Number(a.slot_id) - Number(b.slot_id); });
-  return list;
+  return result;
 }
 
-function eventMatchesName_(ev, displayName, normalized, nameKey) {
-  const desc = ev.getDescription() || '';
-  if (desc.indexOf(CONFIG.NAME_KEY_PREFIX + nameKey) !== -1) return true;
-
-  // 旧フォーマット互換: 予約者: ○○
-  const match = desc.match(/予約者:\s*(.+)/);
-  if (match && normalizeName_(match[1]) === normalized) return true;
-
-  const title = ev.getTitle() || '';
-  if (title.indexOf(CONFIG.TITLE_PREFIX) === 0) {
-    const rest = title.replace(CONFIG.TITLE_PREFIX, '').trim();
-    if (normalizeName_(rest.replace(/[（）\(\)]/g,'')) === normalized) return true;
+function hasName(desc, userName) {
+  var search = normalize(userName);
+  var lines = desc.split('\n');
+  for (var i = 0; i < lines.length; i++) {
+    var line = lines[i].trim();
+    if (!line) continue;
+    if (normalize(line) === search) return true;
+    if (normalize(line).indexOf(search) >= 0) return true;
   }
   return false;
 }
 
-function buildDescription_(displayName, normalized, nameKey, classDetails) {
-  var details = [
-    CONFIG.NAME_KEY_PREFIX + nameKey,
-    '予約者: ' + displayName,
-    '登録: ' + fmtJP_(new Date())
-  ];
-  if (classDetails) {
-    details.push('---');
-    if (classDetails.category) details.push('カテゴリ: ' + classDetails.category);
-    if (classDetails.course) details.push('コース: ' + classDetails.course);
-    if (classDetails.frequency) details.push('頻度: ' + classDetails.frequency);
+function addName(desc, userName) {
+  var lines = desc.split('\n');
+  var names = [];
+  var search = normalize(userName);
+
+  for (var i = 0; i < lines.length; i++) {
+    var line = lines[i].trim();
+    if (!line) continue;
+    if (isJunkLine(line)) continue;
+    names.push(line);
   }
-  return details.join('\n');
+
+  var exists = names.some(function(n) { return normalize(n) === search; });
+  if (!exists) {
+    names.push(userName);
+  }
+  return names.join('\n');
 }
 
-function buildMonthSkeleton_(startDate, rangeDays) {
-  const months = [];
-  const seen = {};
-  const days = Math.max(1, rangeDays);
-  for (var i = 0; i < days; i++) {
-    var day = addDays_(startDate, i);
-    var key = monthKey_(day);
-    if (seen[key]) continue;
-    seen[key] = true;
-    months.push({
-      key: key,
-      label: formatMonthLabel_(key),
-      limit: CONFIG.MONTHLY_LIMIT,
-      reserved: 0,
-      remaining: CONFIG.MONTHLY_LIMIT
-    });
+function removeName(desc, userName) {
+  var lines = desc.split('\n');
+  var result = [];
+  var search = normalize(userName);
+
+  for (var i = 0; i < lines.length; i++) {
+    var line = lines[i].trim();
+    if (!line) continue;
+    if (isJunkLine(line)) continue;
+    if (normalize(line) === search) continue;
+    result.push(line);
   }
-  months.sort(function(a,b){ return a.key < b.key ? -1 : 1; });
+  return result.join('\n');
+}
+
+function isJunkLine(line) {
+  var lower = line.toLowerCase();
+  if (lower.indexOf('namekey') >= 0) return true;
+  if (line.indexOf('予約者') >= 0) return true;
+  if (line === '---') return true;
+  return false;
+}
+
+function normalize(s) {
+  var str = String(s || '').replace(/\s+/g, '').toLowerCase();
+  str = str.replace(/﨑/g, '崎').replace(/髙/g, '高').replace(/濵/g, '浜');
+  str = str.replace(/邊/g, '辺').replace(/邉/g, '辺').replace(/齋/g, '斎');
+  return str;
+}
+
+function buildSlots(cal, start, days) {
+  var slots = [];
+  var now = new Date();
+  var end = addDays(start, days);
+  var events = cal.getEvents(start, end);
+
+  for (var d = 0; d < days; d++) {
+    var day = addDays(start, d);
+    for (var t = 0; t < CONFIG.FIXED_TIMES.length; t++) {
+      var time = CONFIG.FIXED_TIMES[t];
+      var st = atTime(day, time);
+      if (st <= now) continue;
+
+      var et = new Date(st.getTime() + CONFIG.SLOT_MINUTES * 60000);
+      var count = 0;
+      for (var e = 0; e < events.length; e++) {
+        if (events[e].getStartTime() < et && events[e].getEndTime() > st) count++;
+      }
+
+      slots.push({
+        slot_id: String(st.getTime()),
+        iso: st.toISOString(),
+        day_key: formatDate(st),
+        day_label: formatDay(st),
+        start_time: time,
+        month_key: monthKey(st),
+        capacity: CONFIG.CAPACITY,
+        reserved_count: count
+      });
+    }
+  }
+  return slots;
+}
+
+function getMonths(start, days) {
+  var months = [];
+  var seen = {};
+  for (var i = 0; i < days; i++) {
+    var key = monthKey(addDays(start, i));
+    if (!seen[key]) {
+      seen[key] = true;
+      months.push({key: key, label: monthLabel(key), limit: CONFIG.MONTHLY_LIMIT, reserved: 0, remaining: CONFIG.MONTHLY_LIMIT});
+    }
+  }
   return months;
 }
 
-function buildMonthSummary_(startDate, rangeDays, existing, nameKey) {
-  const skeleton = buildMonthSkeleton_(startDate, rangeDays);
-  const overrides = fetchLimitOverrides_(nameKey);
-  const map = {};
-  skeleton.forEach(function(item){
-    var limit = overrides[item.key] || CONFIG.MONTHLY_LIMIT;
-    map[item.key] = {
-      key: item.key,
-      label: item.label,
-      limit: limit,
-      reserved: 0,
-      remaining: limit
-    };
-  });
-  existing.forEach(function(ev){
-    var key = ev.month_key;
-    if (!map[key]) {
-      var limit = overrides[key] || CONFIG.MONTHLY_LIMIT;
-      map[key] = {
-        key: key,
-        label: formatMonthLabel_(key),
-        limit: limit,
-        reserved: 0,
-        remaining: limit
-      };
-    }
-    map[key].reserved += 1;
-    map[key].remaining = Math.max(0, map[key].limit - map[key].reserved);
-  });
-  return Object.keys(map).sort().map(function(k){ return map[k]; });
+function getMonthsWithCount(start, days, existing) {
+  var months = getMonths(start, days);
+  var counts = {};
+  for (var i = 0; i < existing.length; i++) {
+    var k = existing[i].month_key;
+    counts[k] = (counts[k] || 0) + 1;
+  }
+  for (var j = 0; j < months.length; j++) {
+    var m = months[j];
+    m.reserved = counts[m.key] || 0;
+    m.remaining = Math.max(0, m.limit - m.reserved);
+  }
+  return months;
 }
 
-function fetchLimitOverrides_(nameKey) {
-  if (!CONFIG.LIMIT_SHEET_ID) return {};
-  try {
-    const sheet = SpreadsheetApp.openById(CONFIG.LIMIT_SHEET_ID);
-    const range = sheet.getRange(CONFIG.LIMIT_RANGE);
-    const values = range.getValues();
-    const map = {};
-    for (var i = 0; i < values.length; i++) {
-      var row = values[i];
-      var nameCell = normalizeName_(String(row[0] || ''));
-      var month = String(row[1] || '').trim();
-      var limit = Number(row[2] || '');
-      if (!nameCell || !month || isNaN(limit)) continue;
-      if (nameCell === nameKey) {
-        map[month] = limit;
-      }
-    }
-    return map;
-  } catch (err) {
-    return {};
+function sendNotification(type, userName, items, title, email) {
+  var dates = items.map(function(it) { return formatSlot(new Date(it.start)); }).join('\n');
+
+  if (CONFIG.TEACHER_EMAIL) {
+    try {
+      var body = userName + 'さんの予約が' + type + 'されました\n\n' + title + '\n\n' + dates;
+      GmailApp.sendEmail(CONFIG.TEACHER_EMAIL, '【TERACO】' + type + ' ' + userName, body);
+    } catch (e) {}
+  }
+
+  if (email) {
+    try {
+      var body2 = userName + '様\n\nご予約が' + type + 'されました\n\n' + title + '\n\n' + dates + '\n\nTERACOラボ';
+      GmailApp.sendEmail(email, '【TERACO】ご予約' + type + '確認', body2);
+    } catch (e) {}
   }
 }
 
-function sendSummaryMail_(type, displayName, labels, eventTitle, userEmail) {
-  if (!CONFIG.TEACHER_EMAIL) return;
-
-  const subject = `【TERACO予約】${type}確定のお知らせ (${displayName}様)`;
-
-  // Notify teacher
-  const teacherBodyParts = [
-    `${displayName} さんの予約が${type}されました。`,
-    ''
-  ];
-  if (userEmail) {
-    teacherBodyParts.push(`連絡先: ${userEmail}`, '');
-  }
-  teacherBodyParts.push(
-    `件名: ${eventTitle}`,
-    '日時:',
-    labels.map(function(t){ return '・' + t; }).join('\n'),
-    '',
-    'カレンダー: ' + CONFIG.CALENDAR_ID
-  );
-  const teacherBody = teacherBodyParts.join('\n');
-  GmailApp.sendEmail(CONFIG.TEACHER_EMAIL, subject, teacherBody, { name: 'TERACO予約' });
-
-  // Notify user if email is available
-  if (userEmail) {
-    const userBody = [
-      `${displayName}様`,
-      '',
-      `TERACOラボのご予約が${type}されましたので、お知らせいたします。`,
-      '',
-      `件名: ${eventTitle}`,
-      '日時:',
-      labels.map(function(t){ return '・' + t; }).join('\n'),
-      '',
-      'ご不明な点がございましたら、お気軽にお問い合わせください。'
-    ].join('\n');
-    GmailApp.sendEmail(userEmail, subject, userBody, { name: 'TERACO予約' });
-  }
+function jsonOut(obj) {
+  return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(ContentService.MimeType.JSON);
 }
 
-// Utility functions
-function jsonOutput(obj) {
-  return ContentService.createTextOutput(JSON.stringify(obj))
-    .setMimeType(ContentService.MimeType.JSON);
-}
-
-function setScriptTZ() {
-  try { Session.getScriptTimeZone() || null; } catch (e) {}
-}
-
-function normalizeName_(name) {
-  return String(name || '').replace(/\s+/g, '').trim();
-}
-
-function getNameKey_(normalized) {
-  return normalized.toLowerCase();
-}
-
-function addDays_(date, days) {
-  const d = new Date(date.getTime());
-  d.setDate(d.getDate() + days);
-  return d;
-}
-
-function startOfDay_(d) {
+function todayStart() {
+  var d = new Date();
   return new Date(d.getFullYear(), d.getMonth(), d.getDate());
 }
 
-function atTime_(d, hhmm) {
-  const parts = hhmm.split(':');
-  const hh = Number(parts[0] || 0);
-  const mm = Number(parts[1] || 0);
-  return new Date(d.getFullYear(), d.getMonth(), d.getDate(), hh, mm, 0, 0);
+function addDays(d, n) {
+  var r = new Date(d.getTime());
+  r.setDate(r.getDate() + n);
+  return r;
 }
 
-function fmtTime_(d) {
-  const h = String(d.getHours()).padStart(2, '0');
-  const m = String(d.getMinutes()).padStart(2, '0');
-  return `${h}:${m}`;
+function atTime(d, hhmm) {
+  var p = hhmm.split(':');
+  return new Date(d.getFullYear(), d.getMonth(), d.getDate(), Number(p[0]), Number(p[1] || 0));
 }
 
-function fmtJP_(d) {
-  const w = ['日','月','火','水','木','金','土'][d.getDay()];
-  const y = d.getFullYear();
-  const mo = String(d.getMonth()+1).padStart(2,'0');
-  const da = String(d.getDate()).padStart(2,'0');
-  const h = String(d.getHours()).padStart(2,'0');
-  const m = String(d.getMinutes()).padStart(2,'0');
-  return `${y}/${mo}/${da}(${w}) ${h}:${m}`;
+function formatDate(d) {
+  return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
 }
 
-function monthKey_(d) {
-  return Utilities.formatDate(d, CONFIG.TIMEZONE, 'yyyy-MM');
+function formatDay(d) {
+  var w = ['日', '月', '火', '水', '木', '金', '土'][d.getDay()];
+  return (d.getMonth() + 1) + '/' + d.getDate() + '(' + w + ')';
 }
 
-function formatMonthLabel_(monthKey) {
-  const parts = monthKey.split('-');
-  if (parts.length !== 2) return monthKey;
-  return `${parts[0]}年${Number(parts[1])}月`;
+function formatSlot(d) {
+  return formatDay(d) + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes());
 }
 
-function formatDayLabel_(d) {
-  const w = ['日','月','火','水','木','金','土'][d.getDay()];
-  const mo = d.getMonth() + 1;
-  const da = d.getDate();
-  return `${mo}/${da}(${w})`;
+function monthKey(d) {
+  return d.getFullYear() + '-' + pad(d.getMonth() + 1);
 }
 
-function formatSlotLabel_(d) {
-  return `${formatDayLabel_(d)} ${fmtTime_(d)}`;
+function monthLabel(k) {
+  var p = k.split('-');
+  return p[0] + '年' + Number(p[1]) + '月';
 }
 
-function countOverlaps_(cal, start, end) {
-  const events = cal.getEvents(start, end);
-  let count = 0;
-  for (let i = 0; i < events.length; i++) {
-    const ev = events[i];
-    if (ev.getEndTime() <= start) continue;
-    if (ev.getStartTime() >= end) continue;
-    count += 1;
-  }
-  return count;
+function pad(n) {
+  return n < 10 ? '0' + n : String(n);
 }
-
