@@ -822,7 +822,7 @@ function renderExisting() {
       }
     }
 
-    let displayTitle = ev.label;
+    let displayTitle = ev.label || '';
     if (displayTitle.startsWith('TERACO予約')) {
       displayTitle = '旧形式の予約';
     }
