@@ -1037,8 +1037,12 @@ async function submitSelection() {
     return;
 
   } catch (err) {
-    console.error(err);
-    alert('予約の登録に失敗しました。時間をおいて再度お試しください。');
+    console.error('予約エラー:', err);
+    if (err.name === 'AbortError') {
+      alert('サーバーへの接続がタイムアウトしました。予約が完了している可能性があるため、ページを再読み込みして確認してください。');
+    } else {
+      alert('予約の登録に失敗しました。時間をおいて再度お試しください。\nエラー: ' + err.message);
+    }
   } finally {
     btnSubmit.disabled = false;
     setLoading(false);
