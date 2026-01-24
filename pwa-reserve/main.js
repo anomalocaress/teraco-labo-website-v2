@@ -330,9 +330,9 @@ async function loadOverview({ preserveSelection }) {
       setLoading(true, '予約状況を確認しています...');
     }
 
-    // Add timeout to prevent infinite loading (30 seconds for GAS cold start)
+    // Add timeout to prevent infinite loading (15 seconds)
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 30000);
+    const timeoutId = setTimeout(() => controller.abort(), 15000);
 
     const res = await fetch(url.toString(), {
       signal: controller.signal,
@@ -991,15 +991,28 @@ async function submitSelection() {
       return;
     }
 
-    // Success
+    // Success - 即座にUI更新（API待たない）
     state.selected.clear();
     state.activeDay = null;
 
-    // Reload to show new reservations
-    await loadOverview({ preserveSelection: false });
+    // 作成された予約をローカルに追加
+    if (data.created) {
+      data.created.forEach(ev => {
+        state.existing.push(ev);
+        state.existingSet.add(ev.slot_id);
+      });
+    }
+
+    // 即座に画面更新
+    renderAll();
+    setLoading(false);
 
     showMessage(data.message || `${count}件の予約を登録しました。`);
     alert('予約が完了しました！');
+
+    // バックグラウンドで最新データを取得（ユーザーを待たせない）
+    loadOverview({ preserveSelection: false }).catch(console.error);
+    return;
 
   } catch (err) {
     console.error(err);
@@ -1045,11 +1058,22 @@ async function batchCancelReservations(items) {
       return;
     }
 
-    alert(data.message || '予約を取り消しました。');
+    // 取り消した予約をローカルから削除
+    items.forEach(item => {
+      state.existingSet.delete(item.slot_id);
+      state.existing = state.existing.filter(ev => ev.slot_id !== item.slot_id);
+    });
 
-    // Reload
-    await loadOverview({ preserveSelection: true });
+    // 即座に画面更新
+    renderAll();
+    setLoading(false);
+
+    alert(data.message || '予約を取り消しました。');
     showMessage('予約を取り消しました。');
+
+    // バックグラウンドで最新データを取得
+    loadOverview({ preserveSelection: true }).catch(console.error);
+    return;
 
   } catch (err) {
     console.error(err);
