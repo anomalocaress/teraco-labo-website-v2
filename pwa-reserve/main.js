@@ -484,10 +484,16 @@ function buildMonthCalendar(monthKey) {
     cell.textContent = String(day);
 
     const dayOfWeek = date.getDay(); // 0=Sun, 1=Mon, 2=Tue, 3=Wed, 4=Thu, 5=Fri, 6=Sat
+    const slots = state.daySlots.get(dayKey) || [];
+    const hasSelected = Array.from(state.selected.values()).some(slot => slot.day_key === dayKey);
+    const hasReservation = state.existing.some(ev => (state.slotIndex.get(ev.slot_id)?.day_key || ev.iso.slice(0, 10)) === dayKey);
 
     // 1. 過去・今日は選択不可
     if (date <= today) {
       cell.classList.add('disabled');
+      cell.addEventListener('click', () => {
+        alert('予約・修正は講座前日の17:00までにお願いいたします。なお当日の変更はお受け付けできません。お急ぎの場合は教室管理者に直接ご連絡ください。');
+      });
       row.appendChild(cell);
       continue;
     }
@@ -495,6 +501,9 @@ function buildMonthCalendar(monthKey) {
     // 2. 土日は選択不可（お休み）
     if (dayOfWeek === 0 || dayOfWeek === 6) {
       cell.classList.add('disabled');
+      cell.addEventListener('click', () => {
+        alert('土曜日・日曜日は休講日です。');
+      });
       row.appendChild(cell);
       continue;
     }
@@ -503,18 +512,20 @@ function buildMonthCalendar(monthKey) {
     if (state.classSelection.course === 'private') {
       if (![1, 2, 4].includes(dayOfWeek)) {
         cell.classList.add('disabled');
+        cell.addEventListener('click', () => {
+          alert('個人レッスンは月曜日・火曜日・木曜日のみ受付可能です。');
+        });
         row.appendChild(cell);
         continue;
       }
     }
 
-    const slots = state.daySlots.get(dayKey) || [];
-    const hasSelected = Array.from(state.selected.values()).some(slot => slot.day_key === dayKey);
-    const hasReservation = state.existing.some(ev => (state.slotIndex.get(ev.slot_id)?.day_key || ev.iso.slice(0, 10)) === dayKey);
-
-    // 4. スロットデータがない場合は選択不可（範囲外）
+    // スロットデータがない場合（範囲外または読み込み中）
     if (!slots.length) {
       cell.classList.add('disabled');
+      cell.addEventListener('click', () => {
+        alert('この日の予約枠データを取得できませんでした。ページを再読み込みしてください。');
+      });
       row.appendChild(cell);
       continue;
     }
@@ -524,6 +535,9 @@ function buildMonthCalendar(monthKey) {
 
     if (!hasSelectable) {
       cell.classList.add('full');
+      cell.addEventListener('click', () => {
+        alert('この日の予約枠はすべて満席または予約済みです。');
+      });
     } else {
       // Clickable - Embed invisible select for native behavior
       const select = document.createElement('select');
