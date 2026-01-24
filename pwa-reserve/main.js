@@ -483,9 +483,24 @@ function buildMonthCalendar(monthKey) {
     const cell = document.createElement('td');
     cell.textContent = String(day);
 
-    // Add restriction for private lessons (Mon, Tue, Thu only)
+    const dayOfWeek = date.getDay(); // 0=Sun, 1=Mon, 2=Tue, 3=Wed, 4=Thu, 5=Fri, 6=Sat
+
+    // 1. 過去・今日は選択不可
+    if (date <= today) {
+      cell.classList.add('disabled');
+      row.appendChild(cell);
+      continue;
+    }
+
+    // 2. 土日は選択不可（お休み）
+    if (dayOfWeek === 0 || dayOfWeek === 6) {
+      cell.classList.add('disabled');
+      row.appendChild(cell);
+      continue;
+    }
+
+    // 3. 個人レッスンの場合のみ、月・火・木以外は選択不可
     if (state.classSelection.course === 'private') {
-      const dayOfWeek = date.getDay(); // 0=Sun, 1=Mon, 2=Tue, 3=Wed, 4=Thu, 5=Fri, 6=Sat
       if (![1, 2, 4].includes(dayOfWeek)) {
         cell.classList.add('disabled');
         row.appendChild(cell);
@@ -495,18 +510,11 @@ function buildMonthCalendar(monthKey) {
 
     const slots = state.daySlots.get(dayKey) || [];
     // Check if there are any available slots for this day
-    const hasSelectable = slots.some(slot => slot.reserved_count < slot.capacity && !state.existingSet.has(slot.slot_id));
+    const hasSelectable = slots.length === 0 || slots.some(slot => slot.reserved_count < slot.capacity && !state.existingSet.has(slot.slot_id));
     const hasSelected = Array.from(state.selected.values()).some(slot => slot.day_key === dayKey);
     const hasReservation = state.existing.some(ev => (state.slotIndex.get(ev.slot_id)?.day_key || ev.iso.slice(0, 10)) === dayKey);
 
-    if (!slots.length || date <= today) {
-      cell.classList.add('disabled');
-      cell.addEventListener('click', () => {
-        alert('予約・修正は講座前日の17:00までにお願いいたします。なお当日の変更はお受け付けできません。お急ぎの場合は教室管理者に直接ご連絡ください。');
-      });
-    } else if (date.getDay() === 0 || date.getDay() === 6) { // Disable weekends
-      cell.classList.add('disabled');
-    } else if (!hasSelectable) {
+    if (!hasSelectable) {
       cell.classList.add('full');
     } else {
       // Clickable - Embed invisible select for native behavior
