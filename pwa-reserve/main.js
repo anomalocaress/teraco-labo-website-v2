@@ -308,7 +308,7 @@ async function checkReservations() {
 async function loadOverview({ preserveSelection }) {
   // 1. Initialize Slots (Local Mock for Grid)
   if (!state.slots.length) {
-    applySlotList(buildMockSlots(30));
+    applySlotList(buildMockSlots(60));
   }
 
   // Render calendar first for better UX
@@ -394,7 +394,7 @@ async function loadOverview({ preserveSelection }) {
 function applySlotList(slots) {
   let list = Array.isArray(slots) ? slots : [];
   if (!list.length) {
-    list = buildMockSlots(30);
+    list = buildMockSlots(60);
   }
   state.slots = list;
   state.slotIndex = new Map(state.slots.map(slot => [slot.slot_id, slot]));
@@ -509,10 +509,18 @@ function buildMonthCalendar(monthKey) {
     }
 
     const slots = state.daySlots.get(dayKey) || [];
-    // Check if there are any available slots for this day
-    const hasSelectable = slots.length === 0 || slots.some(slot => slot.reserved_count < slot.capacity && !state.existingSet.has(slot.slot_id));
     const hasSelected = Array.from(state.selected.values()).some(slot => slot.day_key === dayKey);
     const hasReservation = state.existing.some(ev => (state.slotIndex.get(ev.slot_id)?.day_key || ev.iso.slice(0, 10)) === dayKey);
+
+    // 4. スロットデータがない場合は選択不可（範囲外）
+    if (!slots.length) {
+      cell.classList.add('disabled');
+      row.appendChild(cell);
+      continue;
+    }
+
+    // Check if there are any available slots for this day
+    const hasSelectable = slots.some(slot => slot.reserved_count < slot.capacity && !state.existingSet.has(slot.slot_id));
 
     if (!hasSelectable) {
       cell.classList.add('full');
