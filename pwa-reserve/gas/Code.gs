@@ -208,6 +208,7 @@ function findEventAt(cal, startTime, title) {
 
 function findUserEvents(cal, userName, start, end) {
   var events = cal.getEvents(start, end);
+  Logger.log('v28: findUserEvents search=' + userName + ' found=' + events.length + ' events');
   var result = [];
   var search = normalize(userName);
 
@@ -227,6 +228,7 @@ function findUserEvents(cal, userName, start, end) {
       });
     }
   }
+  Logger.log('v28: result count=' + result.length);
   return result;
 }
 
@@ -307,7 +309,16 @@ function buildSlots(cal, start, days) {
       var et = new Date(st.getTime() + CONFIG.SLOT_MINUTES * 60000);
       var count = 0;
       for (var e = 0; e < events.length; e++) {
-        if (events[e].getStartTime() < et && events[e].getEndTime() > st) count++;
+        var ev = events[e];
+        if (ev.getStartTime() < et && ev.getEndTime() > st) {
+          // カウント方法の修正：イベント数ではなく、説明欄の名前の数をカウントする
+          var desc = ev.getDescription() || '';
+          var names = desc.split('\n').filter(function(line) {
+            var l = line.trim();
+            return l && !isJunkLine(l);
+          });
+          count += names.length;
+        }
       }
 
       slots.push({
@@ -354,20 +365,64 @@ function getMonthsWithCount(start, days, existing) {
 }
 
 function sendNotification(type, userName, items, title, email) {
-  var dates = items.map(function(it) { return formatSlot(new Date(it.start)); }).join('\n');
+  var dates = items.map(function(it) { return '・' + formatSlot(new Date(it.start)); }).join('\n');
+  var now = new Date();
+  var timestamp = Utilities.formatDate(now, CONFIG.TIMEZONE, 'yyyy/MM/dd HH:mm');
 
+  // 1. 管理者（先生）への通知
   if (CONFIG.TEACHER_EMAIL) {
     try {
-      var body = userName + 'さんの予約が' + type + 'されました\n\n' + title + '\n\n' + dates;
-      GmailApp.sendEmail(CONFIG.TEACHER_EMAIL, '【TERACO】' + type + ' ' + userName, body);
-    } catch (e) {}
+      var teacherSubject = '【TERACO予約】' + type + '通知 (' + userName + '様)';
+      var teacherBody = [
+        userName + ' さんの予約が ' + type + ' されました。',
+        '',
+        '■ 内容: ' + title,
+        '■ 日時:',
+        dates,
+        '',
+        '■ 連絡先: ' + (email ? email : '（Google未ログイン）'),
+        '■ 処理日時: ' + timestamp,
+        '',
+        '---',
+        'このメールはシステムより自動送信されています。'
+      ].join('\n');
+
+      GmailApp.sendEmail(CONFIG.TEACHER_EMAIL, teacherSubject, teacherBody, {
+        name: 'TERACO予約システム'
+      });
+      Logger.log('管理者向けメール送信成功: ' + userName);
+    } catch (e) {
+      Logger.log('管理者向けメール送信失敗: ' + e.toString());
+    }
   }
 
+  // 2. ユーザー（予約者）への通知（Googleログイン時のみ）
   if (email) {
     try {
-      var body2 = userName + '様\n\nご予約が' + type + 'されました\n\n' + title + '\n\n' + dates + '\n\nTERACOラボ';
-      GmailApp.sendEmail(email, '【TERACO】ご予約' + type + '確認', body2);
-    } catch (e) {}
+      var userSubject = '【TERACO予約】' + type + '完了のお知らせ (' + userName + '様)';
+      var userBody = [
+        userName + ' 様',
+        '',
+        'TERACOラボのご予約が ' + type + ' されました。',
+        '',
+        '■ 予約内容: ' + title,
+        '■ 予約日時:',
+        dates,
+        '',
+        'ご不明な点がございましたら、お気軽にお問い合わせください。',
+        '',
+        'TERACOラボ',
+        '---',
+        '※このメールに心当たりがない場合は、お手数ですが破棄してください。'
+      ].join('\n');
+
+      GmailApp.sendEmail(email, userSubject, userBody, {
+        name: 'TERACOラボ'
+      });
+      Logger.log('ユーザー向けメール送信成功: ' + email);
+    } catch (e) {
+      Logger.log('ユーザー向けメール送信失敗: ' + email + ' - ' + e.toString());
+    }
   }
 }
 

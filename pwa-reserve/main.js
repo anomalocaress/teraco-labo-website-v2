@@ -1,4 +1,4 @@
-const API_BASE = 'https://script.google.com/macros/s/AKfycbw_9SvPgbwgWjcL-dqmiK2e8oTQlNTwr-mxsvdv4xCeHDNNe3FJZ6THVMt0o57qz9Lc/exec';
+const API_BASE = 'https://script.google.com/macros/s/AKfycbx8ABfNaUZe3C02gtN--jSCut-Aul1umYSu7kQEBMrenIKgWLA0kjQkmJ-5OcXFuCjX/exec';
 
 const nameInput = document.getElementById('nameInput');
 const calendarWrap = document.getElementById('calendarWrap');
@@ -330,9 +330,9 @@ async function loadOverview({ preserveSelection }) {
       setLoading(true, '予約状況を確認しています...');
     }
 
-    // Add timeout to prevent infinite loading (15 seconds)
+    // Add timeout to prevent infinite loading (30 seconds)
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 15000);
+    const timeoutId = setTimeout(() => controller.abort(), 30000);
 
     const res = await fetch(url.toString(), {
       signal: controller.signal,
@@ -346,6 +346,7 @@ async function loadOverview({ preserveSelection }) {
     }
 
     const data = await res.json();
+    console.log('📥 サーバーからのレスポンス:', data);
 
     if (data.existing) {
       state.existing = data.existing;
@@ -355,25 +356,15 @@ async function loadOverview({ preserveSelection }) {
       state.existingByDay = new Map();
       state.existing.forEach(ev => {
         const slot = state.slotIndex.get(ev.slot_id);
-        const dayKey = slot ? slot.day_key : (ev.iso ? ev.iso.slice(0, 10) : '');
+        const dayKey = slot ? slot.day_key : (ev.start ? ev.start.slice(0, 10) : '');
         if (!dayKey) return;
         state.existingByDay.set(dayKey, (state.existingByDay.get(dayKey) || 0) + 1);
       });
     }
 
-    // Update slot counts based on real data
-    if (data.slot_counts) {
-      state.slots.forEach(slot => {
-        // Default capacity is 8
-        slot.capacity = 8;
-        // Update reserved count if available in response
-        if (data.slot_counts[slot.slot_id] !== undefined) {
-          slot.reserved_count = data.slot_counts[slot.slot_id];
-        } else {
-          slot.reserved_count = 0;
-        }
-        slot.reserved_count_updated = true;
-      });
+    // Update slots from server data
+    if (data.slots && Array.isArray(data.slots)) {
+      applySlotList(data.slots);
     }
   } catch (e) {
     console.error("Failed to fetch reservations:", e);
@@ -486,7 +477,7 @@ function buildMonthCalendar(monthKey) {
     const dayOfWeek = date.getDay(); // 0=Sun, 1=Mon, 2=Tue, 3=Wed, 4=Thu, 5=Fri, 6=Sat
     const slots = state.daySlots.get(dayKey) || [];
     const hasSelected = Array.from(state.selected.values()).some(slot => slot.day_key === dayKey);
-    const hasReservation = state.existing.some(ev => (state.slotIndex.get(ev.slot_id)?.day_key || ev.iso.slice(0, 10)) === dayKey);
+    const hasReservation = state.existing.some(ev => (state.slotIndex.get(ev.slot_id)?.day_key || ev.start.slice(0, 10)) === dayKey);
 
     // 1. 過去・今日は選択不可
     if (date <= today) {
@@ -897,25 +888,30 @@ function updateBatchCancelButton() {
 // Bind the batch cancel button once (outside render loop or check existence)
 // We'll just attach listener here since renderExisting is called repeatedly
 // Better to attach to a static element or replace node to clear listeners
-const btnCancelSelected = document.getElementById('btnCancelSelected');
-const newBtn = btnCancelSelected.cloneNode(true);
-btnCancelSelected.parentNode.replaceChild(newBtn, btnCancelSelected);
+// We'll use the ID directly after checking it exists.
+document.addEventListener('DOMContentLoaded', () => {
+    const btnCancelSelected = document.getElementById('btnCancelSelected');
+    if (btnCancelSelected) {
+        const newBtn = btnCancelSelected.cloneNode(true);
+        btnCancelSelected.parentNode.replaceChild(newBtn, btnCancelSelected);
 
-newBtn.addEventListener('click', async () => {
-  const selectedRows = document.querySelectorAll('.selected-item.to-be-cancelled');
-  if (selectedRows.length === 0) return;
+        newBtn.addEventListener('click', async () => {
+        const selectedRows = document.querySelectorAll('.selected-item.to-be-cancelled');
+        if (selectedRows.length === 0) return;
 
-  if (!confirm(`${selectedRows.length}件の予約を取り消しますか？`)) return;
+        if (!confirm(`${selectedRows.length}件の予約を取り消しますか？`)) return;
 
-  const itemsToCancel = [];
-  selectedRows.forEach(row => {
-    itemsToCancel.push({
-      slot_id: row.dataset.slotId,
-      event_id: row.dataset.eventId
-    });
-  });
+        const itemsToCancel = [];
+        selectedRows.forEach(row => {
+            itemsToCancel.push({
+            slot_id: row.dataset.slotId,
+            event_id: row.dataset.eventId
+            });
+        });
 
-  await batchCancelReservations(itemsToCancel);
+        await batchCancelReservations(itemsToCancel);
+        });
+    }
 });
 
 async function submitSelection() {
