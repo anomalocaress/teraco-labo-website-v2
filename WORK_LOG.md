@@ -33,14 +33,18 @@
 
 ### 7. サイレント制御の徹底（完了）
 - **ステータス管理**: ゲストを完全に削除するのではなく「辞退(declined)」にセットし、`sendUpdates: 'none'` でサイレント更新。これにより、生徒側のカレンダーから予定が消え、かつ手動削除による通知メールも発生しないように改善。
-- **完全消去**: 予約者ゼロ時のイベント削除も API 経由で `sendUpdates: 'none'` を指定し、通知を完全に封鎖。
+- **完全消去**: 予約者ゼロ時のイベント削除も API 経由で `sendUpdates: 'none'` 指定を試みたが、Googleの仕様制限により確実な消去には通知が必要と判明。
 
-### 8. 利便性の向上（完了）
+### 8. キャンセル通知の戦略的活用 (v36 採用)
+- **新仕様**: 生徒さんのカレンダーから予定を確実に消去するため、キャンセル時のみ `sendUpdates: 'all'`（通知あり）を許容する仕様に変更。
+- **効果**: 生徒さんにキャンセルメールが届くと同時に、カレンダーから予定が自動削除される。予約時は引き続きサイレント（通知なし）を維持し、利便性と確実性を両立。
+
+### 9. 利便性の向上（完了）
 - **カレンダー連携のデフォルト化**: Googleアカウントでログインしている場合、予約時に「Googleカレンダーに追加する」のチェックボックスをデフォルトでONにするように変更。
 
 ---
 
 ## 🛠 現在の構成
-- **Frontend**: GitHub Pages (`pwa-reserve/main.js`, `pwa-reserve/index.html`) - API v35 連携済み
-- **Backend**: Google Apps Script (v35 サイレント完全制御版)
+- **Frontend**: GitHub Pages (`pwa-reserve/main.js`, `pwa-reserve/index.html`) - API v36 連携済み
+- **Backend**: Google Apps Script (v36 キャンセル通知ON・カレンダー完全連動版)
 - **Database**: Google Calendar
