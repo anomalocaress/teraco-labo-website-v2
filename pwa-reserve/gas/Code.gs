@@ -1,4 +1,4 @@
-// TERACO予約システム v29 (メール通知安定化版)
+// TERACO予約システム v31 (カレンダー自動登録・通知オフ版)
 
 var CONFIG = {
   TIMEZONE: 'Asia/Tokyo',
@@ -14,25 +14,12 @@ var CONFIG = {
 };
 
 /**
- * 権限承認とテスト送信のための関数
- * エディタでこれを選択して「実行」ボタンを押してください。
+ * 承認ポップアップを強制的に出すための関数
  */
-function testEmail() {
-  Logger.log('--- テストメール送信処理を開始します ---');
-  try {
-    var testBody = 'これはTERACO予約システムのメール送信テストです。\n実行日時: ' + new Date();
-    
-    // ここで承認ポップアップが出るはずです
-    GmailApp.sendEmail(CONFIG.TEACHER_EMAIL, '【テスト】TERACO予約システム', testBody, {
-      name: 'TERACO通知テスト'
-    });
-    
-    Logger.log('送信成功: ' + CONFIG.TEACHER_EMAIL + ' 宛にメールを送りました。');
-    return {ok: true, message: 'メール送信成功'};
-  } catch (err) {
-    Logger.log('送信失敗: ' + err.toString());
-    return {ok: false, message: err.toString()};
-  }
+function authorizeMe() {
+  var me = Session.getActiveUser().getEmail();
+  GmailApp.sendEmail(me, '承認テスト', 'これが届いたら承認完了です');
+  Logger.log('承認されました！');
 }
 
 function doGet(e) {
@@ -40,13 +27,10 @@ function doGet(e) {
   var action = p.action || 'overview';
 
   if (action === 'version') {
-    return jsonOut({ok: true, version: 'v29', timestamp: new Date().toISOString()});
+    return jsonOut({ok: true, version: 'v31', timestamp: new Date().toISOString()});
   }
   if (action === 'overview') {
     return jsonOut(getOverview(p.name || '', Number(p.days) || CONFIG.OVERVIEW_DAYS));
-  }
-  if (action === 'test_email') {
-    return jsonOut(testEmail());
   }
   return jsonOut({ok: true});
 }
@@ -60,7 +44,8 @@ function doPost(e) {
   }
 
   if (body.action === 'batch_reserve') {
-    return jsonOut(reserve(body.name, body.slots, body.class_details, body.email));
+    // add_to_calendar フラグを引数に追加
+    return jsonOut(reserve(body.name, body.slots, body.class_details, body.email, body.add_to_calendar));
   }
   if (body.action === 'batch_cancel') {
     return jsonOut(cancel(body.name, body.event_ids, body.email));
@@ -90,21 +75,14 @@ function getOverview(name, days) {
   };
 }
 
-function reserve(name, slotIds, classDetails, email) {
-  if (!name || !name.trim()) {
-    return {ok: false, message: 'お名前を入力してください'};
-  }
-  if (!slotIds || !slotIds.length) {
-    return {ok: false, message: '日時を選択してください'};
-  }
-
+function reserve(name, slotIds, classDetails, email, addToCalendar) {
+  if (!name || !name.trim()) return {ok: false, message: 'お名前を入力してください'};
+  
   var userName = name.trim();
   var cal = CalendarApp.getCalendarById(CONFIG.CALENDAR_ID);
   var lock = LockService.getScriptLock();
 
-  if (!lock.tryLock(30000)) {
-    return {ok: false, message: 'サーバー混雑中'};
-  }
+  if (!lock.tryLock(30000)) return {ok: false, message: 'サーバー混雑中'};
 
   try {
     var title = makeTitle(classDetails);
@@ -114,23 +92,37 @@ function reserve(name, slotIds, classDetails, email) {
     for (var i = 0; i < slotIds.length; i++) {
       var startTime = new Date(Number(slotIds[i]));
       if (isNaN(startTime.getTime())) continue;
-      if (startTime <= addDays(todayStart(), 1)) continue;
-
+      
       var endTime = new Date(startTime.getTime() + minutes * 60000);
       var existing = findEventAt(cal, startTime, title);
 
       if (existing) {
+        // 既存イベントに名前を追加
         var desc = existing.getDescription() || '';
         if (!hasName(desc, userName)) {
-          var newDesc = addName(desc, userName);
-          existing.setDescription(newDesc);
+          existing.setDescription(addName(desc, userName));
         }
+        
+        // カレンダー登録（通知メールなし）
+        if (addToCalendar && email) {
+          addGuestWithoutEmail(existing.getId(), email);
+        }
+        
         created.push({event_id: existing.getId(), slot_id: String(slotIds[i]), start: startTime.toISOString()});
       } else {
-        var ev = cal.createEvent(title, startTime, endTime, {
+        // 新規イベント作成
+        var eventOptions = {
           description: userName,
-          location: CONFIG.LOCATION
-        });
+          location: CONFIG.LOCATION,
+          sendInvites: false // 招待メールを送らない
+        };
+        
+        // ゲストとして追加する場合
+        if (addToCalendar && email) {
+          eventOptions.guests = email;
+        }
+        
+        var ev = cal.createEvent(title, startTime, endTime, eventOptions);
         created.push({event_id: ev.getId(), slot_id: String(slotIds[i]), start: startTime.toISOString()});
       }
     }
@@ -146,18 +138,42 @@ function reserve(name, slotIds, classDetails, email) {
   }
 }
 
-function cancel(name, eventIds, email) {
-  if (!name || !name.trim()) {
-    return {ok: false, message: 'お名前を入力してください'};
+/**
+ * 招待メールを送らずにゲストを追加する（Advanced Calendar APIを使用）
+ */
+function addGuestWithoutEmail(eventId, email) {
+  try {
+    // eventIdから余計な文字列を削除（iCalUIDではなくAPI用のIDが必要）
+    var cleanId = eventId.replace('@google.com', '');
+    
+    // 現在のイベント情報を取得
+    var event = Calendar.Events.get(CONFIG.CALENDAR_ID, cleanId);
+    
+    // 既に登録済みかチェック
+    var attendees = event.attendees || [];
+    var alreadyAdded = attendees.some(function(a) { return a.email === email; });
+    
+    if (!alreadyAdded) {
+      attendees.push({email: email});
+      // sendUpdates: 'none' で通知を完全にブロック
+      Calendar.Events.patch({attendees: attendees}, CONFIG.CALENDAR_ID, cleanId, {
+        sendUpdates: 'none'
+      });
+      Logger.log('カレンダー登録完了（通知なし）: ' + email);
+    }
+  } catch (e) {
+    Logger.log('カレンダーAPI登録失敗: ' + e.toString());
   }
+}
+
+function cancel(name, eventIds, email) {
+  if (!name || !name.trim()) return {ok: false, message: 'お名前を入力してください'};
 
   var userName = name.trim();
   var cal = CalendarApp.getCalendarById(CONFIG.CALENDAR_ID);
   var lock = LockService.getScriptLock();
 
-  if (!lock.tryLock(30000)) {
-    return {ok: false, message: 'サーバー混雑中'};
-  }
+  if (!lock.tryLock(30000)) return {ok: false, message: 'サーバー混雑中'};
 
   try {
     var removed = [];
@@ -172,6 +188,11 @@ function cancel(name, eventIds, email) {
 
       if (!title) title = ev.getTitle();
       removed.push({slot_id: String(ev.getStartTime().getTime()), start: ev.getStartTime().toISOString()});
+
+      // ゲストからも削除（Advanced API使用で通知なし）
+      if (email) {
+        removeGuestWithoutEmail(eventIds[i], email);
+      }
 
       var newDesc = removeName(desc, userName);
       if (newDesc.trim()) {
@@ -190,6 +211,24 @@ function cancel(name, eventIds, email) {
   } finally {
     lock.releaseLock();
   }
+}
+
+/**
+ * 招待メールを送らずにゲストを削除する
+ */
+function removeGuestWithoutEmail(eventId, email) {
+  try {
+    var cleanId = eventId.replace('@google.com', '');
+    var event = Calendar.Events.get(CONFIG.CALENDAR_ID, cleanId);
+    
+    if (event.attendees) {
+      var newList = event.attendees.filter(function(a) { return a.email !== email; });
+      Calendar.Events.patch({attendees: newList}, CONFIG.CALENDAR_ID, cleanId, {
+        sendUpdates: 'none'
+      });
+      Logger.log('カレンダー削除完了（通知なし）: ' + email);
+    }
+  } catch (e) {}
 }
 
 function makeTitle(details) {
@@ -246,8 +285,7 @@ function hasName(desc, userName) {
   for (var i = 0; i < lines.length; i++) {
     var line = lines[i].trim();
     if (!line) continue;
-    if (normalize(line) === search) return true;
-    if (normalize(line).indexOf(search) >= 0) return true;
+    if (normalize(line) === search || normalize(line).indexOf(search) >= 0) return true;
   }
   return false;
 }
@@ -259,15 +297,12 @@ function addName(desc, userName) {
 
   for (var i = 0; i < lines.length; i++) {
     var line = lines[i].trim();
-    if (!line) continue;
-    if (isJunkLine(line)) continue;
+    if (!line || isJunkLine(line)) continue;
     names.push(line);
   }
 
   var exists = names.some(function(n) { return normalize(n) === search; });
-  if (!exists) {
-    names.push(userName);
-  }
+  if (!exists) names.push(userName);
   return names.join('\n');
 }
 
@@ -278,9 +313,7 @@ function removeName(desc, userName) {
 
   for (var i = 0; i < lines.length; i++) {
     var line = lines[i].trim();
-    if (!line) continue;
-    if (isJunkLine(line)) continue;
-    if (normalize(line) === search) continue;
+    if (!line || isJunkLine(line) || normalize(line) === search) continue;
     result.push(line);
   }
   return result.join('\n');
@@ -288,10 +321,7 @@ function removeName(desc, userName) {
 
 function isJunkLine(line) {
   var lower = line.toLowerCase();
-  if (lower.indexOf('namekey') >= 0) return true;
-  if (line.indexOf('予約者') >= 0) return true;
-  if (line === '---') return true;
-  return false;
+  return lower.indexOf('namekey') >= 0 || line.indexOf('予約者') >= 0 || line === '---';
 }
 
 function normalize(s) {
@@ -376,7 +406,6 @@ function sendNotification(type, userName, items, title, email) {
   var now = new Date();
   var timestamp = Utilities.formatDate(now, CONFIG.TIMEZONE, 'yyyy/MM/dd HH:mm');
 
-  // 1. 管理者（先生）への通知
   if (CONFIG.TEACHER_EMAIL) {
     try {
       var teacherSubject = '【TERACO予約】' + type + '通知 (' + userName + '様)';
@@ -397,13 +426,9 @@ function sendNotification(type, userName, items, title, email) {
       GmailApp.sendEmail(CONFIG.TEACHER_EMAIL, teacherSubject, teacherBody, {
         name: 'TERACO予約システム'
       });
-      Logger.log('管理者向けメール送信成功: ' + userName);
-    } catch (e) {
-      Logger.log('管理者向けメール送信失敗: ' + e.toString());
-    }
+    } catch (e) {}
   }
 
-  // 2. ユーザー（予約者）への通知（Googleログイン時のみ）
   if (email) {
     try {
       var userSubject = '【TERACO予約】' + type + '完了のお知らせ (' + userName + '様)';
@@ -426,10 +451,7 @@ function sendNotification(type, userName, items, title, email) {
       GmailApp.sendEmail(email, userSubject, userBody, {
         name: 'TERACOラボ'
       });
-      Logger.log('ユーザー向けメール送信成功: ' + email);
-    } catch (e) {
-      Logger.log('ユーザー向けメール送信失敗: ' + email + ' - ' + e.toString());
-    }
+    } catch (e) {}
   }
 }
 
