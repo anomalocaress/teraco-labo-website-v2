@@ -1,4 +1,4 @@
-// TERACO予約システム v36 (キャンセル通知ON・カレンダー完全連動版)
+// TERACO予約システム v37 (カレンダー同期 確実版)
 
 var CONFIG = {
   TIMEZONE: 'Asia/Tokyo',
@@ -22,7 +22,7 @@ function authorizeMe() {
 function doGet(e) {
   var p = (e && e.parameter) || {};
   var action = p.action || 'overview';
-  if (action === 'version') return jsonOut({ok: true, version: 'v36', timestamp: new Date().toISOString()});
+  if (action === 'version') return jsonOut({ok: true, version: 'v37', timestamp: new Date().toISOString()});
   if (action === 'overview') return jsonOut(getOverview(p.name || '', Number(p.days) || CONFIG.OVERVIEW_DAYS));
   return jsonOut({ok: true});
 }
@@ -80,8 +80,9 @@ function reserve(name, slotIds, classDetails, email, addToCalendar) {
         eventId = ev.getId();
       }
       
+      // 予約時は「回答待ち」ステータスでサイレント追加
       if (addToCalendar && email && eventId) {
-        addGuestAndAccept(eventId, email);
+        addGuestSilently(eventId, email);
       }
       
       created.push({event_id: eventId, slot_id: String(slotIds[i]), start: startTime.toISOString()});
@@ -94,31 +95,23 @@ function reserve(name, slotIds, classDetails, email, addToCalendar) {
   }
 }
 
-function addGuestAndAccept(eventId, email) {
+/**
+ * ゲストを「回答待ち」状態でサイレント追加する
+ */
+function addGuestSilently(eventId, email) {
   try {
     var cleanId = eventId.split('@')[0];
     var event = Calendar.Events.get(CONFIG.CALENDAR_ID, cleanId);
     var attendees = event.attendees || [];
     
-    var attendeeIndex = -1;
-    var lowerEmail = email.toLowerCase();
-    for (var i = 0; i < attendees.length; i++) {
-      if (attendees[i].email.toLowerCase() === lowerEmail) {
-        attendeeIndex = i;
-        break;
-      }
+    var exists = attendees.some(function(a) { return a.email.toLowerCase() === email.toLowerCase(); });
+    if (!exists) {
+      attendees.push({ email: email, responseStatus: 'needsAction' });
+      // 招待メールを送らずに追加
+      Calendar.Events.patch({attendees: attendees}, CONFIG.CALENDAR_ID, cleanId, { sendUpdates: 'none' });
     }
-
-    if (attendeeIndex === -1) {
-      attendees.push({ email: email, responseStatus: 'accepted' });
-    } else {
-      attendees[attendeeIndex].responseStatus = 'accepted';
-    }
-
-    // 予約時はサイレント（招待メールを送らない）
-    Calendar.Events.patch({attendees: attendees}, CONFIG.CALENDAR_ID, cleanId, { sendUpdates: 'none' });
   } catch (e) {
-    Logger.log('ゲスト追加エラー: ' + e.toString());
+    Logger.log('ゲスト追加失敗: ' + e.toString());
   }
 }
 
@@ -140,14 +133,14 @@ function cancel(name, eventIds, email) {
       if (!title) title = ev.getTitle();
       removed.push({slot_id: String(ev.getStartTime().getTime()), start: ev.getStartTime().toISOString()});
 
-      // ゲストから削除（通知を飛ばして相手のカレンダーから消す）
+      // ゲストから削除（通知を飛ばすことで相手のカレンダーから確実に消去）
       if (email) removeGuestAndNotify(eventIds[i], email);
 
       var newDesc = removeName(desc, userName);
       if (newDesc.trim()) {
         ev.setDescription(newDesc);
       } else {
-        // 全員キャンセルの場合はイベント自体を通知付きで削除
+        // イベント自体の削除も通知付きで行う
         deleteEventAndNotify(eventIds[i]);
       }
     }
@@ -158,9 +151,6 @@ function cancel(name, eventIds, email) {
   }
 }
 
-/**
- * ゲストを削除し、通知を飛ばすことで生徒のカレンダーから自動削除させる
- */
 function removeGuestAndNotify(eventId, email) {
   try {
     var cleanId = eventId.split('@')[0];
@@ -168,31 +158,23 @@ function removeGuestAndNotify(eventId, email) {
     if (!event.attendees) return;
 
     var lowerEmail = email.toLowerCase();
-    var newList = event.attendees.filter(function(a) {
-      return a.email.toLowerCase() !== lowerEmail;
-    });
+    var newList = event.attendees.filter(function(a) { return a.email.toLowerCase() !== lowerEmail; });
 
     if (newList.length !== event.attendees.length) {
-      // sendUpdates: 'all' を指定してキャンセルメールを送信
+      // 削除通知を送信することで、相手のカレンダーから消去させる
       Calendar.Events.patch({attendees: newList}, CONFIG.CALENDAR_ID, cleanId, { sendUpdates: 'all' });
-      Logger.log('生徒をリストから削除し通知を送信しました: ' + email);
     }
   } catch (e) {
-    Logger.log('ゲスト削除エラー: ' + e.toString());
+    Logger.log('ゲスト削除失敗: ' + e.toString());
   }
 }
 
-/**
- * イベントを通知付きで削除する
- */
 function deleteEventAndNotify(eventId) {
   try {
     var cleanId = eventId.split('@')[0];
-    // sendUpdates: 'all' を指定してキャンセルメールを送信
     Calendar.Events.remove(CONFIG.CALENDAR_ID, cleanId, { sendUpdates: 'all' });
-    Logger.log('イベントを通知付きで削除しました: ' + cleanId);
   } catch (e) {
-    Logger.log('イベント削除エラー: ' + e.toString());
+    Logger.log('イベント削除失敗: ' + e.toString());
   }
 }
 
