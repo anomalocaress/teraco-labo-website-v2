@@ -27,9 +27,13 @@
 - **通知抑制**: ユーザーが「はい」を押す手間を省き、管理者への「出席の回答」メール通知を完全にブロック。
 - **UI調整**: ユーザーに不要な不安を与えないよう「招待メールが届きます」という文言を削除。
 
+### 6. キャンセル時の生徒カレンダー完全消去（完了）
+- **症状**: 管理者カレンダーからは消えるが、生徒側のカレンダーに予定が残ってしまう。
+- **対策**: ゲスト削除前に明示的に `declined`（辞退）ステータスをセットする 2-Step 削除ロジックを実装。これにより、生徒側のカレンダーからも即座に予定が消去されるように改善。
+
 ---
 
 ## 🛠 現在の構成
-- **Frontend**: GitHub Pages (`pwa-reserve/main.js`, `pwa-reserve/index.html`) - API v33 連携済み
-- **Backend**: Google Apps Script (v33 自動承諾・通知抑制版)
+- **Frontend**: GitHub Pages (`pwa-reserve/main.js`, `pwa-reserve/index.html`) - API v34 連携済み
+- **Backend**: Google Apps Script (v34 生徒カレンダー完全消去版)
 - **Database**: Google Calendar

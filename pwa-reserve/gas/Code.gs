@@ -1,4 +1,4 @@
-// TERACO予約システム v33 (自動承諾・通知完全ブロック版)
+// TERACO予約システム v34 (生徒カレンダー完全消去版)
 
 var CONFIG = {
   TIMEZONE: 'Asia/Tokyo',
@@ -22,7 +22,7 @@ function authorizeMe() {
 function doGet(e) {
   var p = (e && e.parameter) || {};
   var action = p.action || 'overview';
-  if (action === 'version') return jsonOut({ok: true, version: 'v33', timestamp: new Date().toISOString()});
+  if (action === 'version') return jsonOut({ok: true, version: 'v34', timestamp: new Date().toISOString()});
   if (action === 'overview') return jsonOut(getOverview(p.name || '', Number(p.days) || CONFIG.OVERVIEW_DAYS));
   return jsonOut({ok: true});
 }
@@ -72,7 +72,6 @@ function reserve(name, slotIds, classDetails, email, addToCalendar) {
           existing.setDescription(addName(desc, userName));
         }
       } else {
-        // 新規作成時も招待メールを送らない設定
         var ev = cal.createEvent(title, startTime, endTime, {
           description: userName,
           location: CONFIG.LOCATION,
@@ -81,7 +80,6 @@ function reserve(name, slotIds, classDetails, email, addToCalendar) {
         eventId = ev.getId();
       }
       
-      // カレンダー登録（自動承諾ステータスをセット）
       if (addToCalendar && email && eventId) {
         addGuestAndAccept(eventId, email);
       }
@@ -96,38 +94,28 @@ function reserve(name, slotIds, classDetails, email, addToCalendar) {
   }
 }
 
-/**
- * ゲストを追加し、即座に「出席(accepted)」ステータスにする
- */
 function addGuestAndAccept(eventId, email) {
   try {
-    var cleanId = eventId.replace('@google.com', '');
+    var cleanId = eventId.split('@')[0];
     var event = Calendar.Events.get(CONFIG.CALENDAR_ID, cleanId);
     var attendees = event.attendees || [];
     
     var attendeeIndex = -1;
+    var lowerEmail = email.toLowerCase();
     for (var i = 0; i < attendees.length; i++) {
-      if (attendees[i].email === email) {
+      if (attendees[i].email.toLowerCase() === lowerEmail) {
         attendeeIndex = i;
         break;
       }
     }
 
     if (attendeeIndex === -1) {
-      // 新規追加：承諾済み(accepted)として追加
-      attendees.push({
-        email: email,
-        responseStatus: 'accepted'
-      });
+      attendees.push({ email: email, responseStatus: 'accepted' });
     } else {
-      // 既存：ステータスを更新
       attendees[attendeeIndex].responseStatus = 'accepted';
     }
 
-    // sendUpdates: 'none' で一切の通知を飛ばさない
-    Calendar.Events.patch({attendees: attendees}, CONFIG.CALENDAR_ID, cleanId, {
-      sendUpdates: 'none'
-    });
+    Calendar.Events.patch({attendees: attendees}, CONFIG.CALENDAR_ID, cleanId, { sendUpdates: 'none' });
     Logger.log('自動承諾完了: ' + email);
   } catch (e) {
     Logger.log('自動承諾エラー: ' + e.toString());
@@ -152,7 +140,7 @@ function cancel(name, eventIds, email) {
       if (!title) title = ev.getTitle();
       removed.push({slot_id: String(ev.getStartTime().getTime()), start: ev.getStartTime().toISOString()});
 
-      // ゲストから削除（通知なし）
+      // ゲストから削除（生徒のカレンダーから消す）
       if (email) removeGuestSilently(eventIds[i], email);
 
       var newDesc = removeName(desc, userName);
@@ -166,15 +154,39 @@ function cancel(name, eventIds, email) {
   }
 }
 
+/**
+ * ゲストを削除し、生徒側のカレンダーからも消去する
+ */
 function removeGuestSilently(eventId, email) {
   try {
-    var cleanId = eventId.replace('@google.com', '');
+    var cleanId = eventId.split('@')[0];
     var event = Calendar.Events.get(CONFIG.CALENDAR_ID, cleanId);
-    if (event.attendees) {
-      var newList = event.attendees.filter(function(a) { return a.email !== email; });
+    if (!event.attendees) return;
+
+    var lowerEmail = email.toLowerCase();
+    var found = false;
+    var newList = event.attendees.map(function(a) {
+      if (a.email.toLowerCase() === lowerEmail) {
+        found = true;
+        // 一旦「辞退」に書き換えることで、相手のカレンダーから消えやすくする
+        return { email: a.email, responseStatus: 'declined' };
+      }
+      return a;
+    });
+
+    if (found) {
+      // 1. まず辞退ステータスをセット（通知なし）
       Calendar.Events.patch({attendees: newList}, CONFIG.CALENDAR_ID, cleanId, { sendUpdates: 'none' });
+      
+      // 2. その後、リストから完全に削除（通知なし）
+      var finalList = newList.filter(function(a) { return a.email.toLowerCase() !== lowerEmail; });
+      Calendar.Events.patch({attendees: finalList}, CONFIG.CALENDAR_ID, cleanId, { sendUpdates: 'none' });
+      
+      Logger.log('生徒カレンダー消去完了: ' + email);
     }
-  } catch (e) {}
+  } catch (e) {
+    Logger.log('生徒カレンダー消去失敗: ' + e.toString());
+  }
 }
 
 // --- 共通ユーティリティ ---
