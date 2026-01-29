@@ -22,14 +22,14 @@
   - メールの差出人名称を設定。
   - エラーハンドリングを追加し、送信失敗時にログを残すよう改善。
 
-### 4. 構成の復元とURL維持（完了）
-- **内容**: 
-  - 誤って削除したルートディレクトリの他ファイルを復元。
-  - アプリを `pwa-reserve/` フォルダ内に配置し、従来のURL（.../pwa-reserve/）を維持。
+### 5. Googleカレンダー連携の自動化とノイズ削減（完了）
+- **自動承諾**: ユーザーがカレンダー追加を選択した際、招待メールを送らず、かつ最初からステータスを「出席（承諾済み）」にセット。
+- **通知抑制**: ユーザーが「はい」を押す手間を省き、管理者への「出席の回答」メール通知を完全にブロック。
+- **UI調整**: ユーザーに不要な不安を与えないよう「招待メールが届きます」という文言を削除。
 
 ---
 
 ## 🛠 現在の構成
-- **Frontend**: GitHub Pages (`pwa-reserve/main.js`, `pwa-reserve/index.html`)
-- **Backend**: Google Apps Script (最新デプロイ)
+- **Frontend**: GitHub Pages (`pwa-reserve/main.js`, `pwa-reserve/index.html`) - API v33 連携済み
+- **Backend**: Google Apps Script (v33 自動承諾・通知抑制版)
 - **Database**: Google Calendar

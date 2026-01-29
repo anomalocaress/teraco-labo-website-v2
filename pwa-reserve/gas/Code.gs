@@ -1,4 +1,4 @@
-// TERACO予約システム v32 (カレンダー登録 確実版)
+// TERACO予約システム v33 (自動承諾・通知完全ブロック版)
 
 var CONFIG = {
   TIMEZONE: 'Asia/Tokyo',
@@ -22,7 +22,7 @@ function authorizeMe() {
 function doGet(e) {
   var p = (e && e.parameter) || {};
   var action = p.action || 'overview';
-  if (action === 'version') return jsonOut({ok: true, version: 'v32', timestamp: new Date().toISOString()});
+  if (action === 'version') return jsonOut({ok: true, version: 'v33', timestamp: new Date().toISOString()});
   if (action === 'overview') return jsonOut(getOverview(p.name || '', Number(p.days) || CONFIG.OVERVIEW_DAYS));
   return jsonOut({ok: true});
 }
@@ -68,18 +68,22 @@ function reserve(name, slotIds, classDetails, email, addToCalendar) {
       if (existing) {
         eventId = existing.getId();
         var desc = existing.getDescription() || '';
-        if (!hasName(desc, userName)) existing.setDescription(addName(desc, userName));
+        if (!hasName(desc, userName)) {
+          existing.setDescription(addName(desc, userName));
+        }
       } else {
+        // 新規作成時も招待メールを送らない設定
         var ev = cal.createEvent(title, startTime, endTime, {
           description: userName,
-          location: CONFIG.LOCATION
+          location: CONFIG.LOCATION,
+          sendInvites: false
         });
         eventId = ev.getId();
       }
       
-      // カレンダー登録（新規・既存問わず、Advanced Serviceで通知なし登録）
+      // カレンダー登録（自動承諾ステータスをセット）
       if (addToCalendar && email && eventId) {
-        addGuestSilently(eventId, email);
+        addGuestAndAccept(eventId, email);
       }
       
       created.push({event_id: eventId, slot_id: String(slotIds[i]), start: startTime.toISOString()});
@@ -93,20 +97,40 @@ function reserve(name, slotIds, classDetails, email, addToCalendar) {
 }
 
 /**
- * 招待メールを送らずにゲストを追加（Advanced API使用）
+ * ゲストを追加し、即座に「出席(accepted)」ステータスにする
  */
-function addGuestSilently(eventId, email) {
+function addGuestAndAccept(eventId, email) {
   try {
     var cleanId = eventId.replace('@google.com', '');
     var event = Calendar.Events.get(CONFIG.CALENDAR_ID, cleanId);
     var attendees = event.attendees || [];
-    if (!attendees.some(function(a) { return a.email === email; })) {
-      attendees.push({email: email});
-      Calendar.Events.patch({attendees: attendees}, CONFIG.CALENDAR_ID, cleanId, { sendUpdates: 'none' });
-      Logger.log('カレンダー登録(静音): ' + email);
+    
+    var attendeeIndex = -1;
+    for (var i = 0; i < attendees.length; i++) {
+      if (attendees[i].email === email) {
+        attendeeIndex = i;
+        break;
+      }
     }
+
+    if (attendeeIndex === -1) {
+      // 新規追加：承諾済み(accepted)として追加
+      attendees.push({
+        email: email,
+        responseStatus: 'accepted'
+      });
+    } else {
+      // 既存：ステータスを更新
+      attendees[attendeeIndex].responseStatus = 'accepted';
+    }
+
+    // sendUpdates: 'none' で一切の通知を飛ばさない
+    Calendar.Events.patch({attendees: attendees}, CONFIG.CALENDAR_ID, cleanId, {
+      sendUpdates: 'none'
+    });
+    Logger.log('自動承諾完了: ' + email);
   } catch (e) {
-    Logger.log('カレンダー登録エラー: ' + e.toString());
+    Logger.log('自動承諾エラー: ' + e.toString());
   }
 }
 
