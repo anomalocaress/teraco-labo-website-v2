@@ -94,6 +94,7 @@ function setGoogleUser(user) {
 
     // Show Calendar Option
     document.getElementById('calendarOption').style.display = 'block';
+    document.getElementById('addToCalendar').checked = true;
 
   } else {
     // Logout / Initial State
