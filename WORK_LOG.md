@@ -31,9 +31,13 @@
 - **症状**: 管理者カレンダーからは消えるが、生徒側のカレンダーに予定が残ってしまう。
 - **対策**: ゲスト削除前に明示的に `declined`（辞退）ステータスをセットする 2-Step 削除ロジックを実装。これにより、生徒側のカレンダーからも即座に予定が消去されるように改善。
 
+### 7. サイレント制御の徹底（完了）
+- **ステータス管理**: ゲストを完全に削除するのではなく「辞退(declined)」にセットし、`sendUpdates: 'none'` でサイレント更新。これにより、生徒側のカレンダーから予定が消え、かつ手動削除による通知メールも発生しないように改善。
+- **完全消去**: 予約者ゼロ時のイベント削除も API 経由で `sendUpdates: 'none'` を指定し、通知を完全に封鎖。
+
 ---
 
 ## 🛠 現在の構成
-- **Frontend**: GitHub Pages (`pwa-reserve/main.js`, `pwa-reserve/index.html`) - API v34 連携済み
-- **Backend**: Google Apps Script (v34 生徒カレンダー完全消去版)
+- **Frontend**: GitHub Pages (`pwa-reserve/main.js`, `pwa-reserve/index.html`) - API v35 連携済み
+- **Backend**: Google Apps Script (v35 サイレント完全制御版)
 - **Database**: Google Calendar
