@@ -1,4 +1,4 @@
-// TERACO予約システム v28
+// TERACO予約システム v29 (メール通知安定化版)
 
 var CONFIG = {
   TIMEZONE: 'Asia/Tokyo',
@@ -13,12 +13,34 @@ var CONFIG = {
   MONTHLY_LIMIT: 8
 };
 
+/**
+ * 権限承認とテスト送信のための関数
+ * エディタでこれを選択して「実行」ボタンを押してください。
+ */
+function testEmail() {
+  Logger.log('--- テストメール送信処理を開始します ---');
+  try {
+    var testBody = 'これはTERACO予約システムのメール送信テストです。\n実行日時: ' + new Date();
+    
+    // ここで承認ポップアップが出るはずです
+    GmailApp.sendEmail(CONFIG.TEACHER_EMAIL, '【テスト】TERACO予約システム', testBody, {
+      name: 'TERACO通知テスト'
+    });
+    
+    Logger.log('送信成功: ' + CONFIG.TEACHER_EMAIL + ' 宛にメールを送りました。');
+    return {ok: true, message: 'メール送信成功'};
+  } catch (err) {
+    Logger.log('送信失敗: ' + err.toString());
+    return {ok: false, message: err.toString()};
+  }
+}
+
 function doGet(e) {
   var p = (e && e.parameter) || {};
   var action = p.action || 'overview';
 
   if (action === 'version') {
-    return jsonOut({ok: true, version: 'v28', timestamp: new Date().toISOString()});
+    return jsonOut({ok: true, version: 'v29', timestamp: new Date().toISOString()});
   }
   if (action === 'overview') {
     return jsonOut(getOverview(p.name || '', Number(p.days) || CONFIG.OVERVIEW_DAYS));
@@ -44,15 +66,6 @@ function doPost(e) {
     return jsonOut(cancel(body.name, body.event_ids, body.email));
   }
   return jsonOut({ok: false, message: '不明なアクション'});
-}
-
-function testEmail() {
-  try {
-    GmailApp.sendEmail(CONFIG.TEACHER_EMAIL, 'テスト', 'テストメール\n' + new Date());
-    return {ok: true, message: 'メール送信成功'};
-  } catch (err) {
-    return {ok: false, message: err.message};
-  }
 }
 
 function getOverview(name, days) {
@@ -108,15 +121,12 @@ function reserve(name, slotIds, classDetails, email) {
 
       if (existing) {
         var desc = existing.getDescription() || '';
-        Logger.log('v28: 既存イベント発見, 現在の説明: ' + desc);
         if (!hasName(desc, userName)) {
           var newDesc = addName(desc, userName);
-          Logger.log('v28: 新しい説明: ' + newDesc);
           existing.setDescription(newDesc);
         }
         created.push({event_id: existing.getId(), slot_id: String(slotIds[i]), start: startTime.toISOString()});
       } else {
-        Logger.log('v28: 新規イベント作成, 説明: ' + userName);
         var ev = cal.createEvent(title, startTime, endTime, {
           description: userName,
           location: CONFIG.LOCATION
@@ -208,7 +218,6 @@ function findEventAt(cal, startTime, title) {
 
 function findUserEvents(cal, userName, start, end) {
   var events = cal.getEvents(start, end);
-  Logger.log('v28: findUserEvents search=' + userName + ' found=' + events.length + ' events');
   var result = [];
   var search = normalize(userName);
 
@@ -228,7 +237,6 @@ function findUserEvents(cal, userName, start, end) {
       });
     }
   }
-  Logger.log('v28: result count=' + result.length);
   return result;
 }
 
@@ -311,7 +319,6 @@ function buildSlots(cal, start, days) {
       for (var e = 0; e < events.length; e++) {
         var ev = events[e];
         if (ev.getStartTime() < et && ev.getEndTime() > st) {
-          // カウント方法の修正：イベント数ではなく、説明欄の名前の数をカウントする
           var desc = ev.getDescription() || '';
           var names = desc.split('\n').filter(function(line) {
             var l = line.trim();
