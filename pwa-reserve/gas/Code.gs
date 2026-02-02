@@ -51,9 +51,13 @@ function reserve(name, slotIds, classDetails, email, addToCalendar) {
   var userName = name.trim();
   var cal = CalendarApp.getCalendarById(CONFIG.CALENDAR_ID);
   var lock = LockService.getScriptLock();
-  if (!lock.tryLock(30000)) return {ok: false, message: 'サーバー混雑中'};
+  if (!lock.tryLock(30000)) return {ok: false, message: 'サーバーが一時的に混み合っています。少し時間をおいてからもう一度お試しください。'};
 
   try {
+    // 予約締切チェック (前日17:00まで)
+    var now = new Date();
+    var deadlineLimit = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 17, 0, 0); // 今日の17:00
+    
     var title = makeTitle(classDetails);
     var minutes = getMinutes(classDetails);
     var created = [];
@@ -61,6 +65,18 @@ function reserve(name, slotIds, classDetails, email, addToCalendar) {
     for (var i = 0; i < slotIds.length; i++) {
       var startTime = new Date(Number(slotIds[i]));
       if (isNaN(startTime.getTime())) continue;
+
+      // 判定: 予約日が明日以降か、または今日が17時前で明日以降の予約か
+      var reservationDay = new Date(startTime.getFullYear(), startTime.getMonth(), startTime.getDate());
+      var tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+      
+      if (reservationDay < tomorrow) {
+        return {ok: false, message: '当日および過去の予約はできません。前日17:00までにご予約ください。'};
+      }
+      if (reservationDay.getTime() === tomorrow.getTime() && now > deadlineLimit) {
+        return {ok: false, message: '明日の予約締切（本日17:00）を過ぎています。お急ぎの場合は教室へ直接ご連絡ください。'};
+      }
+
       var endTime = new Date(startTime.getTime() + minutes * 60000);
       var existing = findEventAt(cal, startTime, title);
       var eventId = "";
@@ -120,14 +136,26 @@ function cancel(name, eventIds, email) {
   var userName = name.trim();
   var cal = CalendarApp.getCalendarById(CONFIG.CALENDAR_ID);
   var lock = LockService.getScriptLock();
-  if (!lock.tryLock(30000)) return {ok: false, message: 'サーバー混雑中'};
+  if (!lock.tryLock(30000)) return {ok: false, message: 'サーバーが一時的に混み合っています。少し時間をおいてからもう一度お試しください。'};
 
   try {
+    var now = new Date();
+    var deadlineLimit = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 17, 0, 0); // 今日の17:00
     var removed = [];
     var title = '';
     for (var i = 0; i < eventIds.length; i++) {
       var ev = cal.getEventById(eventIds[i]);
       if (!ev) continue;
+
+      // 取消締切チェック (前日17:00まで)
+      var startTime = ev.getStartTime();
+      var reservationDay = new Date(startTime.getFullYear(), startTime.getMonth(), startTime.getDate());
+      var tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+
+      if (reservationDay < tomorrow || (reservationDay.getTime() === tomorrow.getTime() && now > deadlineLimit)) {
+        return {ok: false, message: '当日および前日17:00を過ぎたキャンセルの受付はできません。教室へ直接ご連絡ください。'};
+      }
+
       var desc = ev.getDescription() || '';
       if (!hasName(desc, userName)) continue;
       if (!title) title = ev.getTitle();

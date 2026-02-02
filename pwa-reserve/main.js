@@ -343,7 +343,7 @@ async function loadOverview({ preserveSelection }) {
     clearTimeout(timeoutId);
 
     if (!res.ok) {
-      throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+      throw new Error('サーバーが一時的に応答していません。');
     }
 
     const data = await res.json();
@@ -371,9 +371,9 @@ async function loadOverview({ preserveSelection }) {
     console.error("Failed to fetch reservations:", e);
     if (e.name === 'AbortError') {
       console.warn('Request timeout after 30 seconds');
-      showMessage('サーバーへの接続がタイムアウトしました。Google Apps Scriptの初回起動には時間がかかることがあります。');
+      showMessage('接続に時間がかかっています。Googleのサーバーが初回起動準備中の可能性があるため、10秒ほど待ってからもう一度お試しください。');
     } else {
-      showMessage('予約データの読み込みに失敗しました: ' + e.message);
+      showMessage('予約データの読み込みに失敗しました。電波の良い場所で再度お試しいただくか、しばらくお待ちください。');
     }
     // Continue to render with mock data even on error
   } finally {
@@ -989,9 +989,7 @@ async function submitSelection() {
     // Check response status
     if (!res.ok) {
       console.error('HTTP Error:', res.status, res.statusText);
-      const text = await res.text();
-      console.error('Response body:', text.substring(0, 500));
-      alert(`サーバーエラーが発生しました（ステータス: ${res.status}）。詳細はコンソールを確認してください。`);
+      alert('申し訳ありません。サーバーが一時的に混み合っているため、予約を登録できませんでした。お手数ですが、少し時間をおいてから再度お試しください。');
       return;
     }
 
