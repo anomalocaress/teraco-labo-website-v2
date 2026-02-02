@@ -1163,3 +1163,120 @@ checkSavedSession();
 loadOverview({ preserveSelection: false });
 renderCurrentDate(); // Initial call
 setInterval(renderCurrentDate, 1000);
+
+// --- Admin Dashboard Logic ---
+
+const adminTrigger = document.getElementById('adminTrigger');
+const adminPanel = document.getElementById('adminPanel');
+const adminLoginView = document.getElementById('adminLoginView');
+const adminContentView = document.getElementById('adminContentView');
+const adminPasscode = document.getElementById('adminPasscode');
+const btnAdminLogin = document.getElementById('btnAdminLogin');
+const btnAdminRefresh = document.getElementById('btnAdminRefresh');
+const btnAdminLogout = document.getElementById('btnAdminLogout');
+const adminSummaryList = document.getElementById('adminSummaryList');
+
+adminTrigger.addEventListener('click', () => {
+  adminPanel.classList.toggle('hidden');
+  if (!adminPanel.classList.contains('hidden')) {
+    adminPanel.scrollIntoView({ behavior: 'smooth' });
+  }
+});
+
+btnAdminLogin.addEventListener('click', adminLogin);
+btnAdminRefresh.addEventListener('click', loadAdminSummary);
+btnAdminLogout.addEventListener('click', adminLogout);
+
+async function adminLogin() {
+  const code = adminPasscode.value;
+  if (!code) return;
+  
+  setLoading(true, '認証中...');
+  try {
+    const ok = await loadAdminSummary();
+    if (ok) {
+      adminLoginView.classList.add('hidden');
+      adminContentView.classList.remove('hidden');
+      // Save passcode temporarily in session
+      sessionStorage.setItem('teraco_admin_code', code);
+    }
+  } finally {
+    setLoading(false);
+  }
+}
+
+function adminLogout() {
+  sessionStorage.removeItem('teraco_admin_code');
+  adminPasscode.value = '';
+  adminLoginView.classList.remove('hidden');
+  adminContentView.classList.add('hidden');
+}
+
+async function loadAdminSummary() {
+  const code = adminPasscode.value || sessionStorage.getItem('teraco_admin_code');
+  if (!code) return false;
+
+  try {
+    const url = new URL(API_BASE);
+    url.searchParams.append('action', 'admin_summary');
+    url.searchParams.append('passcode', code);
+
+    const res = await fetch(url.toString());
+    const data = await res.json();
+
+    if (!data.ok) {
+      alert(data.message || 'エラーが発生しました');
+      return false;
+    }
+
+    renderAdminSummary(data.days);
+    return true;
+  } catch (e) {
+    console.error(e);
+    alert('通信エラーが発生しました');
+    return false;
+  }
+}
+
+function renderAdminSummary(days) {
+  adminSummaryList.innerHTML = '';
+  
+  Object.keys(days).sort().forEach(dayKey => {
+    const dayData = days[dayKey];
+    const group = document.createElement('div');
+    group.className = 'admin-day-group';
+    
+    group.innerHTML = `<div class="admin-day-label">${dayData.label}</div>`;
+    
+    dayData.slots.forEach(slot => {
+      const item = document.createElement('div');
+      item.className = 'admin-slot-item';
+      
+      const hasReservations = slot.count > 0;
+      
+      item.innerHTML = `
+        <div class="admin-slot-header">
+          <span class="admin-slot-time">${slot.time}〜</span>
+          <span class="admin-slot-count">${slot.count}名 / 8</span>
+        </div>
+        <div class="admin-names-list">
+          ${hasReservations ? slot.names.join('、') : '<span class="admin-empty-msg">予約なし</span>'}
+        </div>
+      `;
+      group.appendChild(item);
+    });
+    
+    adminSummaryList.appendChild(group);
+  });
+}
+
+// Restore admin session if exists
+if (sessionStorage.getItem('teraco_admin_code')) {
+  loadAdminSummary().then(ok => {
+    if (ok) {
+      adminPanel.classList.remove('hidden');
+      adminLoginView.classList.add('hidden');
+      adminContentView.classList.remove('hidden');
+    }
+  });
+}

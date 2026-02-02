@@ -1,9 +1,10 @@
-// TERACO予約システム v37 (カレンダー同期 確実版)
+// TERACO予約システム v39 (管理者ダッシュボード対応版)
 
 var CONFIG = {
   TIMEZONE: 'Asia/Tokyo',
   CALENDAR_ID: 'primary',
   TEACHER_EMAIL: 'fujisaki@teraco-labo.com',
+  ADMIN_PASSCODE: '1234', // 管理者画面用のパスコード
   TITLE_PREFIX: 'TERACO予約',
   LOCATION: 'TERACOラボ',
   SLOT_MINUTES: 45,
@@ -22,9 +23,58 @@ function authorizeMe() {
 function doGet(e) {
   var p = (e && e.parameter) || {};
   var action = p.action || 'overview';
-  if (action === 'version') return jsonOut({ok: true, version: 'v37', timestamp: new Date().toISOString()});
+  if (action === 'version') return jsonOut({ok: true, version: 'v39', timestamp: new Date().toISOString()});
   if (action === 'overview') return jsonOut(getOverview(p.name || '', Number(p.days) || CONFIG.OVERVIEW_DAYS));
+  if (action === 'admin_summary') return jsonOut(getAdminSummary(p.passcode));
   return jsonOut({ok: true});
+}
+
+/**
+ * 管理者用：今日・明日の予約状況をまとめて取得
+ */
+function getAdminSummary(passcode) {
+  if (passcode !== CONFIG.ADMIN_PASSCODE) return { ok: false, message: 'パスコードが正しくありません' };
+  
+  var cal = CalendarApp.getCalendarById(CONFIG.CALENDAR_ID);
+  var now = new Date();
+  var start = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  var end = new Date(start.getTime() + 2 * 24 * 60 * 60 * 1000); // 今日・明日の2日間
+  
+  var events = cal.getEvents(start, end);
+  var days = {};
+  
+  // 2日分の枠を初期化
+  for (var i = 0; i < 2; i++) {
+    var d = new Date(start.getTime() + i * 24 * 60 * 60 * 1000);
+    var key = formatDate(d);
+    days[key] = { label: formatDay(d), slots: [] };
+    
+    CONFIG.FIXED_TIMES.forEach(function(time) {
+      days[key].slots.push({ time: time, title: '', count: 0, names: [] });
+    });
+  }
+
+  events.forEach(function(ev) {
+    var st = ev.getStartTime();
+    var dayKey = formatDate(st);
+    var timeStr = pad(st.getHours()) + ':' + pad(st.getMinutes());
+    
+    if (days[dayKey]) {
+      var names = (ev.getDescription() || '').split('\n').filter(function(l) { 
+        return l.trim() && !isJunkLine(l.trim()); 
+      });
+      
+      days[dayKey].slots.forEach(function(slot) {
+        if (slot.time === timeStr) {
+          slot.title = ev.getTitle();
+          slot.count = names.length;
+          slot.names = names;
+        }
+      });
+    }
+  });
+
+  return { ok: true, days: days };
 }
 
 function doPost(e) {
