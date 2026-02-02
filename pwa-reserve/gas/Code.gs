@@ -1,4 +1,4 @@
-// TERACO予約システム v39 (管理者ダッシュボード対応版)
+// TERACO予約システム v40 (通知最適化・削除確実化版)
 
 var CONFIG = {
   TIMEZONE: 'Asia/Tokyo',
@@ -237,6 +237,33 @@ function cancel(name, eventIds, email) {
   }
 }
 
+function removeGuestAndNotify(eventId, email) {
+  try {
+    var cleanId = eventId.split('@')[0];
+    var event = Calendar.Events.get(CONFIG.CALENDAR_ID, cleanId);
+    if (!event.attendees) return;
+
+    var lowerEmail = email.toLowerCase();
+    var newList = event.attendees.filter(function(a) { return a.email.toLowerCase() !== lowerEmail; });
+
+    if (newList.length !== event.attendees.length) {
+      // 削除通知を送信することで、相手のカレンダーから消去させる
+      Calendar.Events.patch({attendees: newList}, CONFIG.CALENDAR_ID, cleanId, { sendUpdates: 'all' });
+    }
+  } catch (e) {
+    Logger.log('ゲスト削除失敗: ' + e.toString());
+  }
+}
+
+function deleteEventAndNotify(eventId) {
+  try {
+    var cleanId = eventId.split('@')[0];
+    Calendar.Events.remove(CONFIG.CALENDAR_ID, cleanId, { sendUpdates: 'all' });
+  } catch (e) {
+    Logger.log('イベント削除失敗: ' + e.toString());
+  }
+}
+
 // 通知機能を分割して整理
 function sendNotification(type, userName, items, title, email) {
   sendNotificationToTeacher(type, userName, items, title, email);
@@ -261,6 +288,8 @@ function sendNotificationToUser(type, userName, items, title, email) {
     GmailApp.sendEmail(email, '【TERACO予約】' + type + '完了のお知らせ (' + userName + '様)', userBody, { name: 'TERACOラボ' });
   } catch (e) { Logger.log('ユーザー通知失敗: ' + e.toString()); }
 }
+
+// --- 共通ユーティリティ ---
 function makeTitle(details) {
   if (!details || !details.category) return CONFIG.TITLE_PREFIX;
   return details.category + (details.course ? ' ' + details.course : '');
@@ -357,10 +386,6 @@ function getMonthsWithCount(start, days, existing) {
   for (var i = 0; i < existing.length; i++) { counts[existing[i].month_key] = (counts[existing[i].month_key] || 0) + 1; }
   for (var j = 0; j < months.length; j++) { var m = months[j]; m.reserved = counts[m.key] || 0; m.remaining = Math.max(0, m.limit - m.reserved); }
   return months;
-}
-function sendNotification(type, userName, items, title, email) {
-  sendNotificationToTeacher(type, userName, items, title, email);
-  sendNotificationToUser(type, userName, items, title, email);
 }
 function jsonOut(obj) { return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(ContentService.MimeType.JSON); }
 function todayStart() { var d = new Date(); return new Date(d.getFullYear(), d.getMonth(), d.getDate()); }
