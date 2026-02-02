@@ -1177,9 +1177,15 @@ const btnAdminLogout = document.getElementById('btnAdminLogout');
 const adminSummaryList = document.getElementById('adminSummaryList');
 
 adminTrigger.addEventListener('click', () => {
+  console.log('Admin trigger clicked'); // 動作確認用ログ
+  if (!adminPanel) {
+    console.error('adminPanel not found');
+    return;
+  }
   adminPanel.classList.toggle('hidden');
   if (!adminPanel.classList.contains('hidden')) {
     adminPanel.scrollIntoView({ behavior: 'smooth' });
+    adminPasscode.focus();
   }
 });
 
