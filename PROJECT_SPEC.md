@@ -80,4 +80,4 @@
 
 ## 6. 管理用情報
 - **現在のGASバージョン**: v40
-- **最新API URL**: `https://script.google.com/macros/s/AKfycbzPTzRSaXKXsO0lCmZDCPkEEQJpAcsy8MOxKZqNtTjvMvJOcrvLikSgBInM33L2EeNQ/exec`
+- **最新API URL**: `https://script.google.com/macros/s/AKfycbwjrKVKbw6ohdk58wB7H6vWcB6Rag4UtpX-DQemSiduJ1erm3x-CCgIUTEl7NcThbWU/exec`
