@@ -4,7 +4,7 @@ var CONFIG = {
   TIMEZONE: 'Asia/Tokyo',
   CALENDAR_ID: 'primary',
   TEACHER_EMAIL: 'fujisaki@teraco-labo.com',
-  ADMIN_PASSCODE: '1234', // 管理者画面用のパスコード
+  ADMIN_PASSCODE: '2684', // 管理者画面用のパスコード
   TITLE_PREFIX: 'TERACO予約',
   LOCATION: 'TERACOラボ',
   SLOT_MINUTES: 45,
