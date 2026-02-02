@@ -23,7 +23,7 @@ function authorizeMe() {
 function doGet(e) {
   var p = (e && e.parameter) || {};
   var action = p.action || 'overview';
-  if (action === 'version') return jsonOut({ok: true, version: 'v39', timestamp: new Date().toISOString()});
+  if (action === 'version') return jsonOut({ok: true, version: 'v40', timestamp: new Date().toISOString()});
   if (action === 'overview') return jsonOut(getOverview(p.name || '', Number(p.days) || CONFIG.OVERVIEW_DAYS));
   if (action === 'admin_summary') return jsonOut(getAdminSummary(p.passcode));
   return jsonOut({ok: true});
@@ -190,14 +190,14 @@ function cancel(name, eventIds, email) {
 
   try {
     var now = new Date();
-    var deadlineLimit = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 17, 0, 0); // 今日の17:00
+    var deadlineLimit = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 17, 0, 0);
     var removed = [];
     var title = '';
+    
     for (var i = 0; i < eventIds.length; i++) {
       var ev = cal.getEventById(eventIds[i]);
       if (!ev) continue;
 
-      // 取消締切チェック (前日17:00まで)
       var startTime = ev.getStartTime();
       var reservationDay = new Date(startTime.getFullYear(), startTime.getMonth(), startTime.getDate());
       var tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
@@ -211,52 +211,56 @@ function cancel(name, eventIds, email) {
       if (!title) title = ev.getTitle();
       removed.push({slot_id: String(ev.getStartTime().getTime()), start: ev.getStartTime().toISOString()});
 
-      // ゲストから削除（通知を飛ばすことで相手のカレンダーから確実に消去）
-      if (email) removeGuestAndNotify(eventIds[i], email);
-
       var newDesc = removeName(desc, userName);
       if (newDesc.trim()) {
+        // まだ他の予約者がいる場合：この生徒だけを削除して通知
         ev.setDescription(newDesc);
+        if (email) removeGuestAndNotify(eventIds[i], email);
       } else {
-        // イベント自体の削除も通知付きで行う
+        // この生徒が最後（または唯一）の予約者の場合：予定ごと削除して通知
+        // ※二重通知を防ぐため removeGuest は呼ばず、deleteEvent のみ実行
         deleteEventAndNotify(eventIds[i]);
       }
     }
-    if (removed.length > 0) sendNotification('取消', userName, removed, title, email);
+    
+    if (removed.length > 0) {
+      // 管理者には常に通知
+      sendNotificationToTeacher('取消', userName, removed, title, email);
+      // ユーザーへのアプリメールは、Googleの通知があるので「Google未ログイン（＝Google通知がない）」場合のみ送信
+      if (!email) {
+        sendNotificationToUser('取消', userName, removed, title, email);
+      }
+    }
     return {ok: true, message: removed.length + '件取り消しました'};
   } finally {
     lock.releaseLock();
   }
 }
 
-function removeGuestAndNotify(eventId, email) {
-  try {
-    var cleanId = eventId.split('@')[0];
-    var event = Calendar.Events.get(CONFIG.CALENDAR_ID, cleanId);
-    if (!event.attendees) return;
-
-    var lowerEmail = email.toLowerCase();
-    var newList = event.attendees.filter(function(a) { return a.email.toLowerCase() !== lowerEmail; });
-
-    if (newList.length !== event.attendees.length) {
-      // 削除通知を送信することで、相手のカレンダーから消去させる
-      Calendar.Events.patch({attendees: newList}, CONFIG.CALENDAR_ID, cleanId, { sendUpdates: 'all' });
-    }
-  } catch (e) {
-    Logger.log('ゲスト削除失敗: ' + e.toString());
-  }
+// 通知機能を分割して整理
+function sendNotification(type, userName, items, title, email) {
+  sendNotificationToTeacher(type, userName, items, title, email);
+  sendNotificationToUser(type, userName, items, title, email);
 }
 
-function deleteEventAndNotify(eventId) {
+function sendNotificationToTeacher(type, userName, items, title, email) {
+  if (!CONFIG.TEACHER_EMAIL) return;
+  var dates = items.map(function(it) { return '・' + formatSlot(new Date(it.start)); }).join('\n');
+  var now = new Date(), timestamp = Utilities.formatDate(now, CONFIG.TIMEZONE, 'yyyy/MM/dd HH:mm');
   try {
-    var cleanId = eventId.split('@')[0];
-    Calendar.Events.remove(CONFIG.CALENDAR_ID, cleanId, { sendUpdates: 'all' });
-  } catch (e) {
-    Logger.log('イベント削除失敗: ' + e.toString());
-  }
+    var teacherBody = userName + ' さんの予約が ' + type + ' されました。\n\n■ 内容: ' + title + '\n■ 日時:\n' + dates + '\n\n■ 連絡先: ' + (email || '（Google未ログイン）') + '\n■ 処理日時: ' + timestamp;
+    GmailApp.sendEmail(CONFIG.TEACHER_EMAIL, '【TERACO予約】' + type + '通知 (' + userName + '様)', teacherBody, { name: 'TERACO予約システム' });
+  } catch (e) { Logger.log('講師通知失敗: ' + e.toString()); }
 }
 
-// --- 共通ユーティリティ ---
+function sendNotificationToUser(type, userName, items, title, email) {
+  if (!email) return;
+  var dates = items.map(function(it) { return '・' + formatSlot(new Date(it.start)); }).join('\n');
+  try {
+    var userBody = userName + ' 様\n\nTERACOラボのご予約が ' + type + ' されました。\n\n■ 予約内容: ' + title + '\n■ 予約日時:\n' + dates + '\n\nご不明な点がございましたら、お気軽にお問い合わせください。\n\nTERACOラボ';
+    GmailApp.sendEmail(email, '【TERACO予約】' + type + '完了のお知らせ (' + userName + '様)', userBody, { name: 'TERACOラボ' });
+  } catch (e) { Logger.log('ユーザー通知失敗: ' + e.toString()); }
+}
 function makeTitle(details) {
   if (!details || !details.category) return CONFIG.TITLE_PREFIX;
   return details.category + (details.course ? ' ' + details.course : '');
@@ -355,20 +359,8 @@ function getMonthsWithCount(start, days, existing) {
   return months;
 }
 function sendNotification(type, userName, items, title, email) {
-  var dates = items.map(function(it) { return '・' + formatSlot(new Date(it.start)); }).join('\n');
-  var now = new Date(), timestamp = Utilities.formatDate(now, CONFIG.TIMEZONE, 'yyyy/MM/dd HH:mm');
-  if (CONFIG.TEACHER_EMAIL) {
-    try {
-      var teacherBody = userName + ' さんの予約が ' + type + ' されました。\n\n■ 内容: ' + title + '\n■ 日時:\n' + dates + '\n\n■ 連絡先: ' + (email || '（Google未ログイン）') + '\n■ 処理日時: ' + timestamp;
-      GmailApp.sendEmail(CONFIG.TEACHER_EMAIL, '【TERACO予約】' + type + '通知 (' + userName + '様)', teacherBody, { name: 'TERACO予約システム' });
-    } catch (e) {}
-  }
-  if (email) {
-    try {
-      var userBody = userName + ' 様\n\nTERACOラボのご予約が ' + type + ' されました。\n\n■ 予約内容: ' + title + '\n■ 予約日時:\n' + dates + '\n\nご不明な点がございましたら、お気軽にお問い合わせください。\n\nTERACOラボ';
-      GmailApp.sendEmail(email, '【TERACO予約】' + type + '完了のお知らせ (' + userName + '様)', userBody, { name: 'TERACOラボ' });
-    } catch (e) {}
-  }
+  sendNotificationToTeacher(type, userName, items, title, email);
+  sendNotificationToUser(type, userName, items, title, email);
 }
 function jsonOut(obj) { return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(ContentService.MimeType.JSON); }
 function todayStart() { var d = new Date(); return new Date(d.getFullYear(), d.getMonth(), d.getDate()); }
