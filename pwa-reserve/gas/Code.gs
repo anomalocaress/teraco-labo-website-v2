@@ -1,4 +1,4 @@
-// TERACO予約システム v40 (通知最適化・削除確実化版)
+// TERACO予約システム v42 (管理者ページから締切チェックスキップ対応)
 
 var CONFIG = {
   TIMEZONE: 'Asia/Tokyo',
@@ -23,7 +23,7 @@ function authorizeMe() {
 function doGet(e) {
   var p = (e && e.parameter) || {};
   var action = p.action || 'overview';
-  if (action === 'version') return jsonOut({ok: true, version: 'v40', timestamp: new Date().toISOString()});
+  if (action === 'version') return jsonOut({ok: true, version: 'v42', timestamp: new Date().toISOString()});
   if (action === 'overview') return jsonOut(getOverview(p.name || '', Number(p.days) || CONFIG.OVERVIEW_DAYS));
   if (action === 'admin_summary') return jsonOut(getAdminSummary(p.passcode));
   return jsonOut({ok: true});
@@ -80,8 +80,8 @@ function getAdminSummary(passcode) {
 function doPost(e) {
   var body = {};
   try { body = JSON.parse(e.postData.contents); } catch (err) { return jsonOut({ok: false, message: 'JSONエラー'}); }
-  if (body.action === 'batch_reserve') return jsonOut(reserve(body.name, body.slots, body.class_details, body.email, body.add_to_calendar));
-  if (body.action === 'batch_cancel') return jsonOut(cancel(body.name, body.event_ids, body.email));
+  if (body.action === 'batch_reserve') return jsonOut(reserve(body.name, body.slots, body.class_details, body.email, body.add_to_calendar, body.passcode));
+  if (body.action === 'batch_cancel') return jsonOut(cancel(body.name, body.event_ids, body.email, body.passcode));
   return jsonOut({ok: false, message: '不明なアクション'});
 }
 
@@ -96,7 +96,7 @@ function getOverview(name, days) {
   return { ok: true, name: trimmed, slots: slots, existing: existing, months: getMonthsWithCount(start, days, existing) };
 }
 
-function reserve(name, slotIds, classDetails, email, addToCalendar) {
+function reserve(name, slotIds, classDetails, email, addToCalendar, passcode) {
   if (!name || !name.trim()) return {ok: false, message: 'お名前を入力してください'};
   var userName = name.trim();
   var cal = CalendarApp.getCalendarById(CONFIG.CALENDAR_ID);
@@ -104,27 +104,34 @@ function reserve(name, slotIds, classDetails, email, addToCalendar) {
   if (!lock.tryLock(30000)) return {ok: false, message: 'サーバーが一時的に混み合っています。少し時間をおいてからもう一度お試しください。'};
 
   try {
-    // 予約締切チェック (前日17:00まで)
+    // 管理者チェック: パスコードが正しければ締切チェックをスキップ
+    var isAdmin = (passcode && passcode === CONFIG.ADMIN_PASSCODE);
+    
+    // 予約締切チェック (前日17:00まで) - 管理者の場合はスキップ
     var now = new Date();
     var deadlineLimit = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 17, 0, 0); // 今日の17:00
     
     var title = makeTitle(classDetails);
     var minutes = getMinutes(classDetails);
     var created = [];
+    var calendarAdded = 0;
 
     for (var i = 0; i < slotIds.length; i++) {
       var startTime = new Date(Number(slotIds[i]));
       if (isNaN(startTime.getTime())) continue;
 
-      // 判定: 予約日が明日以降か、または今日が17時前で明日以降の予約か
-      var reservationDay = new Date(startTime.getFullYear(), startTime.getMonth(), startTime.getDate());
-      var tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
-      
-      if (reservationDay < tomorrow) {
-        return {ok: false, message: '当日および過去の予約はできません。前日17:00までにご予約ください。'};
-      }
-      if (reservationDay.getTime() === tomorrow.getTime() && now > deadlineLimit) {
-        return {ok: false, message: '明日の予約締切（本日17:00）を過ぎています。お急ぎの場合は教室へ直接ご連絡ください。'};
+      // 管理者でない場合のみ締切チェック
+      if (!isAdmin) {
+        // 判定: 予約日が明日以降か、または今日が17時前で明日以降の予約か
+        var reservationDay = new Date(startTime.getFullYear(), startTime.getMonth(), startTime.getDate());
+        var tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+        
+        if (reservationDay < tomorrow) {
+          return {ok: false, message: '当日および過去の予約はできません。前日17:00までにご予約ください。'};
+        }
+        if (reservationDay.getTime() === tomorrow.getTime() && now > deadlineLimit) {
+          return {ok: false, message: '明日の予約締切（本日17:00）を過ぎています。お急ぎの場合は教室へ直接ご連絡ください。'};
+        }
       }
 
       var endTime = new Date(startTime.getTime() + minutes * 60000);
@@ -146,42 +153,59 @@ function reserve(name, slotIds, classDetails, email, addToCalendar) {
         eventId = ev.getId();
       }
       
-      // 予約時は「回答待ち」ステータスでサイレント追加
+      // 複数予約でAPI制限を避けるため、2件目以降は少し待ってからゲスト追加（リトライ付き）
       if (addToCalendar && email && eventId) {
-        addGuestSilently(eventId, email);
+        if (i > 0) Utilities.sleep(450);
+        var ok = addGuestSilently(eventId, email);
+        if (!ok) {
+          Utilities.sleep(500);
+          ok = addGuestSilently(eventId, email);
+        }
+        if (ok) calendarAdded++;
       }
       
       created.push({event_id: eventId, slot_id: String(slotIds[i]), start: startTime.toISOString()});
     }
 
     if (created.length > 0) sendNotification('予約', userName, created, title, email);
-    return {ok: true, message: created.length + '件予約しました', created: created};
+    var msg = created.length + '件予約しました';
+    if (addToCalendar && email && calendarAdded < created.length && calendarAdded >= 0) {
+      msg += '（Googleカレンダー反映: ' + calendarAdded + '/' + created.length + '件）';
+    }
+    return {ok: true, message: msg, created: created, calendar_added: calendarAdded};
   } finally {
     lock.releaseLock();
   }
 }
 
 /**
- * ゲストを「回答待ち」状態でサイレント追加する
+ * ゲストを「回答待ち」状態でサイレント追加する。
+ * 主催者をattendeesに含めて「全員が辞退しました」表示を防ぎ、成功時trueを返す。
  */
 function addGuestSilently(eventId, email) {
   try {
     var cleanId = eventId.split('@')[0];
     var event = Calendar.Events.get(CONFIG.CALENDAR_ID, cleanId);
-    var attendees = event.attendees || [];
-    
-    var exists = attendees.some(function(a) { return a.email.toLowerCase() === email.toLowerCase(); });
+    var attendees = event.attendees ? event.attendees.slice() : [];
+    var organizerEmail = event.organizer && event.organizer.email ? event.organizer.email.toLowerCase() : '';
+
+    // 主催者がattendeesにいない場合は先に追加（accepted）→「全員が辞退しました」を防ぐ
+    if (organizerEmail && !attendees.some(function(a) { return (a.email || '').toLowerCase() === organizerEmail; })) {
+      attendees.push({ email: event.organizer.email, responseStatus: 'accepted' });
+    }
+    var exists = attendees.some(function(a) { return (a.email || '').toLowerCase() === email.toLowerCase(); });
     if (!exists) {
       attendees.push({ email: email, responseStatus: 'needsAction' });
-      // 招待メールを送らずに追加
       Calendar.Events.patch({attendees: attendees}, CONFIG.CALENDAR_ID, cleanId, { sendUpdates: 'none' });
     }
+    return true;
   } catch (e) {
-    Logger.log('ゲスト追加失敗: ' + e.toString());
+    Logger.log('ゲスト追加失敗: ' + eventId + ' - ' + e.toString());
+    return false;
   }
 }
 
-function cancel(name, eventIds, email) {
+function cancel(name, eventIds, email, passcode) {
   if (!name || !name.trim()) return {ok: false, message: 'お名前を入力してください'};
   var userName = name.trim();
   var cal = CalendarApp.getCalendarById(CONFIG.CALENDAR_ID);
@@ -189,6 +213,9 @@ function cancel(name, eventIds, email) {
   if (!lock.tryLock(30000)) return {ok: false, message: 'サーバーが一時的に混み合っています。少し時間をおいてからもう一度お試しください。'};
 
   try {
+    // 管理者チェック: パスコードが正しければ締切チェックをスキップ
+    var isAdmin = (passcode && passcode === CONFIG.ADMIN_PASSCODE);
+    
     var now = new Date();
     var deadlineLimit = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 17, 0, 0);
     var removed = [];
@@ -202,8 +229,11 @@ function cancel(name, eventIds, email) {
       var reservationDay = new Date(startTime.getFullYear(), startTime.getMonth(), startTime.getDate());
       var tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
 
-      if (reservationDay < tomorrow || (reservationDay.getTime() === tomorrow.getTime() && now > deadlineLimit)) {
-        return {ok: false, message: '当日および前日17:00を過ぎたキャンセルの受付はできません。教室へ直接ご連絡ください。'};
+      // 管理者でない場合のみ締切チェック
+      if (!isAdmin) {
+        if (reservationDay < tomorrow || (reservationDay.getTime() === tomorrow.getTime() && now > deadlineLimit)) {
+          return {ok: false, message: '当日および前日17:00を過ぎたキャンセルの受付はできません。教室へ直接ご連絡ください。'};
+        }
       }
 
       var desc = ev.getDescription() || '';

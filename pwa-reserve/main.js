@@ -1,4 +1,4 @@
-const API_BASE = 'https://script.google.com/macros/s/AKfycbwjrKVKbw6ohdk58wB7H6vWcB6Rag4UtpX-DQemSiduJ1erm3x-CCgIUTEl7NcThbWU/exec';
+const API_BASE = 'https://script.google.com/macros/s/AKfycbyfI6MgS5LpkW_I9y6djFa2MtozYkX87tC1YEz16Fu1sj5HvBsqaGdF91qLU84k3uzy/exec';
 
 const nameInput = document.getElementById('nameInput');
 const calendarWrap = document.getElementById('calendarWrap');
@@ -8,6 +8,7 @@ const existingList = document.getElementById('existingList');
 const messageEl = document.getElementById('message');
 const btnSubmit = document.getElementById('btnSubmit');
 const btnClear = document.getElementById('btnClear');
+const btnRefresh = document.getElementById('btnRefresh');
 const btnCheckReservation = document.getElementById('btnCheckReservation');
 const nameError = document.getElementById('nameError');
 const loadingOverlay = document.getElementById('loadingOverlay');
@@ -249,6 +250,24 @@ nameInput.addEventListener('blur', () => {
   // if (state.displayName) {
   //   localStorage.setItem('teraco_name', state.displayName);
   // }
+});
+
+btnRefresh.addEventListener('click', () => {
+  if (confirm('名前入力と予約選択をリセットしますか？\n（Googleログイン状態は維持されます）')) {
+    // 名前入力欄をクリア（Googleログイン状態は維持）
+    nameInput.value = '';
+    nameInput.disabled = false; // 入力可能にする
+    state.displayName = '';
+    state.normalizedName = '';
+    
+    // 予約選択をクリア
+    state.selected.clear();
+    state.activeDay = null;
+    
+    // 画面を再描画
+    renderAll();
+    showMessage('リフレッシュしました。名前と予約を最初から選択できます。');
+  }
 });
 
 btnClear.addEventListener('click', () => {
@@ -963,6 +982,9 @@ async function submitSelection() {
     console.log('🔍 既存の予約:', Array.from(state.existingSet));
     console.log('🔍 名前:', state.displayName);
 
+    // 管理者ログイン済みならパスコードを送信（締切チェックスキップ用）
+    const adminCode = sessionStorage.getItem('teraco_admin_code');
+    
     const payload = {
       action: 'batch_reserve',
       name: state.displayName,
@@ -973,7 +995,8 @@ async function submitSelection() {
         category: categoryLabel,
         course: courseLabel,
         frequency: freqLabel
-      }
+      },
+      passcode: adminCode || null // 管理者の場合は締切チェックスキップ
     };
 
     console.log('📤 送信するペイロード:', payload);
@@ -1025,7 +1048,11 @@ async function submitSelection() {
     setLoading(false);
 
     showMessage(data.message || `${count}件の予約を登録しました。`);
-    alert('予約が完了しました！');
+    var alertMsg = '予約が完了しました！';
+    if (data.calendar_added != null && data.created && data.calendar_added < data.created.length) {
+      alertMsg += '\n（Googleカレンダーへの反映が一部のみの場合は、しばらくしてからカレンダーを確認してください）';
+    }
+    alert(alertMsg);
 
     // バックグラウンドで最新データを取得（ユーザーを待たせない）
     loadOverview({ preserveSelection: false }).catch(console.error);
@@ -1051,6 +1078,9 @@ async function batchCancelReservations(items) {
     // Use batch_cancel action
     const eventIds = items.map(item => item.event_id);
 
+    // 管理者ログイン済みならパスコードを送信（締切チェックスキップ用）
+    const adminCode = sessionStorage.getItem('teraco_admin_code');
+    
     const res = await fetch(API_BASE, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain;charset=utf-8' },
@@ -1058,7 +1088,8 @@ async function batchCancelReservations(items) {
         action: 'batch_cancel',
         name: state.displayName,
         email: state.googleUser ? state.googleUser.email : null,
-        event_ids: eventIds
+        event_ids: eventIds,
+        passcode: adminCode || null // 管理者の場合は締切チェックスキップ
       }),
       redirect: 'follow'
     });
