@@ -292,7 +292,7 @@ function normalizeNameInput() {
 
 function scheduleOverview(force) {
   clearTimeout(overviewTimer);
-  overviewTimer = setTimeout(() => loadOverview({ preserveSelection: true }), force ? 100 : 400);
+  overviewTimer = setTimeout(() => loadOverview({ preserveSelection: true }), force ? 50 : 200);
 }
 
 async function checkReservations() {
@@ -304,11 +304,10 @@ async function checkReservations() {
     return;
   }
 
-  // showMessage('予約状況を確認しています...');
   setLoading(true, '予約状況を確認しています...');
 
   try {
-    // Load real data
+    // Load real data with shorter timeout
     await loadOverview({ preserveSelection: true });
 
     if (state.existing.length === 0) {
@@ -325,7 +324,7 @@ async function checkReservations() {
   }
 }
 
-async function loadOverview({ preserveSelection }) {
+async function loadOverview({ preserveSelection, silent = false }) {
   // 1. Initialize Slots (Local Mock for Grid)
   if (!state.slots.length) {
     applySlotList(buildMockSlots(60));
@@ -343,16 +342,16 @@ async function loadOverview({ preserveSelection }) {
       url.searchParams.append('name', state.displayName);
     }
 
-    // Show loading only on first load
+    // Show loading only on first load or when explicitly requested (not silent)
     const firstSlot = state.slots[0];
     const isFirstLoad = firstSlot && !firstSlot.reserved_count_updated;
-    if (isFirstLoad) {
+    if (isFirstLoad && !silent) {
       setLoading(true, '予約状況を確認しています...');
     }
 
-    // Add timeout to prevent infinite loading (30 seconds)
+    // Add timeout to prevent infinite loading (5 seconds)
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 30000);
+    const timeoutId = setTimeout(() => controller.abort(), 5000);
 
     const res = await fetch(url.toString(), {
       signal: controller.signal,
@@ -389,8 +388,8 @@ async function loadOverview({ preserveSelection }) {
   } catch (e) {
     console.error("Failed to fetch reservations:", e);
     if (e.name === 'AbortError') {
-      console.warn('Request timeout after 30 seconds');
-      showMessage('接続に時間がかかっています。Googleのサーバーが初回起動準備中の可能性があるため、10秒ほど待ってからもう一度お試しください。');
+      console.warn('Request timeout after 5 seconds');
+      showMessage('接続に時間がかかっています。Googleのサーバーが初回起動準備中の可能性があるため、しばらく待ってからもう一度お試しください。');
     } else {
       showMessage('予約データの読み込みに失敗しました。電波の良い場所で再度お試しいただくか、しばらくお待ちください。');
     }
@@ -1054,8 +1053,10 @@ async function submitSelection() {
     }
     alert(alertMsg);
 
-    // バックグラウンドで最新データを取得（ユーザーを待たせない）
-    loadOverview({ preserveSelection: false }).catch(console.error);
+    // バックグラウンドで最新データを取得（ユーザーを待たせない、ローディング表示なし）
+    setTimeout(() => {
+      loadOverview({ preserveSelection: false, silent: true }).catch(console.error);
+    }, 500);
     return;
 
   } catch (err) {
@@ -1123,8 +1124,10 @@ async function batchCancelReservations(items) {
     alert(data.message || '予約を取り消しました。');
     showMessage('予約を取り消しました。');
 
-    // バックグラウンドで最新データを取得
-    loadOverview({ preserveSelection: true }).catch(console.error);
+    // バックグラウンドで最新データを取得（ローディング表示なし）
+    setTimeout(() => {
+      loadOverview({ preserveSelection: true, silent: true }).catch(console.error);
+    }, 500);
     return;
 
   } catch (err) {
