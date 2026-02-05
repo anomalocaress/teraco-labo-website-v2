@@ -1,4 +1,4 @@
-// TERACO予約システム v42 (管理者ページから締切チェックスキップ対応)
+// TERACO予約システム v43 (予約確認・キャンセル: overviewをPOSTで取得しクエリパラメータ消失を回避)
 
 var CONFIG = {
   TIMEZONE: 'Asia/Tokyo',
@@ -23,7 +23,7 @@ function authorizeMe() {
 function doGet(e) {
   var p = (e && e.parameter) || {};
   var action = p.action || 'overview';
-  if (action === 'version') return jsonOut({ok: true, version: 'v42', timestamp: new Date().toISOString()});
+  if (action === 'version') return jsonOut({ok: true, version: 'v43', timestamp: new Date().toISOString()});
   if (action === 'overview') return jsonOut(getOverview(p.name || '', Number(p.days) || CONFIG.OVERVIEW_DAYS));
   if (action === 'admin_summary') return jsonOut(getAdminSummary(p.passcode));
   return jsonOut({ok: true});
@@ -80,6 +80,7 @@ function getAdminSummary(passcode) {
 function doPost(e) {
   var body = {};
   try { body = JSON.parse(e.postData.contents); } catch (err) { return jsonOut({ok: false, message: 'JSONエラー'}); }
+  if (body.action === 'overview') return jsonOut(getOverview(body.name || '', Number(body.days) || CONFIG.OVERVIEW_DAYS));
   if (body.action === 'batch_reserve') return jsonOut(reserve(body.name, body.slots, body.class_details, body.email, body.add_to_calendar, body.passcode));
   if (body.action === 'batch_cancel') return jsonOut(cancel(body.name, body.event_ids, body.email, body.passcode));
   return jsonOut({ok: false, message: '不明なアクション'});

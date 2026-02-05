@@ -1,4 +1,4 @@
-const API_BASE = 'https://script.google.com/macros/s/AKfycbyfI6MgS5LpkW_I9y6djFa2MtozYkX87tC1YEz16Fu1sj5HvBsqaGdF91qLU84k3uzy/exec';
+const API_BASE = 'https://script.google.com/macros/s/AKfycbwzRh2WYpVdahLQMunFywTDARr5iODNGKNp_4YXS_M-adSLI81IZwjvVeBbsX9IWRH9/exec';
 
 const nameInput = document.getElementById('nameInput');
 const calendarWrap = document.getElementById('calendarWrap');
@@ -335,13 +335,8 @@ async function loadOverview({ preserveSelection, silent = false }) {
     renderAll();
   }
 
-  // 2. Fetch Data from GAS (Always fetch to get slot counts)
+  // 2. Fetch Data from GAS (POSTで取得 - GETのクエリパラメータがリダイレクトで失われる問題を回避)
   try {
-    const url = new URL(API_BASE);
-    if (state.displayName) {
-      url.searchParams.append('name', state.displayName);
-    }
-
     // Show loading only on first load or when explicitly requested (not silent)
     const firstSlot = state.slots[0];
     const isFirstLoad = firstSlot && !firstSlot.reserved_count_updated;
@@ -353,10 +348,18 @@ async function loadOverview({ preserveSelection, silent = false }) {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 5000);
 
-    const res = await fetch(url.toString(), {
+    const res = await fetch(API_BASE, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({
+        action: 'overview',
+        name: state.displayName || '',
+        days: 60
+      }),
       signal: controller.signal,
       mode: 'cors',
-      cache: 'no-cache'
+      cache: 'no-cache',
+      redirect: 'follow'
     });
     clearTimeout(timeoutId);
 
