@@ -336,67 +336,73 @@ async function loadOverview({ preserveSelection, silent = false }) {
   }
 
   // 2. Fetch Data from GAS (POSTで取得 - GETのクエリパラメータがリダイレクトで失われる問題を回避)
+  const firstSlot = state.slots[0];
+  const isFirstLoad = firstSlot && !firstSlot.reserved_count_updated;
+  const TIMEOUT_MS = 30000; // GASコールドスタート対応で30秒
+
   try {
-    // Show loading only on first load or when explicitly requested (not silent)
-    const firstSlot = state.slots[0];
-    const isFirstLoad = firstSlot && !firstSlot.reserved_count_updated;
-    if (isFirstLoad && !silent) {
-      setLoading(true, '予約状況を確認しています...');
+    for (let attempt = 0; attempt < 2; attempt++) {
+      try {
+        if (isFirstLoad && !silent) {
+          setLoading(true, attempt === 0 ? '予約状況を確認しています...' : '再試行しています...');
+        }
+
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), TIMEOUT_MS);
+
+        const res = await fetch(API_BASE, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify({
+            action: 'overview',
+            name: state.displayName || '',
+            days: 60
+          }),
+          signal: controller.signal,
+          mode: 'cors',
+          cache: 'no-cache',
+          redirect: 'follow'
+        });
+        clearTimeout(timeoutId);
+
+        if (!res.ok) {
+          throw new Error('サーバーが一時的に応答していません。');
+        }
+
+        const data = await res.json();
+        console.log('📥 サーバーからのレスポンス:', data);
+
+        if (data.existing) {
+          state.existing = data.existing;
+          state.existingSet = new Set(state.existing.map(e => e.slot_id));
+
+          state.existingByDay = new Map();
+          state.existing.forEach(ev => {
+            const slot = state.slotIndex.get(ev.slot_id);
+            const dayKey = slot ? slot.day_key : (ev.start ? ev.start.slice(0, 10) : '');
+            if (!dayKey) return;
+            state.existingByDay.set(dayKey, (state.existingByDay.get(dayKey) || 0) + 1);
+          });
+        }
+
+        if (data.slots && Array.isArray(data.slots)) {
+          applySlotList(data.slots);
+        }
+        break;
+      } catch (e) {
+        console.error("Failed to fetch reservations (attempt " + (attempt + 1) + "):", e);
+        if (e.name === 'AbortError' && attempt === 0) {
+          await new Promise(r => setTimeout(r, 2000));
+          continue;
+        }
+        if (e.name === 'AbortError') {
+          showMessage('接続がタイムアウトしました。しばらく待ってからもう一度お試しください。');
+        } else {
+          showMessage('予約データの読み込みに失敗しました。電波の良い場所で再度お試しいただくか、しばらくお待ちください。');
+        }
+        break;
+      }
     }
-
-    // Add timeout to prevent infinite loading (5 seconds)
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 5000);
-
-    const res = await fetch(API_BASE, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify({
-        action: 'overview',
-        name: state.displayName || '',
-        days: 60
-      }),
-      signal: controller.signal,
-      mode: 'cors',
-      cache: 'no-cache',
-      redirect: 'follow'
-    });
-    clearTimeout(timeoutId);
-
-    if (!res.ok) {
-      throw new Error('サーバーが一時的に応答していません。');
-    }
-
-    const data = await res.json();
-    console.log('📥 サーバーからのレスポンス:', data);
-
-    if (data.existing) {
-      state.existing = data.existing;
-      state.existingSet = new Set(state.existing.map(e => e.slot_id));
-
-      // Re-map existing by day
-      state.existingByDay = new Map();
-      state.existing.forEach(ev => {
-        const slot = state.slotIndex.get(ev.slot_id);
-        const dayKey = slot ? slot.day_key : (ev.start ? ev.start.slice(0, 10) : '');
-        if (!dayKey) return;
-        state.existingByDay.set(dayKey, (state.existingByDay.get(dayKey) || 0) + 1);
-      });
-    }
-
-    // Update slots from server data
-    if (data.slots && Array.isArray(data.slots)) {
-      applySlotList(data.slots);
-    }
-  } catch (e) {
-    console.error("Failed to fetch reservations:", e);
-    if (e.name === 'AbortError') {
-      console.warn('Request timeout after 5 seconds');
-      showMessage('接続に時間がかかっています。Googleのサーバーが初回起動準備中の可能性があるため、しばらく待ってからもう一度お試しください。');
-    } else {
-      showMessage('予約データの読み込みに失敗しました。電波の良い場所で再度お試しいただくか、しばらくお待ちください。');
-    }
-    // Continue to render with mock data even on error
   } finally {
     setLoading(false);
   }
