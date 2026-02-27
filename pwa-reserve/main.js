@@ -243,20 +243,43 @@ nameInput.addEventListener('blur', () => {
 });
 
 btnRefresh.addEventListener('click', () => {
-  if (confirm('名前入力と予約選択をリセットしますか？\n（Googleログイン状態は維持されます）')) {
-    // 名前入力欄をクリア（Googleログイン状態は維持）
-    nameInput.value = '';
-    nameInput.disabled = false; // 入力可能にする
-    state.displayName = '';
-    state.normalizedName = '';
-    
-    // 予約選択をクリア
+  if (confirm('最初からやり直しますか？\n（Googleログイン状態は維持されます）')) {
+
+    // ── 名前のリセット ──
+    // Googleログイン中でない場合のみ名前をクリアして編集可能に
+    if (!state.googleUser) {
+      nameInput.value = '';
+      nameInput.disabled = false;
+      state.displayName = '';
+      state.normalizedName = '';
+    }
+    // Googleログイン中の場合は名前はそのまま（ログイン情報は維持）
+
+    // ── 選択中の予約枠をクリア ──
     state.selected.clear();
+
+    // ── 予約確認で取得した既存予約リストをクリア ──
+    state.existing = [];
+    state.existingSet = new Set();
+    state.existingByDay = new Map();
+
+    // ── カレンダーの選択状態をリセット ──
     state.activeDay = null;
-    
-    // 画面を再描画
+
+    // ── 予約確認パネルを非表示に ──
+    existingPanel.classList.add('hidden');
+    existingList.innerHTML = '';
+
+    // ── 時間パネルを非表示に ──
+    const timePanelWrap = document.getElementById('timePanelWrap');
+    if (timePanelWrap) {
+      timePanelWrap.classList.add('hidden');
+      timePanelWrap.innerHTML = '';
+    }
+
+    // ── 画面を再描画 ──
     renderAll();
-    showMessage('リフレッシュしました。名前と予約を最初から選択できます。');
+    showMessage('リセットしました。最初からやり直せます。');
   }
 });
 
