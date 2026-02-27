@@ -39,8 +39,7 @@ const state = {
   loading: false,
   classSelection: {
     category: 'smartphone', // smartphone | pc_ai
-    course: 'intro',        // intro | applied | basic | advance
-    frequency: 4            // 4 | 8
+    course: 'intro'         // intro | applied | basic | advance | private
   },
   googleUser: null // Store Google User Info
 };
@@ -207,15 +206,6 @@ function initClassSelection() {
     });
   });
 
-  // Frequency
-  document.querySelectorAll('#frequencyGroup .toggle-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      updateToggleUI(document.getElementById('frequencyGroup'), btn.dataset.value);
-      state.classSelection.frequency = btn.dataset.value;
-      // Re-render to update slot types (Regular/Service) based on new frequency
-      renderAll();
-    });
-  });
 }
 
 function updateToggleUI(group, value) {
@@ -447,208 +437,133 @@ function renderCurrentDate() {
 }
 
 function renderCalendar() {
-  // Ensure slots exist
   if (!state.slots.length) {
     applySlotList(buildMockSlots(60));
   }
 
   calendarWrap.innerHTML = '';
-  const monthKeys = Array.from(new Set(state.slots.map(slot => slot.month_key))).sort();
-
-  // Always display exactly 2 months (Current and Next)
-  const displayMonths = monthKeys.slice(0, 2);
-
-  if (displayMonths.length === 0) {
-    calendarWrap.innerHTML = '<div class="error-msg">カレンダーデータの読み込みに失敗しました。</div>';
-    return;
-  }
-
-  displayMonths.forEach(monthKey => {
-    calendarWrap.appendChild(buildMonthCalendar(monthKey));
-  });
-}
-
-function buildMonthCalendar(monthKey) {
-  const [yearStr, monthStr] = monthKey.split('-');
-  const year = Number(yearStr);
-  const month = Number(monthStr) - 1;
-  const first = new Date(year, month, 1);
-  const daysInMonth = new Date(year, month + 1, 0).getDate();
-  const title = `${year}年${month + 1}月`;
-  const table = document.createElement('table');
-  table.className = 'month-grid';
-  table.innerHTML = `
-    <thead>
-      <tr><th>日</th><th>月</th><th>火</th><th>水</th><th>木</th><th>金</th><th>土</th></tr>
-    </thead>
-    <tbody></tbody>
-  `;
-  const tbody = table.querySelector('tbody');
-  let row = document.createElement('tr');
-  const startDay = first.getDay();
-  for (let i = 0; i < startDay; i++) {
-    const cell = document.createElement('td');
-    cell.className = 'disabled';
-    row.appendChild(cell);
-  }
   const today = new Date();
   today.setHours(0, 0, 0, 0);
+  const DAYS = ['日', '月', '火', '水', '木', '金', '土'];
 
-  for (let day = 1; day <= daysInMonth; day++) {
-    if (row.children.length === 7) {
-      tbody.appendChild(row);
-      row = document.createElement('tr');
-    }
-    const date = new Date(year, month, day);
-    const dayKey = formatDayKey(date);
-    const cell = document.createElement('td');
-    cell.textContent = String(day);
+  // 日付ごとにグループ化
+  const dayKeys = Array.from(new Set(state.slots.map(s => s.day_key))).sort();
 
-    const dayOfWeek = date.getDay(); // 0=Sun, 1=Mon, 2=Tue, 3=Wed, 4=Thu, 5=Fri, 6=Sat
+  let lastMonthKey = '';
+
+  dayKeys.forEach(dayKey => {
     const slots = state.daySlots.get(dayKey) || [];
-    const hasSelected = Array.from(state.selected.values()).some(slot => slot.day_key === dayKey);
-    const hasReservation = state.existing.some(ev => (state.slotIndex.get(ev.slot_id)?.day_key || ev.start.slice(0, 10)) === dayKey);
+    if (!slots.length) return;
 
-    // 1. 過去・今日は選択不可
-    if (date <= today) {
-      cell.classList.add('disabled');
-      cell.addEventListener('click', () => {
-        alert('予約・修正は講座前日の17:00までにお願いいたします。なお当日の変更はお受け付けできません。お急ぎの場合は教室管理者に直接ご連絡ください。');
-      });
-      row.appendChild(cell);
-      continue;
+    const [y, m, d] = dayKey.split('-').map(Number);
+    const date = new Date(y, m - 1, d);
+    const dayOfWeek = date.getDay();
+
+    // 過去・今日はスキップ
+    if (date <= today) return;
+    // 土日スキップ
+    if (dayOfWeek === 0 || dayOfWeek === 6) return;
+    // 個人レッスンは月・火・木のみ
+    if (state.classSelection.course === 'private' && ![1, 2, 4].includes(dayOfWeek)) return;
+
+    // 月の見出し
+    const monthKey = `${y}-${String(m).padStart(2, '0')}`;
+    if (monthKey !== lastMonthKey) {
+      const monthHeader = document.createElement('div');
+      monthHeader.textContent = `${y}年${m}月`;
+      monthHeader.style.cssText = 'font-size:22px; font-weight:700; color:var(--green-deep); padding:16px 4px 8px; border-bottom:2px solid var(--border); margin-bottom:12px; margin-top:' + (lastMonthKey ? '24px' : '0');
+      calendarWrap.appendChild(monthHeader);
+      lastMonthKey = monthKey;
     }
 
-    // 2. 土日は選択不可（お休み）
-    if (dayOfWeek === 0 || dayOfWeek === 6) {
-      cell.classList.add('disabled');
-      cell.addEventListener('click', () => {
-        alert('土曜日・日曜日は休講日です。');
-      });
-      row.appendChild(cell);
-      continue;
+    const hasSelected = slots.some(s => state.selected.has(s.slot_id));
+    const hasReservation = slots.some(s => state.existingSet.has(s.slot_id));
+    const anySelectable = slots.some(s => s.reserved_count < s.capacity && !state.existingSet.has(s.slot_id));
+
+    // 日付行
+    const dateRow = document.createElement('div');
+    dateRow.className = 'date-row';
+    if (!anySelectable && !hasReservation) dateRow.classList.add('date-row-full');
+    if (hasReservation) dateRow.classList.add('date-row-booked');
+    if (hasSelected) dateRow.classList.add('date-row-selected');
+
+    // 日付ボタン
+    const dateBtn = document.createElement('button');
+    dateBtn.type = 'button';
+    dateBtn.className = 'date-label-btn';
+
+    let dateText = `${m}月 ${d}日（${DAYS[dayOfWeek]}）`;
+    let badge = '';
+    if (hasReservation) badge = '✓ 予約済み';
+    else if (!anySelectable) badge = '満席';
+
+    dateBtn.innerHTML = `<span>${dateText}</span>${badge ? `<span style="font-size:17px; color:${hasReservation ? 'var(--green)' : '#bbb'};">${badge}</span>` : '<span style="font-size:22px; color:#bbb;">▼</span>'}`;
+
+    if (!anySelectable && !hasReservation) {
+      dateBtn.disabled = true;
     }
 
-    // 3. 個人レッスンの場合のみ、月・火・木以外は選択不可
-    if (state.classSelection.course === 'private') {
-      if (![1, 2, 4].includes(dayOfWeek)) {
-        cell.classList.add('disabled');
-        cell.addEventListener('click', () => {
-          alert('個人レッスンは月曜日・火曜日・木曜日のみ受付可能です。');
+    // 時間パネル（初期は非表示、予約済み・選択済みの日は展開）
+    const timePanel = document.createElement('div');
+    timePanel.className = 'time-panel' + (hasSelected || hasReservation ? '' : ' hidden');
+
+    slots.forEach(slot => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'time-btn';
+
+      if (state.existingSet.has(slot.slot_id)) {
+        btn.textContent = `${slot.start_time}\n済`;
+        btn.classList.add('time-btn-done');
+        btn.disabled = true;
+      } else if (state.selected.has(slot.slot_id)) {
+        btn.textContent = `${slot.start_time}\n✓ 選択中`;
+        btn.classList.add('time-btn-selected');
+        btn.style.whiteSpace = 'pre-line';
+        btn.addEventListener('click', () => {
+          state.selected.delete(slot.slot_id);
+          renderAll();
         });
-        row.appendChild(cell);
-        continue;
+      } else if (slot.reserved_count >= slot.capacity) {
+        btn.textContent = `${slot.start_time}\n満席`;
+        btn.classList.add('time-btn-full');
+        btn.disabled = true;
+        btn.style.whiteSpace = 'pre-line';
+      } else {
+        btn.textContent = slot.start_time;
+        btn.addEventListener('click', () => {
+          addSlot(slot);
+        });
       }
-    }
 
-    // スロットデータがない場合（範囲外または読み込み中）
-    if (!slots.length) {
-      cell.classList.add('disabled');
-      cell.addEventListener('click', () => {
-        alert('この日の予約枠データを取得できませんでした。ページを再読み込みしてください。');
-      });
-      row.appendChild(cell);
-      continue;
-    }
+      timePanel.appendChild(btn);
+    });
 
-    // Check if there are any available slots for this day
-    const hasSelectable = slots.some(slot => slot.reserved_count < slot.capacity && !state.existingSet.has(slot.slot_id));
+    // 日付タップで時間パネル開閉
+    dateBtn.addEventListener('click', () => {
+      timePanel.classList.toggle('hidden');
+      const arrow = dateBtn.querySelector('span:last-child');
+      if (arrow && !hasReservation && anySelectable) {
+        arrow.textContent = timePanel.classList.contains('hidden') ? '▼' : '▲';
+      }
+    });
 
-    if (!hasSelectable) {
-      cell.classList.add('full');
-      cell.addEventListener('click', () => {
-        alert('この日の予約枠はすべて満席または予約済みです。');
-      });
-    } else {
-      // Clickable - Embed invisible select for native behavior
-      const select = document.createElement('select');
-      select.className = 'inline-time-select';
+    dateRow.appendChild(dateBtn);
+    dateRow.appendChild(timePanel);
+    calendarWrap.appendChild(dateRow);
+  });
 
-      // Default option
-      const def = document.createElement('option');
-      def.text = '';
-      def.value = '';
-      def.disabled = true;
-      def.selected = true;
-      select.appendChild(def);
-
-      slots.forEach(slot => {
-        const option = document.createElement('option');
-        option.value = slot.slot_id;
-
-        let text = `${slot.start_time}`;
-        let disabled = false;
-
-        // Calculate remaining seats based on server data
-        let remaining = Math.max(0, slot.capacity - slot.reserved_count);
-
-        if (state.existingSet.has(slot.slot_id)) {
-          // Already reserved by this user
-          text += ` (済) (${slot.reserved_count}人)`;
-          disabled = true;
-        } else if (slot.reserved_count >= slot.capacity) {
-          text += ' (満)';
-          disabled = true;
-        } else if (state.selected.has(slot.slot_id)) {
-          // Selected by user currently
-          // Show reserved count
-          text += ` (選) (${slot.reserved_count}人)`;
-          disabled = true;
-        } else {
-          text += ` (${slot.reserved_count}人)`;
-        }
-
-        option.textContent = text;
-        option.disabled = disabled;
-        select.appendChild(option);
-      });
-
-      select.addEventListener('change', (e) => {
-        const slotId = e.target.value;
-        if (slotId) {
-          const slot = state.slotIndex.get(slotId);
-          if (slot) addSlot(slot);
-        }
-        // Reset value so it can be selected again if needed (though usually re-rendered)
-        select.value = '';
-      });
-
-      // Add hover effect to parent
-      select.addEventListener('mouseenter', () => cell.classList.add('hover'));
-      select.addEventListener('mouseleave', () => cell.classList.remove('hover'));
-
-      cell.appendChild(select);
-    }
-
-    if (hasSelected) cell.classList.add('has-selected');
-    if (state.activeDay === dayKey) cell.classList.add('active');
-    if (hasReservation) cell.classList.add('has-reservation');
-
-    row.appendChild(cell);
+  if (calendarWrap.children.length === 0) {
+    calendarWrap.innerHTML = '<div style="text-align:center; padding:24px; color:#999; font-size:18px;">予約できる日が見つかりませんでした</div>';
   }
-
-  while (row.children.length && row.children.length < 7) {
-    const cell = document.createElement('td');
-    cell.className = 'disabled';
-    row.appendChild(cell);
-  }
-  if (row.children.length) tbody.appendChild(row);
-
-  const wrapper = document.createElement('div');
-  wrapper.className = 'calendar';
-  const header = document.createElement('header');
-  header.textContent = title;
-  wrapper.appendChild(header);
-  wrapper.appendChild(table);
-  return wrapper;
 }
 
 function handleDayClick(dayKey, cell) {
   // Deprecated: Logic moved to inline select in buildMonthCalendar
 }
 
-function getRegularLimit() {
-  return parseInt(state.classSelection.frequency, 10) || 4;
+function getMonthlyLimit() {
+  return 8; // 月の最大予約数（固定）
 }
 
 function detectCategory(title) {
@@ -659,42 +574,26 @@ function detectCategory(title) {
 }
 
 function addSlot(slot) {
-  // Check limits based on frequency AND category
   const monthKey = slot.month_key;
-  const currentCategory = state.classSelection.category; // 'smartphone' or 'pc_ai'
-  const limitRegular = getRegularLimit();
-  const limitService = 4;
-  const limitTotal = limitRegular + limitService;
+  const limit = getMonthlyLimit();
 
-  // Count existing reservations for this month AND this category
+  // この月の既存予約数
   const existingInMonth = state.existing.filter(ev => {
     const evSlot = state.slotIndex.get(ev.slot_id);
-    if (!evSlot || evSlot.month_key !== monthKey) return false;
-
-    // Check category of existing event
-    // If it's a legacy event (TERACO予約...), we might not know. 
-    // Assuming new events have "Category Course" title.
-    let cat = detectCategory(ev.label);
-    // If unknown, maybe treat as current category? Or ignore?
-    // Let's treat unknown as current category to be safe (prevent overbooking if unsure)
-    if (cat === 'unknown') cat = currentCategory;
-
-    return cat === currentCategory;
+    return evSlot && evSlot.month_key === monthKey;
   }).length;
 
-  // Count currently selected for this month AND this category
-  // All items in state.selected are for the CURRENT category being booked
-  const selectedCounts = countSelectedByMonth();
-  const selectedInMonth = selectedCounts[monthKey] || 0;
+  // この月の現在選択中の数
+  const selectedInMonth = (countSelectedByMonth()[monthKey] || 0);
 
-  if (existingInMonth + selectedInMonth + 1 > limitTotal) {
-    alert(`${monthKey}の${currentCategory === 'smartphone' ? 'スマホ' : 'パソコンAI'}クラス予約上限（通常${limitRegular}枠＋サービス${limitService}枠）に達しています。`);
+  if (existingInMonth + selectedInMonth + 1 > limit) {
+    alert(`${monthKey.replace('-', '年')}月の予約上限（${limit}回）に達しています。`);
     return;
   }
 
   state.selected.set(slot.slot_id, slot);
   renderAll();
-  showMessage('リストに追加しました。');
+  showMessage('追加しました。「予約を確定する」を押してください。');
 }
 
 function renderSelected() {
@@ -702,75 +601,37 @@ function renderSelected() {
   const sorted = Array.from(state.selected.values()).sort((a, b) => Number(a.slot_id) - Number(b.slot_id));
 
   if (!sorted.length) {
-    selectedList.innerHTML = '<div class="hint">まだ日時が選択されていません。カレンダーの日付をタップして時間を選んでください。</div>';
+    selectedList.innerHTML = '<div style="font-size:19px; color:var(--muted); padding:12px 0;">まだ選択されていません。上のカレンダーから日付と時間を選んでください。</div>';
     btnSubmit.disabled = true;
     return;
   }
 
-  const limitRegular = getRegularLimit();
-  const limitService = 4;
-  const limitTotal = limitRegular + limitService;
-  const currentCategory = state.classSelection.category;
-
-  // Count existing reservations by month for the CURRENT category
-  const monthCounts = {};
-  state.existing.forEach(ev => {
-    const s = state.slotIndex.get(ev.slot_id);
-    if (s) {
-      let cat = detectCategory(ev.label);
-      if (cat === 'unknown') cat = currentCategory;
-
-      if (cat === currentCategory) {
-        monthCounts[s.month_key] = (monthCounts[s.month_key] || 0) + 1;
-      }
-    }
-  });
+  const { category, course } = state.classSelection;
+  const categoryLabel = category === 'smartphone' ? 'スマホ' : 'パソコンAI';
+  let courseLabel = '';
+  if (course === 'private') {
+    courseLabel = '個人レッスン（50分）';
+  } else if (category === 'smartphone') {
+    courseLabel = course === 'intro' ? '入門まなび（45分）' : '応用てらこ（90分）';
+  } else {
+    courseLabel = course === 'basic' ? '基礎ベーシック（45分）' : '実践アドバンス（90分）';
+  }
 
   sorted.forEach(slot => {
-    const currentCount = (monthCounts[slot.month_key] || 0) + 1;
-    monthCounts[slot.month_key] = currentCount;
-
-    let typeLabel = '';
-    let typeColor = '#666';
-    if (currentCount <= limitRegular) {
-      typeLabel = '通常枠';
-      typeColor = 'var(--green-deep)';
-    } else if (currentCount <= limitTotal) {
-      typeLabel = 'サービス枠';
-      typeColor = '#ff9800';
-    } else {
-      typeLabel = '枠外';
-    }
-
-    const { category, course, frequency } = state.classSelection;
-    const categoryLabel = category === 'smartphone' ? 'スマホ' : 'パソコンAI';
-    let courseLabel = '';
-    if (category === 'smartphone') {
-      courseLabel = course === 'intro' ? '入門まなび' : '応用てらこ';
-    } else {
-      courseLabel = course === 'basic' ? '基礎ベーシック' : '実践アドバンス';
-    }
-    const freqLabel = `月${frequency}回`;
-
     const row = document.createElement('div');
     row.className = 'selected-item';
     row.innerHTML = `
       <div style="flex:1;">
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
-          <span style="font-weight:700;">${slot.day_label}</span>
-          <span style="font-size:12px;background:${typeColor};color:#fff;padding:2px 6px;border-radius:4px;">${typeLabel}</span>
-        </div>
-        <div style="font-size:20px;color:var(--green-deep);margin-bottom:4px;">${slot.start_time}~</div>
-        <div style="font-size:14px;color:#666;">
-          ${categoryLabel} / ${courseLabel} / ${freqLabel}
-        </div>
+        <div style="font-size:22px; font-weight:700; margin-bottom:4px;">${slot.day_label}</div>
+        <div style="font-size:26px; color:var(--green-deep); font-weight:700; margin-bottom:4px;">${slot.start_time}〜</div>
+        <div style="font-size:17px; color:#666;">${categoryLabel} / ${courseLabel}</div>
       </div>
     `;
 
     const btn = document.createElement('button');
     btn.className = 'soft';
-    btn.textContent = '削除';
-    btn.style.padding = '8px 16px';
+    btn.textContent = '取消';
+    btn.style.cssText = 'padding:14px 20px; font-size:18px;';
     btn.addEventListener('click', () => {
       state.selected.delete(slot.slot_id);
       renderAll();
@@ -802,47 +663,7 @@ function renderExisting() {
 
   const sortedExisting = state.existing.slice().sort((a, b) => Number(a.slot_id || 0) - Number(b.slot_id || 0));
 
-  // Track counts by (Month + Category)
-  const countsMap = {}; // Key: "YYYY-MM_category"
-
-  // We need to know the limit for each category.
-  // For the CURRENT category, we use state.classSelection.frequency.
-  // For the OTHER category, we don't know the user's contract. Default to 4?
-  // Or, if the user has mixed reservations, maybe we should just use 4 as default for non-selected categories.
-  const currentCategory = state.classSelection.category;
-  const currentLimit = getRegularLimit();
-
   sortedExisting.forEach(ev => {
-    const slot = state.slotIndex.get(ev.slot_id);
-    let typeLabel = '予約済';
-    let typeColor = '#999';
-
-    if (slot) {
-      let cat = detectCategory(ev.label);
-      // If unknown, assume it belongs to the current category context if we are strict, 
-      // but for display, maybe just 'unknown'? 
-      // Let's map unknown to current for counting safety.
-      if (cat === 'unknown') cat = currentCategory;
-
-      const key = `${slot.month_key}_${cat}`;
-      const currentCount = (countsMap[key] || 0) + 1;
-      countsMap[key] = currentCount;
-
-      // Determine limit for this category
-      let limitRegular = 4; // Default
-      if (cat === currentCategory) {
-        limitRegular = currentLimit;
-      }
-      const limitService = 4;
-      const limitTotal = limitRegular + limitService;
-
-      if (currentCount <= limitRegular) {
-        typeLabel = '通常枠';
-      } else if (currentCount <= limitTotal) {
-        typeLabel = 'サービス枠';
-      }
-    }
-
     let displayTitle = ev.label || '';
     if (displayTitle.startsWith('TERACO予約')) {
       displayTitle = '旧形式の予約';
@@ -857,16 +678,11 @@ function renderExisting() {
 
     row.innerHTML = `
       <div style="flex:1;">
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
-          <span style="font-weight:700;">${formatDayLabelFromKey(ev.start.slice(0, 10))}</span>
-          <span style="font-size:12px;background:#999;color:#fff;padding:2px 6px;border-radius:4px;">${typeLabel}</span>
+        <div style="font-size:22px; font-weight:700; margin-bottom:4px;">${formatDayLabelFromKey(ev.start.slice(0, 10))}</div>
+        <div style="font-size:26px; color:#333; font-weight:700; margin-bottom:4px;">
+          ${fmtTime_(new Date(ev.start))}〜
         </div>
-        <div style="font-size:18px;color:#333;margin-bottom:4px;">
-          ${fmtTime_(new Date(ev.start))}~
-        </div>
-        <div style="font-size:14px;color:#666;">
-          ${displayTitle}
-        </div>
+        <div style="font-size:17px; color:#666;">${displayTitle}</div>
       </div>
     `;
 
@@ -960,19 +776,18 @@ async function submitSelection() {
   const count = state.selected.size;
 
   // Get class selection details
-  const { category, course, frequency } = state.classSelection;
-      const categoryLabel = category === 'smartphone' ? 'スマホ' : 'パソコンAI';
-      let courseLabel = '';
-      if (course === 'private') {
-        courseLabel = '個人レッスン(50分)';
-      } else if (category === 'smartphone') {
-        courseLabel = course === 'intro' ? '入門まなび(45分)' : '応用てらこ(90分)';
-      } else {
-        courseLabel = course === 'basic' ? '基礎ベーシック(45分)' : '実践アドバンス(90分)';
-      }
-      const freqLabel = `月${frequency}回`;
+  const { category, course } = state.classSelection;
+  const categoryLabel = category === 'smartphone' ? 'スマホ' : 'パソコンAI';
+  let courseLabel = '';
+  if (course === 'private') {
+    courseLabel = '個人レッスン(50分)';
+  } else if (category === 'smartphone') {
+    courseLabel = course === 'intro' ? '入門まなび(45分)' : '応用てらこ(90分)';
+  } else {
+    courseLabel = course === 'basic' ? '基礎ベーシック(45分)' : '実践アドバンス(90分)';
+  }
   const confirmMsg = `${state.displayName}様\n\n` +
-    `【選択クラス】\n${categoryLabel} / ${courseLabel} / ${freqLabel}\n\n` +
+    `【クラス】${categoryLabel} / ${courseLabel}\n\n` +
     `${count}件の予約を確定します。よろしいですか？`;
 
   if (!confirm(confirmMsg)) return;
@@ -1003,8 +818,7 @@ async function submitSelection() {
       slots: selectedSlots,
       class_details: {
         category: categoryLabel,
-        course: courseLabel,
-        frequency: freqLabel
+        course: courseLabel
       },
       passcode: adminCode || null // 管理者の場合は締切チェックスキップ
     };

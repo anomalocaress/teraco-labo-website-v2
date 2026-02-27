@@ -29,17 +29,17 @@
       font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
       background: #fff;
       color: var(--text);
-      font-size: 18px;
-      line-height: 1.6;
+      font-size: 20px;
+      line-height: 1.7;
     }
 
     header {
       position: sticky;
       top: 0;
-      padding: 16px 20px;
+      padding: 20px 20px;
       background: var(--green);
       color: #fff;
-      font-size: 24px;
+      font-size: 28px;
       font-weight: 700;
       z-index: 10;
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -65,9 +65,9 @@
     }
 
     .panel h2 {
-      margin: 0 0 16px;
+      margin: 0 0 20px;
       color: var(--green-deep);
-      font-size: 22px;
+      font-size: 26px;
       display: flex;
       align-items: center;
       gap: 10px;
@@ -253,9 +253,9 @@
     }
 
     input[type="text"] {
-      font-size: 22px;
-      padding: 16px;
-      border: 2px solid #ccc;
+      font-size: 24px;
+      padding: 20px 16px;
+      border: 3px solid #ccc;
       border-radius: 12px;
       width: 100%;
     }
@@ -290,8 +290,8 @@
     }
 
     button.big {
-      font-size: 18px;
-      padding: 20px;
+      font-size: 22px;
+      padding: 24px;
       border-radius: 16px;
       border: 0;
       background: var(--green);
@@ -299,7 +299,7 @@
       font-weight: 700;
       cursor: pointer;
       width: 100%;
-      box-shadow: 0 4px 0 var(--green-deep);
+      box-shadow: 0 5px 0 var(--green-deep);
       transition: transform 0.1s;
     }
 
@@ -319,8 +319,8 @@
       background: #fff;
       color: var(--muted);
       border: 2px solid #ccc;
-      padding: 16px;
-      font-size: 18px;
+      padding: 18px;
+      font-size: 20px;
       border-radius: 12px;
       cursor: pointer;
     }
@@ -374,12 +374,12 @@
 
     .toggle-btn {
       flex: 1;
-      padding: 12px;
+      padding: 18px 12px;
       border: 2px solid #ddd;
       background: #fff;
       color: var(--text);
-      border-radius: 8px;
-      font-size: 16px;
+      border-radius: 12px;
+      font-size: 20px;
       font-weight: 700;
       cursor: pointer;
       transition: all 0.2s;
@@ -389,8 +389,92 @@
 
     .toggle-btn.active {
       border-color: var(--green);
-      background: var(--green-light);
+      background: var(--green);
+      color: #fff;
+    }
+
+    /* Date List UI */
+    .date-row {
+      border: 2px solid var(--border);
+      border-radius: 16px;
+      margin-bottom: 14px;
+      overflow: hidden;
+      background: #fff;
+    }
+
+    .date-label-btn {
+      width: 100%;
+      padding: 22px 24px;
+      background: #fff;
+      border: none;
+      font-size: 24px;
+      font-weight: 700;
+      text-align: left;
+      cursor: pointer;
+      color: var(--text);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .date-label-btn:not(:disabled):active {
+      background: var(--green-weak);
+    }
+
+    .date-row-full .date-label-btn {
+      color: #bbb;
+      background: #fafafa;
+      cursor: default;
+    }
+
+    .date-row-booked .date-label-btn {
+      background: var(--green-weak);
+    }
+
+    .date-row-selected .date-label-btn {
+      background: var(--green-weak);
+    }
+
+    .time-panel {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      padding: 16px;
+      background: #f9fdfa;
+      border-top: 2px solid var(--border);
+    }
+
+    .time-btn {
+      flex: 1 1 calc(50% - 12px);
+      padding: 20px 10px;
+      border: 3px solid var(--green);
+      background: #fff;
+      border-radius: 14px;
+      font-size: 22px;
+      font-weight: 700;
+      cursor: pointer;
       color: var(--green-deep);
+      transition: all 0.15s;
+      text-align: center;
+    }
+
+    .time-btn:active:not(:disabled) {
+      background: var(--green);
+      color: #fff;
+    }
+
+    .time-btn-selected {
+      background: var(--green) !important;
+      color: #fff !important;
+      border-color: var(--green-deep) !important;
+    }
+
+    .time-btn-full, .time-btn-done {
+      border-color: #ddd !important;
+      color: #bbb !important;
+      background: #f8f8f8 !important;
+      cursor: not-allowed;
+      font-weight: 400;
     }
 
     .hidden {
@@ -526,22 +610,22 @@
   <header>TERACO予約</header>
   <div class="wrap">
 
-    <div class="notice">
-      <strong>予約の手順：</strong><br>
-      1. お名前をフルネームで入力してください。<br>
-      2. コース種別、クラス、回数を正しく選択してください。<br>
-      3. カレンダー上で日付と時間を選択し、「予約を確定する」を押してください。<br>
-      ※予約の確認と変更は、ページの一番下から行えます。
+    <div class="notice" style="font-size:20px;">
+      <strong>予約の手順</strong><br><br>
+      ① お名前を入力してください<br>
+      ② クラスを選んでください<br>
+      ③ 日付と時間をタップしてください<br>
+      ④「予約を確定する」を押してください
     </div>
 
     <div class="panels">
 
       <!-- STEP 1: Name & Class Selection -->
       <div id="namePanel" class="panel">
-        <h2><span class="step-badge">STEP 1</span> お名前とクラス選択</h2>
+        <h2><span class="step-badge">STEP 1</span> お名前とクラス</h2>
         <div id="inputSection">
           <div class="input-group" style="position: relative;">
-            <label>お名前 (必須)</label>
+            <label style="font-size:20px; font-weight:700; display:block; margin-bottom:10px;">お名前（フルネーム）</label>
             <button id="btnRefresh" class="refresh-icon" title="リフレッシュ（名前と予約をリセット）" style="position: absolute; top: 0; right: 0; background: none; border: none; cursor: pointer; padding: 4px; font-size: 20px; color: #666; opacity: 0.7; transition: opacity 0.2s;">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"></path>
@@ -550,8 +634,8 @@
                 <path d="M3 21v-5h5"></path>
               </svg>
             </button>
-            <input type="text" id="nameInput" placeholder="お名前を入力してください" />
-            <div class="hint">※ 姓と名の間にスペースを入れず続けて入力してください。</div>
+            <input type="text" id="nameInput" placeholder="例：田中花子" />
+            <div class="hint" style="font-size:17px; margin-top:8px;">※ 姓と名はスペースなしで入力してください</div>
             <div class="error-msg" id="nameError">お名前を入力してください</div>
 
             <div style="text-align:center; margin: 16px 0 8px; font-size:12px; color:#666;">または Googleアカウントで自動入力</div>
@@ -578,11 +662,11 @@
           </div>
 
           <!-- Class Selection -->
-          <div class="class-selection" style="margin-top: 32px; border-top: 1px solid #eee; padding-top: 24px;">
+          <div class="class-selection" style="margin-top: 32px; border-top: 2px solid #eee; padding-top: 28px;">
 
             <!-- Category -->
             <div class="selection-group">
-              <label class="field-label">コース種別</label>
+              <label class="field-label" style="font-size:20px; font-weight:700; margin-bottom:12px; display:block;">コース種別</label>
               <div class="toggle-group" id="categoryGroup">
                 <button type="button" class="toggle-btn active" data-value="smartphone">スマホ</button>
                 <button type="button" class="toggle-btn" data-value="pc_ai">パソコンAI</button>
@@ -590,28 +674,19 @@
             </div>
 
             <!-- Course (Dynamic) -->
-            <div class="selection-group">
-              <label class="field-label">クラス</label>
+            <div class="selection-group" style="margin-top:20px;">
+              <label class="field-label" style="font-size:20px; font-weight:700; margin-bottom:12px; display:block;">クラス</label>
               <!-- Smartphone Options -->
-              <div id="courseSmartphone" class="toggle-group">
-                <button type="button" class="toggle-btn active" data-value="intro">入門まなび(45分)</button>
-                <button type="button" class="toggle-btn" data-value="applied">応用てらこ(90分)</button>
-                <button type="button" class="toggle-btn" data-value="private">個人レッスン(50分)</button>
+              <div id="courseSmartphone" class="toggle-group" style="flex-direction:column;">
+                <button type="button" class="toggle-btn active" data-value="intro">入門まなび（45分）</button>
+                <button type="button" class="toggle-btn" data-value="applied">応用てらこ（90分）</button>
+                <button type="button" class="toggle-btn" data-value="private">個人レッスン（50分）</button>
               </div>
               <!-- PC/AI Options (Hidden initially) -->
-              <div id="coursePcAi" class="toggle-group hidden">
-                <button type="button" class="toggle-btn active" data-value="basic">基礎ベーシック(45分)</button>
-                <button type="button" class="toggle-btn" data-value="advance">実践アドバンス(90分)</button>
-                <button type="button" class="toggle-btn" data-value="private">個人レッスン(50分)</button>
-              </div>
-            </div>
-
-            <!-- Frequency -->
-            <div class="selection-group">
-              <label class="field-label">回数</label>
-              <div class="toggle-group" id="frequencyGroup">
-                <button type="button" class="toggle-btn active" data-value="2">月2回</button>
-                <button type="button" class="toggle-btn" data-value="4">月4回</button>
+              <div id="coursePcAi" class="toggle-group hidden" style="flex-direction:column;">
+                <button type="button" class="toggle-btn active" data-value="basic">基礎ベーシック（45分）</button>
+                <button type="button" class="toggle-btn" data-value="advance">実践アドバンス（90分）</button>
+                <button type="button" class="toggle-btn" data-value="private">個人レッスン（50分）</button>
               </div>
             </div>
 
@@ -619,16 +694,15 @@
         </div>
       </div>
 
-      <!-- STEP 2: Calendar & Time -->
+      <!-- STEP 2: Date & Time -->
       <div id="calendarPanel" class="panel">
-        <h2><span class="step-badge">STEP 2</span> 日時を選ぶ</h2>
-        <div class="hint" style="margin-bottom:16px;">ご希望の日付をタップしてください。</div>
+        <h2><span class="step-badge">STEP 2</span> 日付と時間を選ぶ</h2>
+        <div style="font-size:19px; color:var(--muted); margin-bottom:20px;">日付をタップすると時間ボタンが出ます</div>
 
-        <div id="current-date-display" style="text-align:center; margin-bottom:16px; font-size: 1.1em; font-weight: bold;"></div>
+        <div id="current-date-display" style="text-align:center; margin-bottom:16px; font-size: 18px; color: var(--muted);"></div>
 
-        <div id="calendarWrap" class="calendar-wrap"></div>
+        <div id="calendarWrap"></div>
 
-        <!-- Old Time Select Container (Hidden) -->
         <div id="timeSelectContainer" class="hidden" style="display:none;"></div>
       </div>
 
@@ -648,13 +722,13 @@
 
       <!-- STEP 4: Check & Cancel Reservations -->
       <div id="managePanel" class="panel" style="margin-top: 40px; border-top: 4px solid var(--green);">
-        <h2>予約済みの確認・キャンセル</h2>
-        <p style="margin-bottom:16px;">
-          現在確定している予約を確認し、不要な予約を<strong>キャンセル</strong>できます。<br>日程変更をする場合は、一度キャンセルしてから、再度上のカレンダーで予約を取り直してください。</p>
+        <h2>予約の確認・取り消し</h2>
+        <p style="margin-bottom:20px; font-size:19px;">
+          予約を確認したり、取り消したりできます。</p>
 
         <div style="text-align:center; margin-bottom:24px;">
           <button id="btnCheckReservation" class="soft"
-            style="width:100%; max-width:300px; padding:16px; font-size:16px; font-weight:bold;">
+            style="width:100%; padding:22px; font-size:22px; font-weight:bold;">
             予約を確認する
           </button>
         </div>
