@@ -1,4 +1,4 @@
-const API_BASE = 'https://script.google.com/macros/s/AKfycbwzRh2WYpVdahLQMunFywTDARr5iODNGKNp_4YXS_M-adSLI81IZwjvVeBbsX9IWRH9/exec';
+const API_BASE = 'https://script.google.com/macros/s/AKfycbwEmIQLb-w_eEOH_IL4THzxxifwu09VHVevPhfpv-FmQLUFpZxtNwCrWFoaRU6cyBUy/exec';
 
 const nameInput = document.getElementById('nameInput');
 const calendarWrap = document.getElementById('calendarWrap');
@@ -356,7 +356,9 @@ async function loadOverview({ preserveSelection, silent = false }) {
           body: JSON.stringify({
             action: 'overview',
             name: state.displayName || '',
-            days: 60
+            days: 60,
+            // Googleログインしている場合はメールアドレスも送り、サーバー側で「ゲスト情報」からも紐付けられるようにする
+            email: state.googleUser ? state.googleUser.email : null
           }),
           signal: controller.signal,
           mode: 'cors',

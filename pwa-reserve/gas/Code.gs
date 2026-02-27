@@ -1,4 +1,4 @@
-// TERACO予約システム v43 (予約確認・キャンセル: overviewをPOSTで取得しクエリパラメータ消失を回避)
+// TERACO予約システム v44 (Googleログインのメールアドレスでも予約を紐付けて確認・取消できるように対応)
 
 var CONFIG = {
   TIMEZONE: 'Asia/Tokyo',
@@ -23,7 +23,7 @@ function authorizeMe() {
 function doGet(e) {
   var p = (e && e.parameter) || {};
   var action = p.action || 'overview';
-  if (action === 'version') return jsonOut({ok: true, version: 'v43', timestamp: new Date().toISOString()});
+  if (action === 'version') return jsonOut({ok: true, version: 'v44', timestamp: new Date().toISOString()});
   if (action === 'overview') return jsonOut(getOverview(p.name || '', Number(p.days) || CONFIG.OVERVIEW_DAYS));
   if (action === 'admin_summary') return jsonOut(getAdminSummary(p.passcode));
   return jsonOut({ok: true});
@@ -80,20 +80,20 @@ function getAdminSummary(passcode) {
 function doPost(e) {
   var body = {};
   try { body = JSON.parse(e.postData.contents); } catch (err) { return jsonOut({ok: false, message: 'JSONエラー'}); }
-  if (body.action === 'overview') return jsonOut(getOverview(body.name || '', Number(body.days) || CONFIG.OVERVIEW_DAYS));
+  if (body.action === 'overview') return jsonOut(getOverview(body.name || '', Number(body.days) || CONFIG.OVERVIEW_DAYS, body.email || ''));
   if (body.action === 'batch_reserve') return jsonOut(reserve(body.name, body.slots, body.class_details, body.email, body.add_to_calendar, body.passcode));
   if (body.action === 'batch_cancel') return jsonOut(cancel(body.name, body.event_ids, body.email, body.passcode));
   return jsonOut({ok: false, message: '不明なアクション'});
 }
 
-function getOverview(name, days) {
+function getOverview(name, days, email) {
   var cal = CalendarApp.getCalendarById(CONFIG.CALENDAR_ID);
   var start = todayStart();
   var slots = buildSlots(cal, start, days);
   if (!name || !name.trim()) return {ok: true, name: '', slots: slots, existing: [], months: getMonths(start, days)};
   var trimmed = name.trim();
   var end = addDays(start, days + 31);
-  var existing = findUserEvents(cal, trimmed, start, end);
+  var existing = findUserEvents(cal, trimmed, start, end, email || '');
   return { ok: true, name: trimmed, slots: slots, existing: existing, months: getMonthsWithCount(start, days, existing) };
 }
 
@@ -238,7 +238,8 @@ function cancel(name, eventIds, email, passcode) {
       }
 
       var desc = ev.getDescription() || '';
-      if (!hasName(desc, userName)) continue;
+      // 「名前」または「メールアドレス」のどちらかが一致する予約だけを、このユーザーの予約として扱う
+      if (!hasName(desc, userName) && !eventHasEmail(ev, email)) continue;
       if (!title) title = ev.getTitle();
       removed.push({slot_id: String(ev.getStartTime().getTime()), start: ev.getStartTime().toISOString()});
 
@@ -339,18 +340,41 @@ function findEventAt(cal, startTime, title) {
   }
   return null;
 }
-function findUserEvents(cal, userName, start, end) {
+function findUserEvents(cal, userName, start, end, email) {
   var events = cal.getEvents(start, end);
   var result = [];
   var search = normalize(userName);
   for (var i = 0; i < events.length; i++) {
     var ev = events[i], desc = ev.getDescription() || '', title = ev.getTitle() || '';
-    if (hasName(desc, userName) || normalize(title).indexOf(search) >= 0) {
+    // 条件:
+    // 1) 説明欄の名前が一致
+    // 2) タイトルに名前が含まれる（旧形式）
+    // 3) Googleカレンダーのゲストに、ログイン中のメールアドレスが含まれる
+    if (hasName(desc, userName) || normalize(title).indexOf(search) >= 0 || eventHasEmail(ev, email)) {
       var st = ev.getStartTime();
       result.push({ event_id: ev.getId(), slot_id: String(st.getTime()), start: st.toISOString(), label: formatSlot(st), month_key: monthKey(st) });
     }
   }
   return result;
+}
+
+/**
+ * イベントのゲストに指定メールアドレスが含まれているかを判定
+ */
+function eventHasEmail(ev, email) {
+  if (!email) return false;
+  var target = String(email).trim().toLowerCase();
+  if (!target) return false;
+  try {
+    var guests = ev.getGuestList();
+    for (var i = 0; i < guests.length; i++) {
+      var ge = (guests[i].getEmail() || '').toLowerCase();
+      if (ge === target) return true;
+    }
+  } catch (e) {
+    Logger.log('eventHasEmail error: ' + e.toString());
+  }
+  return false;
 }
 function hasName(desc, userName) {
   var search = normalize(userName), lines = desc.split('\n');
