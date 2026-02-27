@@ -442,120 +442,164 @@ function renderCalendar() {
   }
 
   calendarWrap.innerHTML = '';
+  const monthKeys = Array.from(new Set(state.slots.map(slot => slot.month_key))).sort();
+  const displayMonths = monthKeys.slice(0, 2);
+
+  if (displayMonths.length === 0) {
+    calendarWrap.innerHTML = '<div style="text-align:center;padding:20px;color:#999;">読み込み中...</div>';
+  } else {
+    displayMonths.forEach(monthKey => {
+      calendarWrap.appendChild(buildMonthCalendar(monthKey));
+    });
+  }
+
+  renderTimePanel();
+}
+
+function buildMonthCalendar(monthKey) {
+  const [yearStr, monthStr] = monthKey.split('-');
+  const year = Number(yearStr);
+  const month = Number(monthStr) - 1;
+  const first = new Date(year, month, 1);
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+  const wrapper = document.createElement('div');
+  wrapper.className = 'calendar';
+
+  const header = document.createElement('header');
+  header.textContent = `${year}年${month + 1}月`;
+  wrapper.appendChild(header);
+
+  const table = document.createElement('table');
+  table.className = 'month-grid';
+  table.innerHTML = `
+    <thead>
+      <tr><th>日</th><th>月</th><th>火</th><th>水</th><th>木</th><th>金</th><th>土</th></tr>
+    </thead>
+    <tbody></tbody>
+  `;
+  const tbody = table.querySelector('tbody');
+  let row = document.createElement('tr');
+
+  for (let i = 0; i < first.getDay(); i++) {
+    row.appendChild(Object.assign(document.createElement('td'), { className: 'disabled' }));
+  }
+
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-  const DAYS = ['日', '月', '火', '水', '木', '金', '土'];
 
-  // 日付ごとにグループ化
-  const dayKeys = Array.from(new Set(state.slots.map(s => s.day_key))).sort();
+  for (let day = 1; day <= daysInMonth; day++) {
+    if (row.children.length === 7) { tbody.appendChild(row); row = document.createElement('tr'); }
 
-  let lastMonthKey = '';
-
-  dayKeys.forEach(dayKey => {
-    const slots = state.daySlots.get(dayKey) || [];
-    if (!slots.length) return;
-
-    const [y, m, d] = dayKey.split('-').map(Number);
-    const date = new Date(y, m - 1, d);
+    const date = new Date(year, month, day);
+    const dayKey = formatDayKey(date);
     const dayOfWeek = date.getDay();
+    const cell = document.createElement('td');
+    cell.textContent = String(day);
 
-    // 過去・今日はスキップ
-    if (date <= today) return;
-    // 土日スキップ
-    if (dayOfWeek === 0 || dayOfWeek === 6) return;
-    // 個人レッスンは月・火・木のみ
-    if (state.classSelection.course === 'private' && ![1, 2, 4].includes(dayOfWeek)) return;
+    const slots = state.daySlots.get(dayKey) || [];
+    const hasReservation = state.existing.some(ev => (state.slotIndex.get(ev.slot_id)?.day_key || ev.start?.slice(0, 10)) === dayKey);
+    const hasSelected = Array.from(state.selected.values()).some(s => s.day_key === dayKey);
 
-    // 月の見出し
-    const monthKey = `${y}-${String(m).padStart(2, '0')}`;
-    if (monthKey !== lastMonthKey) {
-      const monthHeader = document.createElement('div');
-      monthHeader.textContent = `${y}年${m}月`;
-      monthHeader.style.cssText = 'font-size:22px; font-weight:700; color:var(--green-deep); padding:16px 4px 8px; border-bottom:2px solid var(--border); margin-bottom:12px; margin-top:' + (lastMonthKey ? '24px' : '0');
-      calendarWrap.appendChild(monthHeader);
-      lastMonthKey = monthKey;
+    // 過去・今日
+    if (date <= today) { cell.classList.add('disabled'); row.appendChild(cell); continue; }
+    // 土日
+    if (dayOfWeek === 0 || dayOfWeek === 6) { cell.classList.add('disabled'); row.appendChild(cell); continue; }
+    // 個人レッスン制限
+    if (state.classSelection.course === 'private' && ![1, 2, 4].includes(dayOfWeek)) { cell.classList.add('disabled'); row.appendChild(cell); continue; }
+    // スロットなし
+    if (!slots.length) { cell.classList.add('disabled'); row.appendChild(cell); continue; }
+
+    const hasSelectable = slots.some(s => s.reserved_count < s.capacity && !state.existingSet.has(s.slot_id));
+
+    if (!hasSelectable && !hasReservation) {
+      cell.classList.add('full');
+      row.appendChild(cell);
+      continue;
     }
 
-    const hasSelected = slots.some(s => state.selected.has(s.slot_id));
-    const hasReservation = slots.some(s => state.existingSet.has(s.slot_id));
-    const anySelectable = slots.some(s => s.reserved_count < s.capacity && !state.existingSet.has(s.slot_id));
+    if (state.activeDay === dayKey) cell.classList.add('active');
+    if (hasReservation) cell.classList.add('has-reservation');
+    if (hasSelected) cell.classList.add('has-selected');
 
-    // 日付行
-    const dateRow = document.createElement('div');
-    dateRow.className = 'date-row';
-    if (!anySelectable && !hasReservation) dateRow.classList.add('date-row-full');
-    if (hasReservation) dateRow.classList.add('date-row-booked');
-    if (hasSelected) dateRow.classList.add('date-row-selected');
-
-    // 日付ボタン
-    const dateBtn = document.createElement('button');
-    dateBtn.type = 'button';
-    dateBtn.className = 'date-label-btn';
-
-    let dateText = `${m}月 ${d}日（${DAYS[dayOfWeek]}）`;
-    let badge = '';
-    if (hasReservation) badge = '✓ 予約済み';
-    else if (!anySelectable) badge = '満席';
-
-    dateBtn.innerHTML = `<span>${dateText}</span>${badge ? `<span style="font-size:17px; color:${hasReservation ? 'var(--green)' : '#bbb'};">${badge}</span>` : '<span style="font-size:22px; color:#bbb;">▼</span>'}`;
-
-    if (!anySelectable && !hasReservation) {
-      dateBtn.disabled = true;
-    }
-
-    // 時間パネル（初期は非表示、予約済み・選択済みの日は展開）
-    const timePanel = document.createElement('div');
-    timePanel.className = 'time-panel' + (hasSelected || hasReservation ? '' : ' hidden');
-
-    slots.forEach(slot => {
-      const btn = document.createElement('button');
-      btn.type = 'button';
-      btn.className = 'time-btn';
-
-      if (state.existingSet.has(slot.slot_id)) {
-        btn.textContent = `${slot.start_time}\n済`;
-        btn.classList.add('time-btn-done');
-        btn.disabled = true;
-      } else if (state.selected.has(slot.slot_id)) {
-        btn.textContent = `${slot.start_time}\n✓ 選択中`;
-        btn.classList.add('time-btn-selected');
-        btn.style.whiteSpace = 'pre-line';
-        btn.addEventListener('click', () => {
-          state.selected.delete(slot.slot_id);
-          renderAll();
-        });
-      } else if (slot.reserved_count >= slot.capacity) {
-        btn.textContent = `${slot.start_time}\n満席`;
-        btn.classList.add('time-btn-full');
-        btn.disabled = true;
-        btn.style.whiteSpace = 'pre-line';
-      } else {
-        btn.textContent = slot.start_time;
-        btn.addEventListener('click', () => {
-          addSlot(slot);
-        });
-      }
-
-      timePanel.appendChild(btn);
-    });
-
-    // 日付タップで時間パネル開閉
-    dateBtn.addEventListener('click', () => {
-      timePanel.classList.toggle('hidden');
-      const arrow = dateBtn.querySelector('span:last-child');
-      if (arrow && !hasReservation && anySelectable) {
-        arrow.textContent = timePanel.classList.contains('hidden') ? '▼' : '▲';
+    cell.addEventListener('click', () => {
+      state.activeDay = (state.activeDay === dayKey) ? null : dayKey;
+      renderCalendar();
+      if (state.activeDay) {
+        const tp = document.getElementById('timePanelWrap');
+        if (tp) setTimeout(() => tp.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 80);
       }
     });
 
-    dateRow.appendChild(dateBtn);
-    dateRow.appendChild(timePanel);
-    calendarWrap.appendChild(dateRow);
+    row.appendChild(cell);
+  }
+
+  while (row.children.length > 0 && row.children.length < 7) {
+    row.appendChild(Object.assign(document.createElement('td'), { className: 'disabled' }));
+  }
+  if (row.children.length) tbody.appendChild(row);
+
+  wrapper.appendChild(table);
+  return wrapper;
+}
+
+function renderTimePanel() {
+  const wrap = document.getElementById('timePanelWrap');
+  if (!wrap) return;
+
+  if (!state.activeDay) {
+    wrap.classList.add('hidden');
+    wrap.innerHTML = '';
+    return;
+  }
+
+  const slots = state.daySlots.get(state.activeDay) || [];
+  if (!slots.length) { wrap.classList.add('hidden'); return; }
+
+  const [y, m, d] = state.activeDay.split('-').map(Number);
+  const date = new Date(y, m - 1, d);
+  const DAYS = ['日', '月', '火', '水', '木', '金', '土'];
+  const dayLabel = `${m}月${d}日（${DAYS[date.getDay()]}）`;
+
+  wrap.classList.remove('hidden');
+  wrap.innerHTML = `<div style="font-size:22px; font-weight:700; color:var(--green-deep); text-align:center;">${dayLabel}の時間を選んでください</div>`;
+
+  const grid = document.createElement('div');
+  grid.className = 'time-btn-grid';
+
+  slots.forEach(slot => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'time-btn';
+
+    if (state.existingSet.has(slot.slot_id)) {
+      btn.textContent = `${slot.start_time}\n✓ 済`;
+      btn.classList.add('time-btn-done');
+      btn.disabled = true;
+    } else if (state.selected.has(slot.slot_id)) {
+      btn.textContent = `${slot.start_time}\n✓ 選択中`;
+      btn.classList.add('time-btn-selected');
+      btn.addEventListener('click', () => { state.selected.delete(slot.slot_id); renderAll(); });
+    } else if (slot.reserved_count >= slot.capacity) {
+      btn.textContent = `${slot.start_time}\n満席`;
+      btn.classList.add('time-btn-full');
+      btn.disabled = true;
+    } else {
+      btn.textContent = slot.start_time;
+      btn.addEventListener('click', () => { addSlot(slot); });
+    }
+
+    grid.appendChild(btn);
   });
 
-  if (calendarWrap.children.length === 0) {
-    calendarWrap.innerHTML = '<div style="text-align:center; padding:24px; color:#999; font-size:18px;">予約できる日が見つかりませんでした</div>';
-  }
+  wrap.appendChild(grid);
+
+  const closeBtn = document.createElement('button');
+  closeBtn.textContent = '閉じる';
+  closeBtn.className = 'soft';
+  closeBtn.style.cssText = 'width:100%; margin-top:16px;';
+  closeBtn.addEventListener('click', () => { state.activeDay = null; renderCalendar(); });
+  wrap.appendChild(closeBtn);
 }
 
 function handleDayClick(dayKey, cell) {

@@ -141,14 +141,15 @@
     }
 
     table.month-grid td {
-      height: 56px;
+      height: 64px;
       text-align: center;
       vertical-align: middle;
       border-bottom: 1px solid var(--border);
       border-right: 1px solid var(--border);
       cursor: pointer;
       position: relative;
-      font-size: 18px;
+      font-size: 20px;
+      font-weight: 600;
     }
 
     table.month-grid td:last-child {
@@ -393,74 +394,41 @@
       color: #fff;
     }
 
-    /* Date List UI */
-    .date-row {
-      border: 2px solid var(--border);
-      border-radius: 16px;
-      margin-bottom: 14px;
-      overflow: hidden;
-      background: #fff;
+    /* Time Panel (below calendar) */
+    #timePanelWrap {
+      margin-top: 20px;
+      background: var(--bg);
+      border: 3px solid var(--green);
+      border-radius: 20px;
+      padding: 20px;
     }
 
-    .date-label-btn {
-      width: 100%;
-      padding: 22px 24px;
-      background: #fff;
-      border: none;
-      font-size: 24px;
-      font-weight: 700;
-      text-align: left;
-      cursor: pointer;
-      color: var(--text);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .date-label-btn:not(:disabled):active {
-      background: var(--green-weak);
-    }
-
-    .date-row-full .date-label-btn {
-      color: #bbb;
-      background: #fafafa;
-      cursor: default;
-    }
-
-    .date-row-booked .date-label-btn {
-      background: var(--green-weak);
-    }
-
-    .date-row-selected .date-label-btn {
-      background: var(--green-weak);
-    }
-
-    .time-panel {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      padding: 16px;
-      background: #f9fdfa;
-      border-top: 2px solid var(--border);
+    .time-btn-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-top: 16px;
     }
 
     .time-btn {
-      flex: 1 1 calc(50% - 12px);
-      padding: 20px 10px;
+      padding: 24px 10px;
       border: 3px solid var(--green);
       background: #fff;
       border-radius: 14px;
-      font-size: 22px;
+      font-size: 26px;
       font-weight: 700;
       cursor: pointer;
       color: var(--green-deep);
       transition: all 0.15s;
       text-align: center;
+      white-space: pre-line;
+      line-height: 1.4;
     }
 
     .time-btn:active:not(:disabled) {
       background: var(--green);
       color: #fff;
+      transform: translateY(2px);
     }
 
     .time-btn-selected {
@@ -472,7 +440,7 @@
     .time-btn-full, .time-btn-done {
       border-color: #ddd !important;
       color: #bbb !important;
-      background: #f8f8f8 !important;
+      background: #f5f5f5 !important;
       cursor: not-allowed;
       font-weight: 400;
     }
@@ -701,7 +669,9 @@
 
         <div id="current-date-display" style="text-align:center; margin-bottom:16px; font-size: 18px; color: var(--muted);"></div>
 
-        <div id="calendarWrap"></div>
+        <div id="calendarWrap" class="calendar-wrap"></div>
+
+        <div id="timePanelWrap" class="hidden"></div>
 
         <div id="timeSelectContainer" class="hidden" style="display:none;"></div>
       </div>
