@@ -1,0 +1,283 @@
+/*
+  TERACO.LABO Green Theme
+  ─────────────────────────────────────────────────
+  index.html のデザイントークンを全ページに適用する共有CSS。
+  theme-white.css の後に読み込む。
+  このファイルを削除するだけで元のスタイルに戻せる。
+*/
+
+/* =========================================================
+   デザイントークン上書き
+   theme-white.css の --primary-blue を緑に差し替える
+========================================================= */
+:root {
+  --primary-blue:  #16a34a;   /* 全ページの青参照を緑に */
+  --accent-green:  #4ade80;   /* 薄緑（グラデーション用） */
+  --gradient:      linear-gradient(135deg, #16a34a, #4ade80);
+  --ring:          0 0 0 3px rgba(22, 163, 74, 0.25);
+
+  /* index.html と共通のトークン */
+  --green:         #16a34a;
+  --green-hover:   #15803d;
+  --green-light:   #f0fdf4;
+  --green-mid:     #dcfce7;
+  --red:           #ef4444;
+  --text:          #111827;
+  --text-mid:      #374151;
+  --muted:         #6b7280;
+  --border:        #e5e7eb;
+  --bg-alt:        #f9fafb;
+  --shadow-sm:     0 2px 8px rgba(0,0,0,0.05);
+  --shadow-md:     0 4px 20px rgba(0,0,0,0.07);
+  --shadow-green:  0 4px 20px rgba(22,163,74,0.22);
+}
+
+/* =========================================================
+   ページ背景（元はグラデーション → 白に）
+========================================================= */
+html, body {
+  background: #fff !important;
+  color: var(--text) !important;
+}
+
+/* =========================================================
+   ナビ
+========================================================= */
+.nav-menu a:hover,
+.nav-menu a.active {
+  color: var(--green) !important;
+  background: rgba(22, 163, 74, 0.07) !important;
+}
+
+/* =========================================================
+   ページ内の青ハードコード色を緑に上書き
+   （各ページ <style> 内の #5b52ff / #2563eb 参照をカバー）
+========================================================= */
+
+/* セクションタイトル */
+.section-title::after {
+  background: linear-gradient(90deg, var(--green), var(--accent-green)) !important;
+}
+
+/* 特集・機能カード見出し */
+.feature-card h4,
+.feature-card h3,
+.plan-title,
+.price-label,
+.highlight-title,
+.step-number,
+.point-icon,
+.service-icon,
+.voice-author,
+.testimonial-author,
+.faq-q,
+.details-block > summary,
+.back-link,
+h2 .badge,
+.label-tag {
+  color: var(--green) !important;
+}
+
+/* ボーダーアクセント（左線） */
+[style*="border-left"][style*="#5b52ff"],
+.plan-card,
+.step-item,
+.point-item {
+  border-left-color: var(--green) !important;
+}
+.experience-item,
+.detail-item {
+  border-left-color: var(--green) !important;
+}
+
+/* タグ・チップ */
+.feature-tag,
+.feature-item,
+.price-tag,
+.status-tag,
+.scope-tag,
+.type-tag,
+.badge-tag {
+  background: transparent !important;
+  color: var(--muted) !important;
+  border: 1px solid var(--border) !important;
+}
+
+/* =========================================================
+   ボタン — contact-btn / submit-button を緑ソリッドに
+========================================================= */
+.contact-btn,
+.contact-btn:link,
+.contact-btn:visited {
+  background: var(--green) !important;
+  color: #fff !important;
+  -webkit-text-fill-color: #fff !important;
+  border: none !important;
+  box-shadow: var(--shadow-green) !important;
+  border-radius: 50px !important;
+  font-weight: 700 !important;
+  transition: background 0.22s ease, transform 0.22s ease, box-shadow 0.22s ease !important;
+  animation: none !important;
+}
+.contact-btn:hover {
+  background: var(--green-hover) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 28px rgba(22,163,74,0.30) !important;
+  filter: none !important;
+}
+.contact-btn::after { content: none !important; }
+
+.submit-button,
+.submit-btn {
+  background: var(--green) !important;
+  color: #fff !important;
+  -webkit-text-fill-color: #fff !important;
+  border: none !important;
+  box-shadow: var(--shadow-green) !important;
+  border-radius: 50px !important;
+  font-weight: 700 !important;
+  animation: none !important;
+}
+.submit-button:hover,
+.submit-btn:hover {
+  background: var(--green-hover) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 28px rgba(22,163,74,0.30) !important;
+  filter: none !important;
+}
+.submit-button::after,
+.submit-btn::after { content: none !important; }
+
+/* LINE ボタン（緑アウトライン） */
+.line-btn,
+a[href*="lin.ee"],
+a[href*="line.me"] {
+  background: transparent !important;
+  color: var(--green) !important;
+  -webkit-text-fill-color: var(--green) !important;
+  border: 2px solid var(--green) !important;
+  border-radius: 50px !important;
+  font-weight: 700 !important;
+  animation: none !important;
+  box-shadow: none !important;
+}
+.line-btn:hover,
+a[href*="lin.ee"]:hover,
+a[href*="line.me"]:hover {
+  background: var(--green) !important;
+  color: #fff !important;
+  -webkit-text-fill-color: #fff !important;
+  box-shadow: var(--shadow-green) !important;
+}
+.line-btn::after,
+a[href*="lin.ee"]::after,
+a[href*="line.me"]::after { content: none !important; }
+
+/* =========================================================
+   フォーム入力フォーカス
+========================================================= */
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  border-color: var(--green) !important;
+  box-shadow: 0 0 0 3px rgba(22,163,74,0.20) !important;
+  outline: none !important;
+}
+
+/* =========================================================
+   カードホバー（サービスカード等）
+========================================================= */
+.service-card-large[role="link"]:hover,
+.space-card[role="link"]:hover,
+.service-card-large[onclick]:hover,
+.space-card[onclick]:hover {
+  border-color: transparent !important;
+  background: linear-gradient(#fff, #fff) padding-box,
+              var(--gradient) border-box !important;
+  box-shadow: 0 16px 44px rgba(22,163,74,0.12) !important;
+}
+
+/* カード内 → 矢印 */
+.service-card-large[role="link"]::after,
+.space-card[role="link"]::after,
+.service-card-large[onclick]::after,
+.space-card[onclick]::after {
+  color: var(--green) !important;
+}
+
+/* =========================================================
+   FAQアコーディオン（各ページ共通）
+========================================================= */
+.details-block[open] > summary,
+details[open] > summary {
+  color: var(--green) !important;
+  -webkit-text-fill-color: var(--green) !important;
+}
+.details-block > summary::marker,
+.details-block > summary::-webkit-details-marker { color: var(--green) !important; }
+
+/* =========================================================
+   料金・プランカード
+========================================================= */
+.pricing-card.featured,
+.pricing-card.recommended {
+  border-color: var(--green) !important;
+}
+.plan-badge.featured { background: var(--green) !important; }
+
+/* =========================================================
+   フッター
+========================================================= */
+footer {
+  background: #1a1a2e !important;
+  border-top: none !important;
+}
+footer p,
+.footer-inner a,
+.footer-content a {
+  color: rgba(255,255,255,0.65) !important;
+  -webkit-text-fill-color: rgba(255,255,255,0.65) !important;
+}
+footer a:hover,
+.footer-inner a:hover { color: #fff !important; -webkit-text-fill-color: #fff !important; }
+.footer-line-link  { color: #4ade80 !important; -webkit-text-fill-color: #4ade80 !important; }
+.footer-copy       { color: rgba(255,255,255,0.38) !important; -webkit-text-fill-color: rgba(255,255,255,0.38) !important; }
+
+/* =========================================================
+   汎用リンク色
+========================================================= */
+main a:not(.contact-btn):not(.submit-button):not(.submit-btn):not(.back-link):not([href*="lin.ee"]):not([href*="line.me"]) {
+  color: var(--green) !important;
+}
+main a:not(.contact-btn):not(.submit-button):not(.submit-btn):not(.back-link):not([href*="lin.ee"]):not([href*="line.me"]):hover {
+  color: var(--green-hover) !important;
+}
+
+/* =========================================================
+   スティッキーモバイルCTAバー（各ページに共通表示）
+   ※ HTML側に .sticky-cta 要素がないページは非表示のまま
+========================================================= */
+.sticky-cta { display: none; }
+@media (max-width: 768px) {
+  .sticky-cta {
+    display: flex;
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 900;
+    background: #fff; border-top: 1px solid var(--border);
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.09);
+  }
+  .sticky-btn {
+    flex: 1; display: flex; align-items: center; justify-content: center;
+    gap: 0.4rem; height: 58px;
+    text-decoration: none; font-weight: 700; font-size: 0.92rem;
+  }
+  .sticky-btn-phone { color: var(--green); border-right: 1px solid var(--border); }
+  .sticky-btn-phone:hover { background: var(--green-light); }
+  .sticky-btn-line  { color: #00B900; }
+  .sticky-btn-line:hover  { background: #f0fdf4; }
+  body { padding-bottom: 58px; }
+}
+
+/* アニメーション軽減設定 */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition-duration: 0.01ms !important; }
+}
