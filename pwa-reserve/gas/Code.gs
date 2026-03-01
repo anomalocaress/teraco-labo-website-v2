@@ -1,4 +1,4 @@
-// TERACO予約システム v44 (Googleログインのメールアドレスでも予約を紐付けて確認・取消できるように対応)
+// TERACO予約システム v45 (管理者向け受講履歴検索機能を追加)
 
 var CONFIG = {
   TIMEZONE: 'Asia/Tokyo',
@@ -23,9 +23,10 @@ function authorizeMe() {
 function doGet(e) {
   var p = (e && e.parameter) || {};
   var action = p.action || 'overview';
-  if (action === 'version') return jsonOut({ok: true, version: 'v44', timestamp: new Date().toISOString()});
+  if (action === 'version') return jsonOut({ok: true, version: 'v45', timestamp: new Date().toISOString()});
   if (action === 'overview') return jsonOut(getOverview(p.name || '', Number(p.days) || CONFIG.OVERVIEW_DAYS));
   if (action === 'admin_summary') return jsonOut(getAdminSummary(p.passcode));
+  if (action === 'attendance_history') return jsonOut(getAttendanceHistory(p.passcode, p.name || '', p.email || '', Number(p.months) || 3));
   return jsonOut({ok: true});
 }
 
@@ -77,12 +78,38 @@ function getAdminSummary(passcode) {
   return { ok: true, days: days };
 }
 
+/**
+ * 管理者用：指定した受講者の過去の受講履歴を取得
+ * @param {string} passcode  管理者パスコード
+ * @param {string} name      検索する受講者名
+ * @param {string} email     受講者のメールアドレス（省略可）
+ * @param {number} months    遡る月数（1/3/6/12）
+ */
+function getAttendanceHistory(passcode, name, email, months) {
+  if (passcode !== CONFIG.ADMIN_PASSCODE) return { ok: false, message: 'パスコードが正しくありません' };
+  if (!name || !name.trim()) return { ok: false, message: '検索する名前を入力してください' };
+
+  var cal = CalendarApp.getCalendarById(CONFIG.CALENDAR_ID);
+  var now = new Date();
+  var end = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1); // 今日を含める
+  var start = new Date(now.getFullYear(), now.getMonth() - months, now.getDate());
+
+  var userName = name.trim();
+  var events = findUserEvents(cal, userName, start, end, email || '');
+
+  // 日付の新しい順にソート
+  events.sort(function(a, b) { return new Date(b.start).getTime() - new Date(a.start).getTime(); });
+
+  return { ok: true, name: userName, history: events, total: events.length, period_months: months };
+}
+
 function doPost(e) {
   var body = {};
   try { body = JSON.parse(e.postData.contents); } catch (err) { return jsonOut({ok: false, message: 'JSONエラー'}); }
   if (body.action === 'overview') return jsonOut(getOverview(body.name || '', Number(body.days) || CONFIG.OVERVIEW_DAYS, body.email || ''));
   if (body.action === 'batch_reserve') return jsonOut(reserve(body.name, body.slots, body.class_details, body.email, body.add_to_calendar, body.passcode));
   if (body.action === 'batch_cancel') return jsonOut(cancel(body.name, body.event_ids, body.email, body.passcode));
+  if (body.action === 'attendance_history') return jsonOut(getAttendanceHistory(body.passcode, body.name || '', body.email || '', Number(body.months) || 3));
   return jsonOut({ok: false, message: '不明なアクション'});
 }
 
@@ -352,7 +379,7 @@ function findUserEvents(cal, userName, start, end, email) {
     // 3) Googleカレンダーのゲストに、ログイン中のメールアドレスが含まれる
     if (hasName(desc, userName) || normalize(title).indexOf(search) >= 0 || eventHasEmail(ev, email)) {
       var st = ev.getStartTime();
-      result.push({ event_id: ev.getId(), slot_id: String(st.getTime()), start: st.toISOString(), label: formatSlot(st), month_key: monthKey(st) });
+      result.push({ event_id: ev.getId(), slot_id: String(st.getTime()), start: st.toISOString(), label: formatSlot(st), month_key: monthKey(st), class_title: title });
     }
   }
   return result;

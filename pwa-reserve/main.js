@@ -1202,6 +1202,122 @@ function renderAdminSummary(days) {
   });
 }
 
+// --- 受講履歴検索 ---
+
+let historyPeriodMonths = 3;
+
+document.querySelectorAll('.history-period-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.history-period-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    historyPeriodMonths = Number(btn.dataset.months);
+  });
+});
+
+document.getElementById('btnHistorySearch').addEventListener('click', searchAttendanceHistory);
+
+async function searchAttendanceHistory() {
+  const name = (document.getElementById('historyNameInput').value || '').trim();
+  if (!name) {
+    alert('検索したい受講者のお名前を入力してください。');
+    document.getElementById('historyNameInput').focus();
+    return;
+  }
+
+  const code = sessionStorage.getItem('teraco_admin_code');
+  if (!code) {
+    alert('管理者としてログインしてください。');
+    return;
+  }
+
+  setLoading(true, '受講履歴を検索しています...');
+
+  try {
+    const url = new URL(API_BASE);
+    url.searchParams.append('action', 'attendance_history');
+    url.searchParams.append('passcode', code);
+    url.searchParams.append('name', name);
+    url.searchParams.append('months', String(historyPeriodMonths));
+
+    const res = await fetch(url.toString());
+    const data = await res.json();
+
+    if (!data.ok) {
+      alert(data.message || 'エラーが発生しました。');
+      return;
+    }
+
+    renderAttendanceHistory(data);
+
+  } catch (e) {
+    console.error(e);
+    alert('通信エラーが発生しました。電波の良い場所で再試行してください。');
+  } finally {
+    setLoading(false);
+  }
+}
+
+function renderAttendanceHistory(data) {
+  const panel = document.getElementById('historyResultPanel');
+  const content = document.getElementById('historyResultContent');
+  panel.classList.remove('hidden');
+  content.innerHTML = '';
+
+  const periodLabel = historyPeriodMonths === 12 ? '1年' : `${historyPeriodMonths}ヶ月`;
+  const total = data.total || 0;
+
+  // サマリーヘッダー
+  const summary = document.createElement('div');
+  summary.style.cssText = 'font-weight:bold; font-size:17px; margin-bottom:16px; padding:12px; background:#f5f5f5; border-radius:8px; color:#333;';
+  summary.textContent = `${data.name}さん ／ 過去${periodLabel}の受講回数：${total}回`;
+  content.appendChild(summary);
+
+  if (total === 0) {
+    const empty = document.createElement('div');
+    empty.style.cssText = 'text-align:center; padding:20px; color:#999; font-size:15px;';
+    empty.textContent = `過去${periodLabel}の受講履歴はありません。`;
+    content.appendChild(empty);
+    return;
+  }
+
+  // 月ごとにグループ化
+  const byMonth = {};
+  data.history.forEach(ev => {
+    const mk = ev.start.slice(0, 7);
+    if (!byMonth[mk]) byMonth[mk] = [];
+    byMonth[mk].push(ev);
+  });
+
+  // 新しい月順で表示
+  Object.keys(byMonth).sort().reverse().forEach(mk => {
+    const [y, m] = mk.split('-');
+    const monthDiv = document.createElement('div');
+    monthDiv.className = 'history-result-month';
+
+    const label = document.createElement('div');
+    label.className = 'history-month-label';
+    label.textContent = `${y}年${Number(m)}月（${byMonth[mk].length}回）`;
+    monthDiv.appendChild(label);
+
+    byMonth[mk].forEach(ev => {
+      const d = new Date(ev.start);
+      const dateLabel = formatDayLabelFromKey(ev.start.slice(0, 10));
+      const time = `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+      const classTitle = ev.class_title || ev.label || '';
+
+      const item = document.createElement('div');
+      item.className = 'history-item';
+      item.innerHTML = `
+        <span class="history-item-date">${dateLabel} ${time}〜</span>
+        <span class="history-item-class">${classTitle}</span>
+      `;
+      monthDiv.appendChild(item);
+    });
+
+    content.appendChild(monthDiv);
+  });
+}
+
 // Restore admin session if exists
 if (sessionStorage.getItem('teraco_admin_code')) {
   loadAdminSummary().then(ok => {
