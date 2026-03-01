@@ -100,7 +100,15 @@ function getAttendanceHistory(passcode, name, email, months) {
   // 日付の新しい順にソート
   events.sort(function(a, b) { return new Date(b.start).getTime() - new Date(a.start).getTime(); });
 
-  return { ok: true, name: userName, history: events, total: events.length, period_months: months };
+  return {
+    ok: true,
+    name: userName,
+    history: events,
+    total: events.length,
+    period_months: months,
+    period_start: Utilities.formatDate(start, CONFIG.TIMEZONE, 'yyyy/MM/dd'),
+    period_end: Utilities.formatDate(new Date(end.getTime() - 24 * 60 * 60 * 1000), CONFIG.TIMEZONE, 'yyyy/MM/dd')
+  };
 }
 
 function doPost(e) {

@@ -1263,19 +1263,29 @@ function renderAttendanceHistory(data) {
   panel.classList.remove('hidden');
   content.innerHTML = '';
 
-  const periodLabel = historyPeriodMonths === 12 ? '1年' : `${historyPeriodMonths}ヶ月`;
+  const months = data.period_months || historyPeriodMonths;
+  const periodLabel = months === 12 ? '1年' : `${months}ヶ月`;
   const total = data.total || 0;
+  const rangeStr = (data.period_start && data.period_end)
+    ? `（${data.period_start} 〜 ${data.period_end}）`
+    : '';
 
   // サマリーヘッダー
   const summary = document.createElement('div');
-  summary.style.cssText = 'font-weight:bold; font-size:17px; margin-bottom:16px; padding:12px; background:#f5f5f5; border-radius:8px; color:#333;';
+  summary.style.cssText = 'font-weight:bold; font-size:17px; margin-bottom:4px; padding:12px 12px 8px; background:#f5f5f5; border-radius:8px 8px 0 0; color:#333;';
   summary.textContent = `${data.name}さん ／ 過去${periodLabel}の受講回数：${total}回`;
   content.appendChild(summary);
+
+  // 検索期間の表示
+  const rangeEl = document.createElement('div');
+  rangeEl.style.cssText = 'font-size:13px; color:#888; padding:0 12px 12px; background:#f5f5f5; border-radius:0 0 8px 8px; margin-bottom:16px;';
+  rangeEl.textContent = `検索期間 ${rangeStr}`;
+  content.appendChild(rangeEl);
 
   if (total === 0) {
     const empty = document.createElement('div');
     empty.style.cssText = 'text-align:center; padding:20px; color:#999; font-size:15px;';
-    empty.textContent = `過去${periodLabel}の受講履歴はありません。`;
+    empty.textContent = `この期間に受講記録はありません。`;
     content.appendChild(empty);
     return;
   }
