@@ -152,6 +152,7 @@ function decodeJwtResponse(token) {
 
 let overviewTimer = null;
 const DEFAULT_TIMES = ['10:00', '14:00', '16:00', '18:00'];
+const ADMIN_TIMES   = ['09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00'];
 
 // --- Initialization ---
 
@@ -1062,12 +1063,14 @@ function buildMockSlots(days, { ignoreTimeFilter = false } = {}) {
   const start = new Date();
   start.setHours(0, 0, 0, 0);
   const now = new Date();
+  const isAdmin = !!sessionStorage.getItem('teraco_admin_code');
+  const times = isAdmin ? ADMIN_TIMES : DEFAULT_TIMES;
   for (let i = 0; i < days; i++) {
     const day = new Date(start.getTime());
     day.setDate(day.getDate() + i);
     const dayKey = formatDayKey(day);
     const dayLabel = formatDayLabelFromKey(dayKey);
-    DEFAULT_TIMES.forEach(time => {
+    times.forEach(time => {
       const [hh, mm] = time.split(':').map(Number);
       const startTime = new Date(day.getFullYear(), day.getMonth(), day.getDate(), hh, mm, 0, 0);
       if (!ignoreTimeFilter && startTime <= now) return;
