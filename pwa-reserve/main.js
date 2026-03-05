@@ -524,14 +524,18 @@ function buildMonthCalendar(monthKey) {
     const hasReservation = state.existing.some(ev => (state.slotIndex.get(ev.slot_id)?.day_key || ev.start?.slice(0, 10)) === dayKey);
     const hasSelected = Array.from(state.selected.values()).some(s => s.day_key === dayKey);
 
-    // 過去・今日
-    if (date <= today) { cell.classList.add('disabled'); row.appendChild(cell); continue; }
-    // 土日
-    if (dayOfWeek === 0 || dayOfWeek === 6) { cell.classList.add('disabled'); row.appendChild(cell); continue; }
-    // 個人レッスン制限
-    if (state.classSelection.course === 'private' && ![1, 2, 4].includes(dayOfWeek)) { cell.classList.add('disabled'); row.appendChild(cell); continue; }
-    // スロットなし
-    if (!slots.length) { cell.classList.add('disabled'); row.appendChild(cell); continue; }
+    // 管理者ログイン中はすべての日付にアクセス可能
+    const isAdmin = !!sessionStorage.getItem('teraco_admin_code');
+    if (!isAdmin) {
+      // 過去・今日
+      if (date <= today) { cell.classList.add('disabled'); row.appendChild(cell); continue; }
+      // 土日
+      if (dayOfWeek === 0 || dayOfWeek === 6) { cell.classList.add('disabled'); row.appendChild(cell); continue; }
+      // 個人レッスン制限
+      if (state.classSelection.course === 'private' && ![1, 2, 4].includes(dayOfWeek)) { cell.classList.add('disabled'); row.appendChild(cell); continue; }
+      // スロットなし
+      if (!slots.length) { cell.classList.add('disabled'); row.appendChild(cell); continue; }
+    }
 
     const hasSelectable = slots.some(s => s.reserved_count < s.capacity && !state.existingSet.has(s.slot_id));
 
@@ -1053,7 +1057,7 @@ function fmtTime_(date) {
   return `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
 }
 
-function buildMockSlots(days) {
+function buildMockSlots(days, { ignoreTimeFilter = false } = {}) {
   const slots = [];
   const start = new Date();
   start.setHours(0, 0, 0, 0);
@@ -1066,7 +1070,7 @@ function buildMockSlots(days) {
     DEFAULT_TIMES.forEach(time => {
       const [hh, mm] = time.split(':').map(Number);
       const startTime = new Date(day.getFullYear(), day.getMonth(), day.getDate(), hh, mm, 0, 0);
-      if (startTime <= now) return;
+      if (!ignoreTimeFilter && startTime <= now) return;
       const endTime = new Date(startTime.getTime() + 45 * 60 * 1000);
       slots.push({
         slot_id: String(startTime.getTime()),
@@ -1129,8 +1133,10 @@ async function adminLogin() {
     if (ok) {
       adminLoginView.classList.add('hidden');
       adminContentView.classList.remove('hidden');
-      // Save passcode temporarily in session
       sessionStorage.setItem('teraco_admin_code', code);
+      // スロット再ロード＆カレンダー再描画（管理者は全スロット表示）
+      applySlotList(buildMockSlots(60, { ignoreTimeFilter: true }));
+      renderAll();
     }
   } finally {
     setLoading(false);
@@ -1142,6 +1148,9 @@ function adminLogout() {
   adminPasscode.value = '';
   adminLoginView.classList.remove('hidden');
   adminContentView.classList.add('hidden');
+  // カレンダーを通常表示に戻す
+  applySlotList(buildMockSlots(60));
+  renderAll();
 }
 
 async function loadAdminSummary() {
