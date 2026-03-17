@@ -1,4 +1,4 @@
-// TERACO予約システム v45 (管理者向け受講履歴検索機能を追加)
+// TERACO予約システム v46 (管理者キャンセル時、Googleログイン予約者のカレンダーから正しく削除されるよう修正)
 
 var CONFIG = {
   TIMEZONE: 'Asia/Tokyo',
@@ -23,11 +23,86 @@ function authorizeMe() {
 function doGet(e) {
   var p = (e && e.parameter) || {};
   var action = p.action || 'overview';
-  if (action === 'version') return jsonOut({ok: true, version: 'v45', timestamp: new Date().toISOString()});
+  if (action === 'version') return jsonOut({ok: true, version: 'v46', timestamp: new Date().toISOString()});
   if (action === 'overview') return jsonOut(getOverview(p.name || '', Number(p.days) || CONFIG.OVERVIEW_DAYS));
   if (action === 'admin_summary') return jsonOut(getAdminSummary(p.passcode));
   if (action === 'attendance_history') return jsonOut(getAttendanceHistory(p.passcode, p.name || '', p.email || '', Number(p.months) || 3));
+  if (action === 'admin_calendar_events') return jsonOut(getAdminCalendarEvents(p.passcode, p.start || '', p.end || ''));
+  if (action === 'admin_customer_reservations') return jsonOut(getAdminCustomerReservations(p.passcode, p.name || '', p.start || '', p.end || ''));
+  if (action === 'admin_import_sheet_data') return jsonOut(adminImportSheetData(p.passcode, p.sheet_id || '', p.sheet_name || ''));
   return jsonOut({ok: true});
+}
+
+/**
+ * 管理者用：期間指定でカレンダー予約一覧を取得
+ */
+function getAdminCalendarEvents(passcode, startStr, endStr) {
+  if (passcode !== CONFIG.ADMIN_PASSCODE) return { ok: false, message: 'パスコードが正しくありません' };
+  var cal = CalendarApp.getCalendarById(CONFIG.CALENDAR_ID);
+  var start = startStr ? new Date(startStr) : todayStart();
+  var end = endStr ? new Date(endStr + 'T23:59:59') : addDays(start, 14);
+  var events = cal.getEvents(start, end);
+  var result = events.map(function(ev) {
+    var names = (ev.getDescription() || '').split('\n').filter(function(l) { return l.trim() && !isJunkLine(l.trim()); });
+    return {
+      event_id: ev.getId(),
+      title: ev.getTitle(),
+      start: ev.getStartTime().toISOString(),
+      end: ev.getEndTime().toISOString(),
+      names: names
+    };
+  });
+  return { ok: true, events: result };
+}
+
+/**
+ * 管理者用：顧客名で予約一覧を取得
+ */
+function getAdminCustomerReservations(passcode, name, startStr, endStr) {
+  if (passcode !== CONFIG.ADMIN_PASSCODE) return { ok: false, message: 'パスコードが正しくありません' };
+  if (!name || !name.trim()) return { ok: false, message: '名前を入力してください' };
+  var cal = CalendarApp.getCalendarById(CONFIG.CALENDAR_ID);
+  var start = startStr ? new Date(startStr) : todayStart();
+  var end = endStr ? new Date(endStr + 'T23:59:59') : addDays(start, 90);
+  var reservations = findUserEvents(cal, name.trim(), start, end, '');
+  return { ok: true, name: name.trim(), reservations: reservations };
+}
+
+/**
+ * 管理者用：Googleスプレッドシートの全データを取得
+ * @param {string} passcode   管理者パスコード
+ * @param {string} sheetId    スプレッドシートのID
+ * @param {string} sheetName  シート名（省略時は先頭シート）
+ */
+function adminImportSheetData(passcode, sheetId, sheetName) {
+  if (passcode !== CONFIG.ADMIN_PASSCODE) return { ok: false, message: 'パスコードが正しくありません' };
+  if (!sheetId || !sheetId.trim()) return { ok: false, message: 'スプレッドシートIDを指定してください' };
+  try {
+    var ss = SpreadsheetApp.openById(sheetId.trim());
+    var allSheets = ss.getSheets().map(function(s) { return s.getName(); });
+    var sheet;
+    if (sheetName && sheetName.trim()) {
+      sheet = ss.getSheetByName(sheetName.trim());
+      if (!sheet) return { ok: false, message: 'シート「' + sheetName + '」が見つかりません', sheets: allSheets };
+    } else {
+      sheet = ss.getSheets()[0];
+    }
+    var data = sheet.getDataRange().getValues();
+    if (data.length === 0) return { ok: true, headers: [], rows: [], sheets: allSheets, sheet: sheet.getName() };
+    var headers = data[0].map(function(h) { return String(h || '').trim(); });
+    var rows = data.slice(1).map(function(row) {
+      return headers.map(function(h, i) {
+        var v = row[i];
+        if (v instanceof Date) return Utilities.formatDate(v, CONFIG.TIMEZONE, 'yyyy/MM/dd');
+        return v !== undefined && v !== null ? String(v) : '';
+      });
+    }).filter(function(row) {
+      return row.some(function(cell) { return cell !== ''; });
+    });
+    return { ok: true, headers: headers, rows: rows, sheets: allSheets, sheet: sheet.getName(), total: rows.length };
+  } catch (e) {
+    return { ok: false, message: 'スプレッドシートの読み込みに失敗しました: ' + e.toString() };
+  }
 }
 
 /**
@@ -178,11 +253,11 @@ function reserve(name, slotIds, classDetails, email, addToCalendar, passcode) {
         eventId = existing.getId();
         var desc = existing.getDescription() || '';
         if (!hasName(desc, userName)) {
-          existing.setDescription(addName(desc, userName));
+          existing.setDescription(addName(desc, userName, email));
         }
       } else {
         var ev = cal.createEvent(title, startTime, endTime, {
-          description: userName,
+          description: addName('', userName, email),
           location: CONFIG.LOCATION,
           sendInvites: false
         });
@@ -282,7 +357,9 @@ function cancel(name, eventIds, email, passcode) {
       if (newDesc.trim()) {
         // まだ他の予約者がいる場合：この生徒だけを削除して通知
         ev.setDescription(newDesc);
-        if (email) removeGuestAndNotify(eventIds[i], email);
+        // 管理者キャンセル時はemailが渡らないので、説明欄に保存していればそこから取得
+        var emailToRemove = email || getEmailFromDesc(desc, userName);
+        if (emailToRemove) removeGuestAndNotify(eventIds[i], emailToRemove);
       } else {
         // この生徒が最後（または唯一）の予約者の場合：予定ごと削除して通知
         // ※二重通知を防ぐため removeGuest は呼ばず、deleteEvent のみ実行
@@ -411,6 +488,27 @@ function eventHasEmail(ev, email) {
   }
   return false;
 }
+
+/**
+ * 説明欄から名前に対応するメールアドレスを取得（予約時にemail付きで保存した場合）
+ */
+function getEmailFromDesc(desc, userName) {
+  if (!desc || !userName) return '';
+  var lines = desc.split('\n'), search = normalize(userName);
+  for (var i = 0; i < lines.length; i++) {
+    var line = lines[i].trim();
+    if (line.indexOf('email:') === 0) {
+      var parts = line.split(':');
+      if (parts.length >= 3) {
+        var storedName = parts.slice(1, -1).join(':');
+        var storedEmail = parts[parts.length - 1];
+        if (normalize(storedName) === search && storedEmail.indexOf('@') >= 0) return storedEmail;
+      }
+    }
+  }
+  return '';
+}
+
 function hasName(desc, userName) {
   var search = normalize(userName), lines = desc.split('\n');
   for (var i = 0; i < lines.length; i++) {
@@ -419,26 +517,38 @@ function hasName(desc, userName) {
   }
   return false;
 }
-function addName(desc, userName) {
+function addName(desc, userName, email) {
   var lines = desc.split('\n'), names = [], search = normalize(userName);
   for (var i = 0; i < lines.length; i++) {
     var line = lines[i].trim();
     if (line && !isJunkLine(line)) names.push(line);
   }
-  if (!names.some(function(n) { return normalize(n) === search; })) names.push(userName);
+  if (!names.some(function(n) { return normalize(n) === search; })) {
+    names.push(userName);
+    if (email && String(email).trim().indexOf('@') >= 0) {
+      names.push('email:' + userName + ':' + String(email).trim());
+    }
+  }
   return names.join('\n');
 }
 function removeName(desc, userName) {
   var lines = desc.split('\n'), result = [], search = normalize(userName);
   for (var i = 0; i < lines.length; i++) {
     var line = lines[i].trim();
-    if (line && !isJunkLine(line) && normalize(line) !== search) result.push(line);
+    if (!line) continue;
+    if (isJunkLine(line)) continue;
+    if (normalize(line) === search) continue;
+    if (line.indexOf('email:') === 0) {
+      var parts = line.split(':');
+      if (parts.length >= 3 && normalize(parts.slice(1, -1).join(':')) === search) continue;
+    }
+    result.push(line);
   }
   return result.join('\n');
 }
 function isJunkLine(line) {
   var lower = line.toLowerCase();
-  return lower.indexOf('namekey') >= 0 || line.indexOf('予約者') >= 0 || line === '---';
+  return lower.indexOf('namekey') >= 0 || line.indexOf('予約者') >= 0 || line === '---' || line.indexOf('email:') === 0;
 }
 function normalize(s) {
   return String(s || '').replace(/\s+/g, '').toLowerCase().replace(/﨑/g, '崎').replace(/髙/g, '高').replace(/濵/g, '浜').replace(/邊/g, '辺').replace(/邉/g, '辺').replace(/齋/g, '斎');
