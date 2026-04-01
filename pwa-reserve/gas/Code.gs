@@ -553,12 +553,22 @@ function isJunkLine(line) {
 function normalize(s) {
   return String(s || '').replace(/\s+/g, '').toLowerCase().replace(/﨑/g, '崎').replace(/髙/g, '高').replace(/濵/g, '浜').replace(/邊/g, '辺').replace(/邉/g, '辺').replace(/齋/g, '斎');
 }
+// 曜日別予約可能時間（火=2・木=4 は1時間おき、それ以外は18:00のみ）
+function getTimesForDay(day) {
+  var dow = day.getDay(); // 0=日,1=月,2=火,3=水,4=木,5=金,6=土
+  if (dow === 2 || dow === 4) {
+    return ['10:00', '11:00', '14:00', '15:00', '16:00', '17:00', '18:00'];
+  }
+  return ['18:00'];
+}
+
 function buildSlots(cal, start, days) {
   var slots = [], now = new Date(), end = addDays(start, days), events = cal.getEvents(start, end);
   for (var d = 0; d < days; d++) {
     var day = addDays(start, d);
-    for (var t = 0; t < CONFIG.FIXED_TIMES.length; t++) {
-      var time = CONFIG.FIXED_TIMES[t], st = atTime(day, time);
+    var times = getTimesForDay(day);
+    for (var t = 0; t < times.length; t++) {
+      var time = times[t], st = atTime(day, time);
       if (st <= now) continue;
       var et = new Date(st.getTime() + CONFIG.SLOT_MINUTES * 60000), count = 0;
       for (var e = 0; e < events.length; e++) {

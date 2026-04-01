@@ -151,8 +151,15 @@ function decodeJwtResponse(token) {
 }
 
 let overviewTimer = null;
-const DEFAULT_TIMES = ['10:00', '14:00', '16:00', '18:00'];
+// 曜日別の予約可能時間（火=2・木=4 は1時間おき、それ以外は18:00のみ）
+const TIMES_TUE_THU = ['10:00', '11:00', '14:00', '15:00', '16:00', '17:00', '18:00'];
+const TIMES_OTHER   = ['18:00'];
 const ADMIN_TIMES   = ['09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00'];
+
+function getTimesForDayOfWeek(dayOfWeek, isAdmin) {
+  if (isAdmin) return ADMIN_TIMES;
+  return (dayOfWeek === 2 || dayOfWeek === 4) ? TIMES_TUE_THU : TIMES_OTHER;
+}
 
 // --- Initialization ---
 
@@ -281,6 +288,16 @@ btnRefresh.addEventListener('click', () => {
     // ── 画面を再描画 ──
     renderAll();
     showMessage('リセットしました。最初からやり直せます。');
+  }
+});
+
+// ポップアップ外クリックで閉じる
+document.addEventListener('click', () => {
+  const popup = document.getElementById('timePopup');
+  if (popup && !popup.classList.contains('hidden')) {
+    closeTimePopup();
+    state.activeDay = null;
+    renderCalendar();
   }
 });
 
@@ -532,8 +549,8 @@ function buildMonthCalendar(monthKey) {
       if (date <= today) { cell.classList.add('disabled'); row.appendChild(cell); continue; }
       // 土日
       if (dayOfWeek === 0 || dayOfWeek === 6) { cell.classList.add('disabled'); row.appendChild(cell); continue; }
-      // 個人レッスン制限
-      if (state.classSelection.course === 'private' && ![1, 2, 4].includes(dayOfWeek)) { cell.classList.add('disabled'); row.appendChild(cell); continue; }
+      // 個人レッスン制限（火・木のみ）
+      if (state.classSelection.course === 'private' && ![2, 4].includes(dayOfWeek)) { cell.classList.add('disabled'); row.appendChild(cell); continue; }
       // スロットなし
       if (!slots.length) { cell.classList.add('disabled'); row.appendChild(cell); continue; }
     }
@@ -550,12 +567,19 @@ function buildMonthCalendar(monthKey) {
     if (hasReservation) cell.classList.add('has-reservation');
     if (hasSelected) cell.classList.add('has-selected');
 
-    cell.addEventListener('click', () => {
-      state.activeDay = (state.activeDay === dayKey) ? null : dayKey;
-      renderCalendar();
-      if (state.activeDay) {
-        const tp = document.getElementById('timePanelWrap');
-        if (tp) setTimeout(() => tp.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 80);
+    cell.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const wasActive = state.activeDay === dayKey;
+      closeTimePopup();
+      if (!wasActive) {
+        // renderCalendar() でDOM再構築される前に座標を取得
+        const cellRect = cell.getBoundingClientRect();
+        state.activeDay = dayKey;
+        renderCalendar();
+        showTimePopup(dayKey, cellRect);
+      } else {
+        state.activeDay = null;
+        renderCalendar();
       }
     });
 
@@ -572,25 +596,25 @@ function buildMonthCalendar(monthKey) {
 }
 
 function renderTimePanel() {
+  // timePanelWrap は使用しない（ポップアップ方式に変更）
   const wrap = document.getElementById('timePanelWrap');
-  if (!wrap) return;
+  if (wrap) { wrap.classList.add('hidden'); wrap.innerHTML = ''; }
+}
 
-  if (!state.activeDay) {
-    wrap.classList.add('hidden');
-    wrap.innerHTML = '';
-    return;
-  }
+function showTimePopup(dayKey, cellRect) {
+  const popup = document.getElementById('timePopup');
+  const content = document.getElementById('timePopupContent');
+  if (!popup || !content) return;
 
-  const slots = state.daySlots.get(state.activeDay) || [];
-  if (!slots.length) { wrap.classList.add('hidden'); return; }
+  const slots = state.daySlots.get(dayKey) || [];
+  if (!slots.length) return;
 
-  const [y, m, d] = state.activeDay.split('-').map(Number);
+  const [y, m, d] = dayKey.split('-').map(Number);
   const date = new Date(y, m - 1, d);
   const DAYS = ['日', '月', '火', '水', '木', '金', '土'];
   const dayLabel = `${m}月${d}日（${DAYS[date.getDay()]}）`;
 
-  wrap.classList.remove('hidden');
-  wrap.innerHTML = `<div style="font-size:22px; font-weight:700; color:var(--green-deep); text-align:center;">${dayLabel}の時間を選んでください</div>`;
+  content.innerHTML = `<div style="font-weight:700;color:var(--green-deep);margin-bottom:10px;font-size:15px;text-align:center;white-space:nowrap;">${dayLabel}</div>`;
 
   const grid = document.createElement('div');
   grid.className = 'time-btn-grid';
@@ -607,27 +631,75 @@ function renderTimePanel() {
     } else if (state.selected.has(slot.slot_id)) {
       btn.textContent = `${slot.start_time}\n✓ 選択中`;
       btn.classList.add('time-btn-selected');
-      btn.addEventListener('click', () => { state.selected.delete(slot.slot_id); renderAll(); });
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        state.selected.delete(slot.slot_id);
+        closeTimePopup();
+        state.activeDay = null;
+        renderAll();
+      });
     } else if (slot.reserved_count >= slot.capacity) {
       btn.textContent = `${slot.start_time}\n満席`;
       btn.classList.add('time-btn-full');
       btn.disabled = true;
     } else {
       btn.textContent = slot.start_time;
-      btn.addEventListener('click', () => { addSlot(slot); });
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        closeTimePopup();
+        state.activeDay = null;
+        addSlot(slot);
+      });
     }
 
     grid.appendChild(btn);
   });
 
-  wrap.appendChild(grid);
+  content.appendChild(grid);
 
-  const closeBtn = document.createElement('button');
-  closeBtn.textContent = '閉じる';
-  closeBtn.className = 'soft';
-  closeBtn.style.cssText = 'width:100%; margin-top:16px;';
-  closeBtn.addEventListener('click', () => { state.activeDay = null; renderCalendar(); });
-  wrap.appendChild(closeBtn);
+  // 一時表示して寸法を確定させる
+  popup.style.visibility = 'hidden';
+  popup.classList.remove('hidden');
+
+  requestAnimationFrame(() => {
+    const pw = popup.offsetWidth;
+    const ph = popup.offsetHeight;
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    const margin = 4;
+
+    let left, top;
+
+    // ① セルの右に収まるか
+    if (cellRect.right + margin + pw <= vw - margin) {
+      left = cellRect.right + margin;
+      top = cellRect.top;
+    }
+    // ② セルの左に収まるか
+    else if (cellRect.left - margin - pw >= margin) {
+      left = cellRect.left - margin - pw;
+      top = cellRect.top;
+    }
+    // ③ どちらにも収まらない（スマホ等）→ セル直下・セル中央揃え
+    else {
+      left = cellRect.left + (cellRect.width - pw) / 2;
+      top = cellRect.bottom + margin;
+    }
+
+    // 画面端クランプ
+    left = Math.max(margin, Math.min(left, vw - pw - margin));
+    if (top + ph > vh - margin) top = cellRect.top - ph - margin;
+    top = Math.max(margin, top);
+
+    popup.style.left = left + 'px';
+    popup.style.top = top + 'px';
+    popup.style.visibility = 'visible';
+  });
+}
+
+function closeTimePopup() {
+  const popup = document.getElementById('timePopup');
+  if (popup) popup.classList.add('hidden');
 }
 
 function handleDayClick(dayKey, cell) {
@@ -1064,10 +1136,11 @@ function buildMockSlots(days, { ignoreTimeFilter = false } = {}) {
   start.setHours(0, 0, 0, 0);
   const now = new Date();
   const isAdmin = !!sessionStorage.getItem('teraco_admin_code');
-  const times = isAdmin ? ADMIN_TIMES : DEFAULT_TIMES;
   for (let i = 0; i < days; i++) {
     const day = new Date(start.getTime());
     day.setDate(day.getDate() + i);
+    const dayOfWeek = day.getDay();
+    const times = getTimesForDayOfWeek(dayOfWeek, isAdmin);
     const dayKey = formatDayKey(day);
     const dayLabel = formatDayLabelFromKey(dayKey);
     times.forEach(time => {
