@@ -498,6 +498,26 @@
       }
     }
 
+    /* Sync Bar (background update indicator) */
+    #syncBar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 200;
+      background: var(--green-deep);
+      color: #fff;
+      font-size: 14px;
+      text-align: center;
+      padding: 6px 12px;
+      transform: translateY(-100%);
+      transition: transform 0.3s ease;
+      pointer-events: none;
+    }
+    #syncBar.visible {
+      transform: translateY(0);
+    }
+
     /* Loading Overlay */
     #loadingOverlay {
       position: fixed;
@@ -867,6 +887,8 @@
   <div id="timePopup" class="hidden">
     <div id="timePopupContent"></div>
   </div>
+
+  <div id="syncBar">予約状況を更新中...</div>
 
   <div id="loadingOverlay">
     <div class="spinner"></div>

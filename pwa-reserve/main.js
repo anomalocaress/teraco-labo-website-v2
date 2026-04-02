@@ -13,6 +13,7 @@ const btnCheckReservation = document.getElementById('btnCheckReservation');
 const nameError = document.getElementById('nameError');
 const loadingOverlay = document.getElementById('loadingOverlay');
 const loadingText = document.getElementById('loadingText');
+const syncBar = document.getElementById('syncBar');
 
 function setLoading(isLoading, text) {
   if (isLoading) {
@@ -20,6 +21,15 @@ function setLoading(isLoading, text) {
     loadingOverlay.classList.add('visible');
   } else {
     loadingOverlay.classList.remove('visible');
+  }
+}
+
+function setSyncBar(visible, text) {
+  if (visible) {
+    syncBar.textContent = text || '予約状況を更新中...';
+    syncBar.classList.add('visible');
+  } else {
+    syncBar.classList.remove('visible');
   }
 }
 
@@ -151,14 +161,37 @@ function decodeJwtResponse(token) {
 }
 
 let overviewTimer = null;
-// 曜日別の予約可能時間（火=2・木=4 は1時間おき、それ以外は18:00のみ）
-const TIMES_TUE_THU = ['10:00', '11:00', '14:00', '15:00', '16:00', '17:00', '18:00'];
-const TIMES_OTHER   = ['18:00'];
-const ADMIN_TIMES   = ['09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00'];
+/// コース・曜日別の予約可能時間
+// 個人レッスン: 月(1)・火(2)・木(4) = 1時間おき10〜17時、水(3)・金(5) = 17:00のみ
+// その他コース: 水(3)・金(5) = 10:00/14:00/16:00 の3択のみ
+const TIMES_PRIVATE_FULL  = ['10:00', '11:00', '14:00', '15:00', '16:00', '17:00']; // 個人レッスン 月火木
+const TIMES_PRIVATE_SHORT = ['17:00'];                                                // 個人レッスン 水金
+const TIMES_GROUP         = ['10:00', '14:00', '16:00'];                              // その他コース 水金
+const ADMIN_TIMES         = ['09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00'];
 
+// モック用スーパーセット（コース変更に対応できるよう全時間帯を保持）
+const TIMES_MOCK_FULL  = ['10:00', '11:00', '14:00', '15:00', '16:00', '17:00']; // 月火木
+const TIMES_MOCK_SHORT = ['10:00', '14:00', '16:00', '17:00'];                    // 水金
+
+function getTimesForCourseAndDay(course, dayOfWeek, isAdmin) {
+  if (isAdmin) return ADMIN_TIMES;
+  if (course === 'private') {
+    if ([1, 2, 4].includes(dayOfWeek)) return TIMES_PRIVATE_FULL;
+    if ([3, 5].includes(dayOfWeek)) return TIMES_PRIVATE_SHORT;
+    return [];
+  } else {
+    // intro / applied / basic / advance
+    if ([3, 5].includes(dayOfWeek)) return TIMES_GROUP;
+    return [];
+  }
+}
+
+// 後方互換のため残す（buildMockSlots内で使用）
 function getTimesForDayOfWeek(dayOfWeek, isAdmin) {
   if (isAdmin) return ADMIN_TIMES;
-  return (dayOfWeek === 2 || dayOfWeek === 4) ? TIMES_TUE_THU : TIMES_OTHER;
+  if ([1, 2, 4].includes(dayOfWeek)) return TIMES_MOCK_FULL;
+  if ([3, 5].includes(dayOfWeek)) return TIMES_MOCK_SHORT;
+  return [];
 }
 
 // --- Initialization ---
@@ -374,8 +407,8 @@ async function loadOverview({ preserveSelection, silent = false }) {
   try {
     for (let attempt = 0; attempt < 2; attempt++) {
       try {
-        if (isFirstLoad && !silent) {
-          setLoading(true, attempt === 0 ? '予約状況を確認しています...' : '再試行しています...');
+        if (!silent) {
+          setSyncBar(true, attempt === 0 ? '予約状況を更新中...' : '再試行しています...');
         }
 
         const controller = new AbortController();
@@ -438,6 +471,7 @@ async function loadOverview({ preserveSelection, silent = false }) {
     }
   } finally {
     setLoading(false);
+    setSyncBar(false);
   }
 
   renderAll();
@@ -549,13 +583,23 @@ function buildMonthCalendar(monthKey) {
       if (date <= today) { cell.classList.add('disabled'); row.appendChild(cell); continue; }
       // 土日
       if (dayOfWeek === 0 || dayOfWeek === 6) { cell.classList.add('disabled'); row.appendChild(cell); continue; }
-      // 個人レッスン制限（火・木のみ）
-      if (state.classSelection.course === 'private' && ![2, 4].includes(dayOfWeek)) { cell.classList.add('disabled'); row.appendChild(cell); continue; }
+      // コース別曜日制限
+      const course = state.classSelection.course;
+      if (course === 'private') {
+        // 個人レッスン: 月(1)・火(2)・木(4)・水(3)・金(5) のみ（土日は上でブロック済み）
+        // 月〜金はすべて選択可なので追加制限なし
+      } else {
+        // その他コース: 水(3)・金(5) のみ
+        if (![3, 5].includes(dayOfWeek)) { cell.classList.add('disabled'); row.appendChild(cell); continue; }
+      }
       // スロットなし
       if (!slots.length) { cell.classList.add('disabled'); row.appendChild(cell); continue; }
     }
 
-    const hasSelectable = slots.some(s => s.reserved_count < s.capacity && !state.existingSet.has(s.slot_id));
+    const { course } = state.classSelection;
+    const allowedTimes = getTimesForCourseAndDay(course, dayOfWeek, isAdmin);
+    const courseSlots = isAdmin ? slots : slots.filter(s => allowedTimes.includes(s.start_time));
+    const hasSelectable = courseSlots.some(s => s.reserved_count < s.capacity && !state.existingSet.has(s.slot_id));
 
     if (!hasSelectable && !hasReservation) {
       cell.classList.add('full');
@@ -606,11 +650,14 @@ function showTimePopup(dayKey, cellRect) {
   const content = document.getElementById('timePopupContent');
   if (!popup || !content) return;
 
-  const slots = state.daySlots.get(dayKey) || [];
-  if (!slots.length) return;
-
+  const allSlots = state.daySlots.get(dayKey) || [];
   const [y, m, d] = dayKey.split('-').map(Number);
   const date = new Date(y, m - 1, d);
+  const isAdmin = !!sessionStorage.getItem('teraco_admin_code');
+  const { course } = state.classSelection;
+  const allowedTimes = getTimesForCourseAndDay(course, date.getDay(), isAdmin);
+  const slots = isAdmin ? allSlots : allSlots.filter(s => allowedTimes.includes(s.start_time));
+  if (!slots.length) return;
   const DAYS = ['日', '月', '火', '水', '木', '金', '土'];
   const dayLabel = `${m}月${d}日（${DAYS[date.getDay()]}）`;
 
