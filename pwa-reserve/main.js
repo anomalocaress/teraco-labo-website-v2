@@ -162,10 +162,10 @@ function decodeJwtResponse(token) {
 
 let overviewTimer = null;
 /// コース・曜日別の予約可能時間
-// 個人レッスン: 月(1)・火(2)・木(4) = 1時間おき10〜17時、水(3)・金(5) = 17:00のみ
+// 個人レッスン: 火(2)・木(4) = 1時間おき10〜17時（それ以外は選択不可）
 // その他コース: 水(3)・金(5) = 10:00/14:00/16:00 の3択のみ
-const TIMES_PRIVATE_FULL  = ['10:00', '11:00', '14:00', '15:00', '16:00', '17:00']; // 個人レッスン 月火木
-const TIMES_PRIVATE_SHORT = ['17:00'];                                                // 個人レッスン 水金
+const TIMES_PRIVATE_FULL  = ['10:00', '11:00', '14:00', '15:00', '16:00', '17:00']; // 個人レッスン 火木
+const TIMES_PRIVATE_SHORT = ['17:00'];                                                // 個人レッスン（現在未使用）
 const TIMES_GROUP         = ['10:00', '14:00', '16:00'];                              // その他コース 水金
 const ADMIN_TIMES         = ['09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00'];
 
@@ -176,8 +176,7 @@ const TIMES_MOCK_SHORT = ['10:00', '14:00', '16:00', '17:00'];                  
 function getTimesForCourseAndDay(course, dayOfWeek, isAdmin) {
   if (isAdmin) return ADMIN_TIMES;
   if (course === 'private') {
-    if ([1, 2, 4].includes(dayOfWeek)) return TIMES_PRIVATE_FULL;
-    if ([3, 5].includes(dayOfWeek)) return TIMES_PRIVATE_SHORT;
+    if ([2, 4].includes(dayOfWeek)) return TIMES_PRIVATE_FULL; // 火・木のみ
     return [];
   } else {
     // intro / applied / basic / advance
@@ -586,8 +585,8 @@ function buildMonthCalendar(monthKey) {
       // コース別曜日制限
       const course = state.classSelection.course;
       if (course === 'private') {
-        // 個人レッスン: 月(1)・火(2)・木(4)・水(3)・金(5) のみ（土日は上でブロック済み）
-        // 月〜金はすべて選択可なので追加制限なし
+        // 個人レッスン: 火(2)・木(4) のみ
+        if (![2, 4].includes(dayOfWeek)) { cell.classList.add('disabled'); row.appendChild(cell); continue; }
       } else {
         // その他コース: 水(3)・金(5) のみ
         if (![3, 5].includes(dayOfWeek)) { cell.classList.add('disabled'); row.appendChild(cell); continue; }
