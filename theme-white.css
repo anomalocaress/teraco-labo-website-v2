@@ -374,15 +374,16 @@ input, textarea, select {
 /* Content paragraphs keep solid readable color */
 p, li, label, small { color: var(--text) !important; }
 
-/* Links: simple underline with subtle color */
-main a:not(.cta-button):not(.back-link),
+/* Links: simple underline with subtle color.
+   ボタン/カード系の<a>は除外（下線・青色を出さない） */
+main a:not(.cta-button):not(.back-link):not(.btn-green):not(.btn-line):not(.service-card):not(.sticky-btn):not(.about-cta):not(.detail-link):not(.skip-link),
 .content a {
   color: var(--primary-blue) !important;
   text-decoration: underline !important;
   text-underline-offset: 3px;
   transition: color .2s ease, text-underline-offset .2s var(--ease-out);
 }
-main a:hover:not(.cta-button):not(.back-link),
+main a:hover:not(.cta-button):not(.back-link):not(.btn-green):not(.btn-line):not(.service-card):not(.sticky-btn):not(.about-cta):not(.detail-link):not(.skip-link),
 .content a:hover {
   color: #1d4ed8 !important;
   text-underline-offset: 5px;
