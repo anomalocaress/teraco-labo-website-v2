@@ -194,6 +194,40 @@
       background: #fff0f0;
     }
 
+    /* 日付マス右下の予約人数バッジ */
+    .day-count {
+      position: absolute;
+      bottom: 3px;
+      right: 4px;
+      font-size: 11px;
+      font-weight: 700;
+      line-height: 1;
+      color: #fff;
+      background: var(--green);
+      border-radius: 8px;
+      padding: 2px 5px;
+      pointer-events: none;
+    }
+
+    td.active .day-count {
+      background: #fff;
+      color: var(--green-deep);
+    }
+
+    td.full .day-count {
+      background: #e57373;
+      color: #fff;
+    }
+
+    @media (max-width:640px) {
+      .day-count {
+        font-size: 9px;
+        padding: 1px 4px;
+        bottom: 2px;
+        right: 2px;
+      }
+    }
+
     /* Time Selection (Dropdown) */
     .time-select-wrapper {
       margin-top: 20px;
@@ -903,7 +937,7 @@
     <div class="spinner"></div>
     <div id="loadingText">処理中です...</div>
   </div>
-  <script src="main.js?v=43.4"></script>
+  <script src="main.js?v=43.5"></script>
   <script>if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js'); }</script>
 </body>
 

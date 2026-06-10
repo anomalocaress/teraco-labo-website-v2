@@ -546,6 +546,16 @@ function renderCalendar() {
   renderTimePanel();
 }
 
+// 日付マスの右下に予約人数バッジを表示する（0人や未定義は表示しない）
+function appendDayCount(cell, count) {
+  if (!count || count <= 0) return;
+  const badge = document.createElement('span');
+  badge.className = 'day-count';
+  badge.textContent = `${count}人`;
+  badge.title = `予約 ${count}人`;
+  cell.appendChild(badge);
+}
+
 function buildMonthCalendar(monthKey) {
   const [yearStr, monthStr] = monthKey.split('-');
   const year = Number(yearStr);
@@ -618,8 +628,12 @@ function buildMonthCalendar(monthKey) {
       : slots.filter(s => allowedTimes.includes(s.start_time) && !getBlockReason(dayKey, s.start_time));
     const hasSelectable = courseSlots.some(s => s.reserved_count < s.capacity && !state.existingSet.has(s.slot_id));
 
+    // その日の合計予約人数（このコースで表示している時間帯の合計）
+    const dayReserved = courseSlots.reduce((sum, s) => sum + (Number(s.reserved_count) || 0), 0);
+
     if (!hasSelectable && !hasReservation) {
       cell.classList.add('full');
+      appendDayCount(cell, dayReserved);
       row.appendChild(cell);
       continue;
     }
@@ -644,6 +658,7 @@ function buildMonthCalendar(monthKey) {
       }
     });
 
+    appendDayCount(cell, dayReserved);
     row.appendChild(cell);
   }
 
