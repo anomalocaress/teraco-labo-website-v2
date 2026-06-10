@@ -193,6 +193,22 @@ function getTimesForDayOfWeek(dayOfWeek, isAdmin) {
   return [];
 }
 
+// --- 特別な予約不可日時 ---
+// 個別の予定により、特定の日付・時間帯だけ予約を止めたいときにここへ追加する。
+// match(startTime) が true の枠を予約不可にし、ホバー時に reason を表示する。
+// 例: 2026-08-07 の午前中（12:00より前）は出張のため予約不可
+const BLOCKED_SLOTS = [
+  { day: '2026-08-07', reason: '出張のため予約できません（午前）', match: (t) => t < '12:00' }
+];
+
+// 指定の日付キー・開始時刻が予約不可なら理由文字列を、そうでなければ null を返す
+function getBlockReason(dayKey, startTime) {
+  for (const rule of BLOCKED_SLOTS) {
+    if (rule.day === dayKey && rule.match(startTime)) return rule.reason;
+  }
+  return null;
+}
+
 // --- Initialization ---
 
 // Class Selection Logic
@@ -597,7 +613,9 @@ function buildMonthCalendar(monthKey) {
 
     const { course } = state.classSelection;
     const allowedTimes = getTimesForCourseAndDay(course, dayOfWeek, isAdmin);
-    const courseSlots = isAdmin ? slots : slots.filter(s => allowedTimes.includes(s.start_time));
+    const courseSlots = isAdmin
+      ? slots
+      : slots.filter(s => allowedTimes.includes(s.start_time) && !getBlockReason(dayKey, s.start_time));
     const hasSelectable = courseSlots.some(s => s.reserved_count < s.capacity && !state.existingSet.has(s.slot_id));
 
     if (!hasSelectable && !hasReservation) {
@@ -670,7 +688,18 @@ function showTimePopup(dayKey, cellRect) {
     btn.type = 'button';
     btn.className = 'time-btn';
 
-    if (state.existingSet.has(slot.slot_id)) {
+    const blockReason = isAdmin ? null : getBlockReason(dayKey, slot.start_time);
+
+    if (blockReason) {
+      btn.textContent = `${slot.start_time}\n× 予約不可`;
+      btn.classList.add('time-btn-blocked');
+      btn.title = blockReason;                 // PCでカーソルを合わせるとホバー表示
+      btn.setAttribute('aria-disabled', 'true');
+      btn.addEventListener('click', (e) => {   // タップ時は理由をメッセージ表示
+        e.stopPropagation();
+        if (messageEl) messageEl.textContent = blockReason;
+      });
+    } else if (state.existingSet.has(slot.slot_id)) {
       btn.textContent = `${slot.start_time}\n✓ 済`;
       btn.classList.add('time-btn-done');
       btn.disabled = true;
