@@ -704,9 +704,14 @@ function showTimePopup(dayKey, cellRect) {
     btn.className = 'time-btn';
 
     const blockReason = isAdmin ? null : getBlockReason(dayKey, slot.start_time);
+    const reserved = Number(slot.reserved_count) || 0;
+    // 時間ボタンの中身（上＝時刻、下＝状態/人数の小さい行）を組み立てる
+    const setBtn = (sub) => {
+      btn.innerHTML = `<span class="t-time">${slot.start_time}</span><span class="t-sub">${sub}</span>`;
+    };
 
     if (blockReason) {
-      btn.textContent = `${slot.start_time}\n× 予約不可`;
+      setBtn('× 予約不可');
       btn.classList.add('time-btn-blocked');
       btn.title = blockReason;                 // PCでカーソルを合わせるとホバー表示
       btn.setAttribute('aria-disabled', 'true');
@@ -715,11 +720,11 @@ function showTimePopup(dayKey, cellRect) {
         if (messageEl) messageEl.textContent = blockReason;
       });
     } else if (state.existingSet.has(slot.slot_id)) {
-      btn.textContent = `${slot.start_time}\n✓ 済`;
+      setBtn('✓ 予約済');
       btn.classList.add('time-btn-done');
       btn.disabled = true;
     } else if (state.selected.has(slot.slot_id)) {
-      btn.textContent = `${slot.start_time}\n✓ 選択中`;
+      setBtn('✓ 選択中');
       btn.classList.add('time-btn-selected');
       btn.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -728,12 +733,13 @@ function showTimePopup(dayKey, cellRect) {
         state.activeDay = null;
         renderAll();
       });
-    } else if (slot.reserved_count >= slot.capacity) {
-      btn.textContent = `${slot.start_time}\n満席`;
+    } else if (reserved >= slot.capacity) {
+      setBtn('満席');
       btn.classList.add('time-btn-full');
       btn.disabled = true;
     } else {
-      btn.textContent = slot.start_time;
+      // 予約可能：その枠の現在の予約人数を表示（0人は「空き」）
+      setBtn(reserved > 0 ? `${reserved}人` : '空き');
       btn.addEventListener('click', (e) => {
         e.stopPropagation();
         closeTimePopup();

@@ -488,6 +488,33 @@
       font-size: 18px !important;
     }
 
+    /* 時間ボタン内の2段表示（上＝時刻 / 下＝人数・状態） */
+    .time-btn .t-time {
+      display: block;
+    }
+
+    .time-btn .t-sub {
+      display: block;
+      margin-top: 4px;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--green-deep);
+    }
+
+    .time-btn-full .t-sub,
+    .time-btn-done .t-sub {
+      color: #aaa;
+    }
+
+    .time-btn-selected .t-sub {
+      color: #fff;
+    }
+
+    .time-btn-blocked .t-sub {
+      color: #c97b7b;
+      font-weight: 600;
+    }
+
     .hidden {
       display: none !important;
     }
@@ -937,7 +964,7 @@
     <div class="spinner"></div>
     <div id="loadingText">処理中です...</div>
   </div>
-  <script src="main.js?v=43.5"></script>
+  <script src="main.js?v=43.6"></script>
   <script>if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js'); }</script>
 </body>
 
