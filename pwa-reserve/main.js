@@ -707,7 +707,9 @@ function showTimePopup(dayKey, cellRect) {
     const reserved = Number(slot.reserved_count) || 0;
     // 時間ボタンの中身（上＝時刻、下＝状態/人数の小さい行）を組み立てる
     const setBtn = (sub) => {
-      btn.innerHTML = `<span class="t-time">${slot.start_time}</span><span class="t-sub">${sub}</span>`;
+      btn.innerHTML = sub
+        ? `<span class="t-time">${slot.start_time}</span><span class="t-sub">${sub}</span>`
+        : `<span class="t-time">${slot.start_time}</span>`;
     };
 
     if (blockReason) {
@@ -738,8 +740,8 @@ function showTimePopup(dayKey, cellRect) {
       btn.classList.add('time-btn-full');
       btn.disabled = true;
     } else {
-      // 予約可能：その枠の現在の予約人数を表示（0人は「空き」）
-      setBtn(reserved > 0 ? `${reserved}人` : '空き');
+      // 予約可能：1人以上のときだけ人数を表示（0人は何も出さない）
+      setBtn(reserved > 0 ? `${reserved}人` : '');
       btn.addEventListener('click', (e) => {
         e.stopPropagation();
         closeTimePopup();
