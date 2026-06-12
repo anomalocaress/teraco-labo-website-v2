@@ -194,6 +194,13 @@
       background: #fff0f0;
     }
 
+    /* 当日：予約不可だが人数確認のためタップ可（ビュー専用） */
+    td.today-view {
+      color: var(--text);
+      background: #eef6ef;
+      cursor: pointer;
+    }
+
     /* 日付マス右下の予約人数バッジ */
     .day-count {
       position: absolute;
@@ -477,6 +484,18 @@
       background: #f5f5f5 !important;
       cursor: not-allowed;
       font-weight: 400;
+    }
+
+    /* 当日のビュー専用ボタン（人数のみ・予約不可） */
+    .time-btn-view {
+      border-color: #cfd8cf !important;
+      color: #555 !important;
+      background: #f3f7f3 !important;
+      cursor: default;
+    }
+
+    .time-btn-view .t-sub {
+      color: #4a8c5e !important;
     }
 
     .time-btn-blocked {
@@ -964,7 +983,7 @@
     <div class="spinner"></div>
     <div id="loadingText">処理中です...</div>
   </div>
-  <script src="main.js?v=43.7"></script>
+  <script src="main.js?v=43.8"></script>
   <script>if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js'); }</script>
 </body>
 

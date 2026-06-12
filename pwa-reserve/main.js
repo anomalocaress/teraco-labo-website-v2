@@ -603,9 +603,10 @@ function buildMonthCalendar(monthKey) {
 
     // 管理者ログイン中はすべての日付にアクセス可能
     const isAdmin = !!sessionStorage.getItem('teraco_admin_code');
+    const isToday = !isAdmin && date.getTime() === today.getTime();
     if (!isAdmin) {
-      // 過去・今日
-      if (date <= today) { cell.classList.add('disabled'); row.appendChild(cell); continue; }
+      // 過去（昨日以前）は完全に無効。当日は予約不可だが人数確認のため下で処理する
+      if (date < today) { cell.classList.add('disabled'); row.appendChild(cell); continue; }
       // 土日
       if (dayOfWeek === 0 || dayOfWeek === 6) { cell.classList.add('disabled'); row.appendChild(cell); continue; }
       // コース別曜日制限
@@ -630,6 +631,29 @@ function buildMonthCalendar(monthKey) {
 
     // その日の合計予約人数（このコースで表示している時間帯の合計）
     const dayReserved = courseSlots.reduce((sum, s) => sum + (Number(s.reserved_count) || 0), 0);
+
+    // 当日：予約は不可だが、タップすると各枠の人数だけ確認できる（ビュー専用）
+    if (isToday) {
+      cell.classList.add('today-view');
+      if (hasReservation) cell.classList.add('has-reservation');
+      appendDayCount(cell, dayReserved);
+      cell.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const wasActive = state.activeDay === dayKey;
+        closeTimePopup();
+        if (!wasActive) {
+          const cellRect = cell.getBoundingClientRect();
+          state.activeDay = dayKey;
+          renderCalendar();
+          showTimePopup(dayKey, cellRect);
+        } else {
+          state.activeDay = null;
+          renderCalendar();
+        }
+      });
+      row.appendChild(cell);
+      continue;
+    }
 
     if (!hasSelectable && !hasReservation) {
       cell.classList.add('full');
@@ -690,10 +714,13 @@ function showTimePopup(dayKey, cellRect) {
   const allowedTimes = getTimesForCourseAndDay(course, date.getDay(), isAdmin);
   const slots = isAdmin ? allSlots : allSlots.filter(s => allowedTimes.includes(s.start_time));
   if (!slots.length) return;
+  const _today = new Date(); _today.setHours(0, 0, 0, 0);
+  const isToday = !isAdmin && date.getTime() === _today.getTime();
   const DAYS = ['日', '月', '火', '水', '木', '金', '土'];
   const dayLabel = `${m}月${d}日（${DAYS[date.getDay()]}）`;
 
-  content.innerHTML = `<div style="font-weight:700;color:var(--green-deep);margin-bottom:10px;font-size:15px;text-align:center;white-space:nowrap;">${dayLabel}</div>`;
+  content.innerHTML = `<div style="font-weight:700;color:var(--green-deep);margin-bottom:10px;font-size:15px;text-align:center;white-space:nowrap;">${dayLabel}</div>`
+    + (isToday ? `<div style="color:#c97b7b;font-size:12px;text-align:center;margin-bottom:8px;line-height:1.4;">本日は予約できません<br>（現在の人数のみ表示）</div>` : '');
 
   const grid = document.createElement('div');
   grid.className = 'time-btn-grid';
@@ -712,7 +739,12 @@ function showTimePopup(dayKey, cellRect) {
         : `<span class="t-time">${slot.start_time}</span>`;
     };
 
-    if (blockReason) {
+    if (isToday) {
+      // 当日：予約は不可。人数のみ確認できるビュー専用表示
+      setBtn(reserved >= slot.capacity ? '満席' : (reserved > 0 ? `${reserved}人` : ''));
+      btn.classList.add('time-btn-view');
+      btn.disabled = true;
+    } else if (blockReason) {
       setBtn('× 予約不可');
       btn.classList.add('time-btn-blocked');
       btn.title = blockReason;                 // PCでカーソルを合わせるとホバー表示
