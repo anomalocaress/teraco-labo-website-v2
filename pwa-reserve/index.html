@@ -338,7 +338,7 @@
 
     input[type="text"] {
       font-size: 24px;
-      padding: 20px 16px;
+      padding: 14px 16px;
       border: 3px solid #ccc;
       border-radius: 12px;
       width: 100%;
@@ -829,31 +829,17 @@
 
     <div class="notice" style="font-size:20px;">
       <strong>予約の手順</strong><br><br>
-      ① 日付と時間をタップしてください<br>
-      ② お名前を入力してください<br>
-      ③ クラスを選んでください<br>
+      ① お名前を入力してください<br>
+      ② クラスを選んでください<br>
+      ③ 日付と時間をタップしてください<br>
       ④「予約を確定する」を押してください
     </div>
 
     <div class="panels">
 
-      <!-- STEP 1: Date & Time -->
-      <div id="calendarPanel" class="panel">
-        <h2><span class="step-badge">STEP 1</span> 日付と時間を選ぶ</h2>
-        <div style="font-size:19px; color:var(--muted); margin-bottom:20px;">日付をタップすると時間ボタンが出ます</div>
-
-        <div id="current-date-display" style="text-align:center; margin-bottom:16px; font-size: 18px; color: var(--muted);"></div>
-
-        <div id="calendarWrap" class="calendar-wrap"></div>
-
-        <div id="timePanelWrap" class="hidden"></div>
-
-        <div id="timeSelectContainer" class="hidden" style="display:none;"></div>
-      </div>
-
-      <!-- STEP 2: Name & Class Selection -->
+      <!-- STEP 1: Name & Class Selection -->
       <div id="namePanel" class="panel">
-        <h2><span class="step-badge">STEP 2</span> お名前とクラス</h2>
+        <h2><span class="step-badge">STEP 1</span> お名前とクラス</h2>
         <div id="inputSection">
           <div class="input-group" style="position: relative;">
             <label style="font-size:20px; font-weight:700; display:block; margin-bottom:10px;">お名前（フルネーム）</label>
@@ -869,9 +855,9 @@
             <div class="hint" style="font-size:17px; margin-top:8px;">※ 姓と名はスペースなしで入力してください</div>
             <div class="error-msg" id="nameError">お名前を入力してください</div>
 
-            <div style="text-align:center; margin: 16px 0 8px; font-size:12px; color:#666;">または Googleアカウントで自動入力</div>
+            <div style="text-align:center; margin: 10px 0 6px; font-size:12px; color:#666;">または Googleアカウントで自動入力</div>
 
-            <div id="googleBtnWrapper" style="margin-bottom: 12px;">
+            <div id="googleBtnWrapper" style="margin-bottom: 8px;">
               <!-- Google Sign-In Button Container -->
               <div id="g_id_onload"
                 data-client_id="962051135287-af9qpio58l2qt7cu3avip6qvk9269sl2.apps.googleusercontent.com"
@@ -893,11 +879,11 @@
           </div>
 
           <!-- Class Selection -->
-          <div class="class-selection" style="margin-top: 32px; border-top: 2px solid #eee; padding-top: 28px;">
+          <div class="class-selection" style="margin-top: 16px; border-top: 2px solid #eee; padding-top: 16px;">
 
             <!-- Category -->
             <div class="selection-group">
-              <label class="field-label" style="font-size:20px; font-weight:700; margin-bottom:12px; display:block;">コース種別</label>
+              <label class="field-label" style="font-size:20px; font-weight:700; margin-bottom:8px; display:block;">コース種別</label>
               <div class="toggle-group" id="categoryGroup">
                 <button type="button" class="toggle-btn active" data-value="smartphone">スマホ</button>
                 <button type="button" class="toggle-btn" data-value="pc_ai">パソコンAI</button>
@@ -905,8 +891,8 @@
             </div>
 
             <!-- Course (Dynamic) -->
-            <div class="selection-group" style="margin-top:20px;">
-              <label class="field-label" style="font-size:20px; font-weight:700; margin-bottom:12px; display:block;">クラス</label>
+            <div class="selection-group" style="margin-top:14px;">
+              <label class="field-label" style="font-size:20px; font-weight:700; margin-bottom:8px; display:block;">クラス</label>
               <!-- Smartphone Options -->
               <div id="courseSmartphone" class="toggle-group" style="flex-direction:column;">
                 <button type="button" class="toggle-btn active" data-value="intro">入門まなび（45分）</button>
@@ -923,6 +909,20 @@
 
           </div>
         </div>
+      </div>
+
+      <!-- STEP 2: Date & Time -->
+      <div id="calendarPanel" class="panel">
+        <h2><span class="step-badge">STEP 2</span> 日付と時間を選ぶ</h2>
+        <div style="font-size:18px; color:var(--muted); margin-bottom:14px;">日付をタップすると時間ボタンが出ます</div>
+
+        <div id="current-date-display" style="text-align:center; margin-bottom:14px; font-size: 18px; color: var(--muted);"></div>
+
+        <div id="calendarWrap" class="calendar-wrap"></div>
+
+        <div id="timePanelWrap" class="hidden"></div>
+
+        <div id="timeSelectContainer" class="hidden" style="display:none;"></div>
       </div>
 
       <!-- STEP 3: Confirmation -->
