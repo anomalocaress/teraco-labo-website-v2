@@ -494,9 +494,31 @@ async function loadOverview({ preserveSelection, silent = false }) {
 
 function applySlotList(slots) {
   let list = Array.isArray(slots) ? slots : [];
-  if (!list.length) {
+  const isAdmin = !!sessionStorage.getItem('teraco_admin_code');
+
+  if (isAdmin) {
+    // 管理者は過去〜未来いつでも予約できるよう、広い範囲の枠を用意し、
+    // サーバーから来た予約数(reserved_count)を同じ枠(slot_id)に重ねる。
+    const base = buildMockSlots(ADMIN_SLOT_RANGE_DAYS * 2 + 1, {
+      ignoreTimeFilter: true,
+      startOffsetDays: -ADMIN_SLOT_RANGE_DAYS
+    });
+    const byId = new Map(base.map(s => [s.slot_id, s]));
+    list.forEach(s => {
+      const existing = byId.get(s.slot_id);
+      if (existing) {
+        existing.reserved_count = s.reserved_count;
+        existing.capacity = s.capacity;
+        if (s.label) existing.label = s.label;
+      } else {
+        byId.set(s.slot_id, s); // サーバーにしかない枠も保持
+      }
+    });
+    list = Array.from(byId.values());
+  } else if (!list.length) {
     list = buildMockSlots(60);
   }
+
   state.slots = list;
   state.slotIndex = new Map(state.slots.map(slot => [slot.slot_id, slot]));
   state.daySlots = new Map();
@@ -544,7 +566,14 @@ function monthDiff(a, b) {
   const [by, bm] = b.split('-').map(Number);
   return (by - ay) * 12 + (bm - am);
 }
-const CAL_RANGE_MONTHS = 6; // 当月から前後に表示できる範囲
+const CAL_RANGE_MONTHS = 6;          // 一般利用者：当月から前後に表示できる範囲（月）
+const CAL_RANGE_MONTHS_ADMIN = 12;   // 管理者：前後に表示できる範囲（月）
+const ADMIN_SLOT_RANGE_DAYS = 400;   // 管理者：枠を生成する前後の日数（約13ヶ月）
+
+// 現在の表示可能範囲（管理者ログイン中は広い）
+function calRangeMonths() {
+  return sessionStorage.getItem('teraco_admin_code') ? CAL_RANGE_MONTHS_ADMIN : CAL_RANGE_MONTHS;
+}
 
 function renderCalendar() {
   if (!state.slots.length) {
@@ -563,8 +592,9 @@ function renderCalendar() {
 // 表示月を delta ヶ月ずらす（前後 CAL_RANGE_MONTHS の範囲でクランプ）
 function navigateMonth(delta) {
   const cur = currentMonthKey();
-  const minMonth = addMonths(cur, -CAL_RANGE_MONTHS);
-  const maxMonth = addMonths(cur, CAL_RANGE_MONTHS);
+  const range = calRangeMonths();
+  const minMonth = addMonths(cur, -range);
+  const maxMonth = addMonths(cur, range);
   const target = addMonths(state.viewMonth, delta);
   if (monthDiff(minMonth, target) < 0 || monthDiff(target, maxMonth) < 0) return; // 範囲外は無視
   closeTimePopup();
@@ -595,8 +625,9 @@ function buildMonthCalendar(monthKey) {
 
   // ヘッダー：‹ 前月  YYYY年M月  翌月 › の月ナビゲーション
   const cur = currentMonthKey();
-  const minMonth = addMonths(cur, -CAL_RANGE_MONTHS);
-  const maxMonth = addMonths(cur, CAL_RANGE_MONTHS);
+  const range = calRangeMonths();
+  const minMonth = addMonths(cur, -range);
+  const maxMonth = addMonths(cur, range);
 
   const header = document.createElement('header');
   header.className = 'cal-header';
@@ -1314,10 +1345,11 @@ function fmtTime_(date) {
   return `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
 }
 
-function buildMockSlots(days, { ignoreTimeFilter = false } = {}) {
+function buildMockSlots(days, { ignoreTimeFilter = false, startOffsetDays = 0 } = {}) {
   const slots = [];
   const start = new Date();
   start.setHours(0, 0, 0, 0);
+  start.setDate(start.getDate() + startOffsetDays); // 過去から生成する場合は負の値
   const now = new Date();
   const isAdmin = !!sessionStorage.getItem('teraco_admin_code');
   for (let i = 0; i < days; i++) {
@@ -1394,9 +1426,10 @@ async function adminLogin() {
       adminLoginView.classList.add('hidden');
       adminContentView.classList.remove('hidden');
       sessionStorage.setItem('teraco_admin_code', code);
-      // スロット再ロード＆カレンダー再描画（管理者は全スロット表示）
-      applySlotList(buildMockSlots(60, { ignoreTimeFilter: true }));
-      renderAll();
+      // 管理者は過去〜未来いつでも予約可。全範囲の枠を用意し、サーバーの予約数を重ねて再描画
+      state.slots = [];
+      state.viewMonth = currentMonthKey();
+      await loadOverview({ preserveSelection: true });
     }
   } finally {
     setLoading(false);
@@ -1408,7 +1441,8 @@ function adminLogout() {
   adminPasscode.value = '';
   adminLoginView.classList.remove('hidden');
   adminContentView.classList.add('hidden');
-  // カレンダーを通常表示に戻す
+  // カレンダーを通常表示（前後6ヶ月・未来のみ予約可）に戻す
+  state.viewMonth = currentMonthKey();
   applySlotList(buildMockSlots(60));
   renderAll();
 }
