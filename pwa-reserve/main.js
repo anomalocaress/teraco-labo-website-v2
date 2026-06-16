@@ -526,24 +526,51 @@ function renderCurrentDate() {
   el.innerHTML = `現在日時: ${datePart} ${hours}<span style="visibility: ${colonVisible ? 'visible' : 'hidden'};">:</span>${minutes}`;
 }
 
+// --- 月ナビゲーション用ヘルパー ---
+function monthKeyOf(date) {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+}
+function currentMonthKey() {
+  return monthKeyOf(new Date());
+}
+// monthKey に delta ヶ月を加えた月キーを返す
+function addMonths(monthKey, delta) {
+  const [y, m] = monthKey.split('-').map(Number);
+  return monthKeyOf(new Date(y, m - 1 + delta, 1));
+}
+// a から b までの月数（b が未来なら正）
+function monthDiff(a, b) {
+  const [ay, am] = a.split('-').map(Number);
+  const [by, bm] = b.split('-').map(Number);
+  return (by - ay) * 12 + (bm - am);
+}
+const CAL_RANGE_MONTHS = 6; // 当月から前後に表示できる範囲
+
 function renderCalendar() {
   if (!state.slots.length) {
     applySlotList(buildMockSlots(60));
   }
 
-  calendarWrap.innerHTML = '';
-  const monthKeys = Array.from(new Set(state.slots.map(slot => slot.month_key))).sort();
-  const displayMonths = monthKeys.slice(0, 2);
+  // 表示月の初期値は当月
+  if (!state.viewMonth) state.viewMonth = currentMonthKey();
 
-  if (displayMonths.length === 0) {
-    calendarWrap.innerHTML = '<div style="text-align:center;padding:20px;color:#999;">読み込み中...</div>';
-  } else {
-    displayMonths.forEach(monthKey => {
-      calendarWrap.appendChild(buildMonthCalendar(monthKey));
-    });
-  }
+  calendarWrap.innerHTML = '';
+  calendarWrap.appendChild(buildMonthCalendar(state.viewMonth));
 
   renderTimePanel();
+}
+
+// 表示月を delta ヶ月ずらす（前後 CAL_RANGE_MONTHS の範囲でクランプ）
+function navigateMonth(delta) {
+  const cur = currentMonthKey();
+  const minMonth = addMonths(cur, -CAL_RANGE_MONTHS);
+  const maxMonth = addMonths(cur, CAL_RANGE_MONTHS);
+  const target = addMonths(state.viewMonth, delta);
+  if (monthDiff(minMonth, target) < 0 || monthDiff(target, maxMonth) < 0) return; // 範囲外は無視
+  closeTimePopup();
+  state.activeDay = null;
+  state.viewMonth = target;
+  renderCalendar();
 }
 
 // 日付マスの右下に予約人数バッジを表示する（0人や未定義は表示しない）
@@ -566,8 +593,35 @@ function buildMonthCalendar(monthKey) {
   const wrapper = document.createElement('div');
   wrapper.className = 'calendar';
 
+  // ヘッダー：‹ 前月  YYYY年M月  翌月 › の月ナビゲーション
+  const cur = currentMonthKey();
+  const minMonth = addMonths(cur, -CAL_RANGE_MONTHS);
+  const maxMonth = addMonths(cur, CAL_RANGE_MONTHS);
+
   const header = document.createElement('header');
-  header.textContent = `${year}年${month + 1}月`;
+  header.className = 'cal-header';
+
+  const prevBtn = document.createElement('button');
+  prevBtn.type = 'button';
+  prevBtn.className = 'cal-nav';
+  prevBtn.textContent = '‹';
+  prevBtn.setAttribute('aria-label', '前の月');
+  prevBtn.disabled = monthDiff(minMonth, monthKey) <= 0; // これ以上過去へ行けない
+  prevBtn.addEventListener('click', (e) => { e.stopPropagation(); navigateMonth(-1); });
+
+  const title = document.createElement('span');
+  title.className = 'cal-title';
+  title.textContent = `${year}年${month + 1}月`;
+
+  const nextBtn = document.createElement('button');
+  nextBtn.type = 'button';
+  nextBtn.className = 'cal-nav';
+  nextBtn.textContent = '›';
+  nextBtn.setAttribute('aria-label', '次の月');
+  nextBtn.disabled = monthDiff(monthKey, maxMonth) <= 0; // これ以上未来へ行けない
+  nextBtn.addEventListener('click', (e) => { e.stopPropagation(); navigateMonth(1); });
+
+  header.append(prevBtn, title, nextBtn);
   wrapper.appendChild(header);
 
   const table = document.createElement('table');

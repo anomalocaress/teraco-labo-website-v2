@@ -108,7 +108,9 @@
     }
 
     .calendar {
-      flex: 1 1 300px;
+      flex: 0 1 460px;
+      max-width: 460px;
+      width: 100%;
       border: 2px solid var(--border);
       border-radius: 16px;
       overflow: hidden;
@@ -124,6 +126,46 @@
       padding: 12px 16px;
       border-bottom: 1px solid var(--border);
       text-align: center;
+    }
+
+    /* 月ナビゲーションのヘッダー */
+    .calendar header.cal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .cal-header .cal-title {
+      flex: 1;
+      text-align: center;
+    }
+
+    .cal-nav {
+      flex: 0 0 auto;
+      width: 44px;
+      height: 44px;
+      border: 2px solid var(--green);
+      background: #fff;
+      color: var(--green-deep);
+      border-radius: 12px;
+      font-size: 24px;
+      font-weight: 700;
+      line-height: 1;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .cal-nav:active:not(:disabled) {
+      background: var(--green);
+      color: #fff;
+      transform: translateY(2px);
+    }
+
+    .cal-nav:disabled {
+      border-color: #ddd;
+      color: #ccc;
+      cursor: not-allowed;
     }
 
     table.month-grid {
@@ -787,17 +829,31 @@
 
     <div class="notice" style="font-size:20px;">
       <strong>予約の手順</strong><br><br>
-      ① お名前を入力してください<br>
-      ② クラスを選んでください<br>
-      ③ 日付と時間をタップしてください<br>
+      ① 日付と時間をタップしてください<br>
+      ② お名前を入力してください<br>
+      ③ クラスを選んでください<br>
       ④「予約を確定する」を押してください
     </div>
 
     <div class="panels">
 
-      <!-- STEP 1: Name & Class Selection -->
+      <!-- STEP 1: Date & Time -->
+      <div id="calendarPanel" class="panel">
+        <h2><span class="step-badge">STEP 1</span> 日付と時間を選ぶ</h2>
+        <div style="font-size:19px; color:var(--muted); margin-bottom:20px;">日付をタップすると時間ボタンが出ます</div>
+
+        <div id="current-date-display" style="text-align:center; margin-bottom:16px; font-size: 18px; color: var(--muted);"></div>
+
+        <div id="calendarWrap" class="calendar-wrap"></div>
+
+        <div id="timePanelWrap" class="hidden"></div>
+
+        <div id="timeSelectContainer" class="hidden" style="display:none;"></div>
+      </div>
+
+      <!-- STEP 2: Name & Class Selection -->
       <div id="namePanel" class="panel">
-        <h2><span class="step-badge">STEP 1</span> お名前とクラス</h2>
+        <h2><span class="step-badge">STEP 2</span> お名前とクラス</h2>
         <div id="inputSection">
           <div class="input-group" style="position: relative;">
             <label style="font-size:20px; font-weight:700; display:block; margin-bottom:10px;">お名前（フルネーム）</label>
@@ -867,20 +923,6 @@
 
           </div>
         </div>
-      </div>
-
-      <!-- STEP 2: Date & Time -->
-      <div id="calendarPanel" class="panel">
-        <h2><span class="step-badge">STEP 2</span> 日付と時間を選ぶ</h2>
-        <div style="font-size:19px; color:var(--muted); margin-bottom:20px;">日付をタップすると時間ボタンが出ます</div>
-
-        <div id="current-date-display" style="text-align:center; margin-bottom:16px; font-size: 18px; color: var(--muted);"></div>
-
-        <div id="calendarWrap" class="calendar-wrap"></div>
-
-        <div id="timePanelWrap" class="hidden"></div>
-
-        <div id="timeSelectContainer" class="hidden" style="display:none;"></div>
       </div>
 
       <!-- STEP 3: Confirmation -->
@@ -983,7 +1025,7 @@
     <div class="spinner"></div>
     <div id="loadingText">処理中です...</div>
   </div>
-  <script src="main.js?v=43.8"></script>
+  <script src="main.js?v=43.9"></script>
   <script>if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js'); }</script>
 </body>
 
