@@ -607,6 +607,21 @@
         background: #1a1a2e;   /* 深みのある濃紺 */
         color: rgba(255,255,255,0.72);
         text-align: center; padding: 2.5rem 0;
+        position: relative;
+    }
+    .footer-library-link {
+        position: absolute;
+        right: 1.1rem;
+        bottom: 0.65rem;
+        font-size: 0.68rem;
+        color: rgba(255,255,255,0.22);
+        text-decoration: none;
+        letter-spacing: 0.02em;
+        transition: color 0.25s ease;
+    }
+    .footer-library-link:hover,
+    .footer-library-link:focus-visible {
+        color: rgba(255,255,255,0.6);
     }
     .footer-inner { display: flex; flex-direction: column; gap: 0.7rem; align-items: center; }
     .footer-inner a {
@@ -1155,6 +1170,7 @@
                 <p class="footer-copy">&copy; 2025 TERACO.LABO. All rights reserved.</p>
             </div>
         </div>
+        <a href="https://teraco-labo.github.io/line-outou/" class="footer-library-link" target="_blank" rel="noopener">てらこ図書館</a>
     </footer>
 
     <!-- ===================================================
