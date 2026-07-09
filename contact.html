@@ -4,438 +4,65 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>お問い合わせフォーム - TERACO.LABO</title>
+    <meta name="description" content="TERACO.LABOへのお問い合わせ・体験会のお申し込みはこちらから。スマホ教室・AI教室・外部講師・映像制作・レンタルスペース、いずれもお気軽にご相談ください。">
+
+    <!-- OGP -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://anomalocaress.github.io/teraco-labo-website-v2/contact.html">
+    <meta property="og:title" content="お問い合わせフォーム | TERACO.LABO">
+    <meta property="og:description" content="TERACO.LABOへのお問い合わせ・体験会のお申し込みはこちらから。">
+    <meta property="og:image" content="https://anomalocaress.github.io/teraco-labo-website-v2/images/teraco-labo-logo-main.png">
+    <meta property="og:locale" content="ja_JP">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="お問い合わせフォーム | TERACO.LABO">
+    <meta name="twitter:description" content="TERACO.LABOへのお問い合わせ・体験会のお申し込みはこちらから。">
+
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     <script src="email-config.js"></script>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
 
-        body {
-            font-family: 'M PLUS Rounded 1c', 'Hiragino Sans', 'Yu Gothic', 'Meiryo', sans-serif;
-            line-height: 1.6;
-            color: #333;
-            background: linear-gradient(to right, #5b52ff, #1fffa1);
-            background-attachment: fixed;
-            background-repeat: no-repeat;
-            background-size: cover;
-            min-height: 100vh;
-        }
+    <!-- Google Analytics 4 -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-3GCZQ39LS1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-3GCZQ39LS1');
+    </script>
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700;900&family=Shippori+Mincho:wght@600;700&display=swap" rel="stylesheet">
 
-        header {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            position: fixed;
-            top: 0;
-            width: 100%;
-            z-index: 1000;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        nav {
-            padding: 1rem 0;
-        }
-
-        nav .container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo h1 {
-            font-size: 1.8rem;
-            font-weight: bold;
-            color: #5b52ff;
-            margin-bottom: 0.2rem;
-        }
-
-        .logo p {
-            font-size: 0.9rem;
-            color: #666;
-        }
-
-        .nav-menu {
-            display: flex;
-            list-style: none;
-            gap: 1rem;
-            justify-content: flex-end;
-            align-items: center;
-            margin: 0;
-            padding: 0;
-        }
-
-        .nav-menu a {
-            text-decoration: none;
-            color: #333;
-            font-weight: 500;
-            transition: color 0.3s ease;
-            padding: 0.5rem 0.8rem;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-            font-size: 0.9rem;
-            white-space: nowrap;
-        }
-
-        .nav-menu a:hover {
-            color: #5b52ff;
-            background: rgba(91, 82, 255, 0.1);
-        }
-
-        .nav-menu a.active {
-            color: #5b52ff;
-            background: rgba(91, 82, 255, 0.1);
-            font-weight: 600;
-        }
-
-        /* ハンバーガーメニューボタン */
-        .mobile-menu-toggle {
-            display: none;
-            flex-direction: column;
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 0.5rem;
-            width: 30px;
-            height: 30px;
-            justify-content: space-between;
-        }
-
-        .mobile-menu-toggle span {
-            display: block;
-            height: 3px;
-            width: 100%;
-            background: linear-gradient(135deg, #5b52ff 0%, #1fffa1 100%);
-            border-radius: 3px;
-            transition: all 0.3s ease;
-        }
-
-        .mobile-menu-toggle.active span:nth-child(1) {
-            transform: rotate(45deg) translate(5px, 5px);
-        }
-
-        .mobile-menu-toggle.active span:nth-child(2) {
-            opacity: 0;
-        }
-
-        .mobile-menu-toggle.active span:nth-child(3) {
-            transform: rotate(-45deg) translate(7px, -6px);
-        }
-
-        main {
-            padding: 120px 0 80px;
-        }
-
-        .form-container {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 24px;
-            padding: 3rem;
-            margin: 2rem 0;
-            backdrop-filter: blur(20px);
-            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.1);
-        }
-
-        .form-title {
-            font-size: 2.2rem;
-            margin-bottom: 1rem;
-            color: #5b52ff;
-            text-align: center;
-        }
-
-        .form-subtitle {
-            font-size: 1.1rem;
-            color: #666;
-            text-align: center;
-            margin-bottom: 3rem;
-            line-height: 1.8;
-        }
-
-        .form-group {
-            margin-bottom: 2rem;
-        }
-
-        .form-label {
-            display: block;
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 0.5rem;
-            font-size: 1rem;
-        }
-
-        .required {
-            color: #e74c3c;
-            margin-left: 0.3rem;
-        }
-
-        .form-input,
-        .form-select,
-        .form-textarea {
-            width: 100%;
-            padding: 1rem;
-            border: 2px solid #e0e0e0;
-            border-radius: 12px;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-            background: white;
-        }
-
-        .form-input:focus,
-        .form-select:focus,
-        .form-textarea:focus {
-            outline: none;
-            border-color: #5b52ff;
-            box-shadow: 0 0 0 3px rgba(91, 82, 255, 0.1);
-        }
-
-        .form-textarea {
-            resize: vertical;
-            min-height: 120px;
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1.5rem;
-        }
-
-        .submit-button {
-            background: linear-gradient(135deg, #5b52ff 0%, #1fffa1 100%);
-            color: white;
-            padding: 1rem 3rem;
-            border: none;
-            border-radius: 50px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: block;
-            margin: 3rem auto 0;
-            min-width: 200px;
-        }
-
-        .submit-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-        }
-
-        .submit-button:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .success-message,
-        .error-message {
-            padding: 1rem;
-            border-radius: 12px;
-            margin: 1rem 0;
-            text-align: center;
-            font-weight: 500;
-        }
-
-        .success-message {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-
-        .error-message {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-
-        /* サービス選択スタイル */
-        .service-options {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-            margin-bottom: 1rem;
-        }
-
-        .service-option {
-            padding: 1rem;
-            border: 2px solid #e0e0e0;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-align: center;
-        }
-
-        .service-option:hover {
-            border-color: #5b52ff;
-        }
-
-        .service-option.selected {
-            border-color: #5b52ff;
-            background: rgba(91, 82, 255, 0.1);
-        }
-
-        .service-option input[type="radio"] {
-            display: none;
-        }
-
-        .service-name {
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 0.5rem;
-        }
-
-        .service-description {
-            font-size: 0.9rem;
-            color: #666;
-        }
-
-        /* 下部の電話案内 */
-        .call-footer {
-            margin-top: 2rem;
-            text-align: center;
-            background: #f8f9fa;
-            border-radius: 16px;
-            padding: 1rem;
-            border: 1px solid rgba(0,0,0,0.05);
-        }
-        .call-footer a {
-            color: #5b52ff;
-            text-decoration: none;
-            font-weight: 700;
-            font-size: 1.25rem;
-        }
-
-        /* サービス詳細フィールド */
-        .service-details {
-            display: none;
-            margin-top: 1.5rem;
-            padding: 1.5rem;
-            background: rgba(102, 126, 234, 0.05);
-            border-radius: 12px;
-            border-left: 4px solid #5b52ff;
-        }
-
-        .service-details.active {
-            display: block;
-            animation: fadeIn 0.3s ease-in-out;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .service-details h4 {
-            color: #5b52ff;
-            margin-bottom: 1rem;
-            font-size: 1.1rem;
-        }
-
-        .detail-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-            margin-bottom: 1rem;
-        }
-
-        .detail-group {
-            margin-bottom: 1rem;
-        }
-
-        .detail-label {
-            display: block;
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 0.3rem;
-            font-size: 0.9rem;
-        }
-
-        @media (max-width: 768px) {
-            .nav-menu {
-                display: none;
-                position: fixed;
-                top: 80px;
-                left: 0;
-                right: 0;
-                background: rgba(255, 255, 255, 0.98);
-                backdrop-filter: blur(20px);
-                flex-direction: column;
-                padding: 1rem;
-                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-                z-index: 999;
-            }
-            
-            .nav-menu.active {
-                display: flex;
-            }
-            
-            .nav-menu li {
-                margin: 0.5rem 0;
-            }
-            
-            .nav-menu a {
-                display: block;
-                padding: 1rem;
-                font-size: 1.1rem;
-                text-align: center;
-                border-bottom: 1px solid rgba(91, 82, 255, 0.1);
-            }
-            
-            .mobile-menu-toggle {
-                display: flex;
-            }
-            
-            .form-container {
-                padding: 2rem;
-                margin: 1rem 0;
-            }
-            
-            .form-title {
-                font-size: 1.8rem;
-            }
-            
-            .form-row {
-                grid-template-columns: 1fr;
-                gap: 1rem;
-            }
-            
-            .service-options {
-                grid-template-columns: 1fr;
-            }
-            
-            .detail-row {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
-    <link rel="stylesheet" href="theme-white.css">
-    <link rel="stylesheet" href="theme-green.css">
+    <link rel="stylesheet" href="theme-warm.css">
 </head>
 <body>
+    <a href="#main-content" class="skip-link">メインコンテンツへスキップ</a>
+
     <header>
         <nav>
             <div class="container">
                 <div class="logo">
-                    <a href="index.html" aria-label="TERACO.LABO ホーム" style="text-decoration: none; color: inherit; display:flex; align-items:center;">
-                        <img src="images/teraco-labo-logo-new.png" alt="TERACO.LABO ロゴ">
+                    <a href="index.html" aria-label="TERACO.LABO トップページへ">
+                        <img src="images/teraco-labo-logo-main.png" alt="TERACO.LABO ロゴ">
                     </a>
                 </div>
-                <ul class="nav-menu">
-                    <li><a href="smartphone.html">スマホ教室</a></li>
-                    <li><a href="ai.html">パソコンAI教室</a></li>
-                    <li><a href="instructor.html">外部講師</a></li>
-                    <li><a href="video.html">映像制作</a></li>
-                    <li><a href="video.html">ドローン</a></li>
-                    <li><a href="rental.html">レンタルスペース</a></li>
-                    <li><a href="index.html#about">代表紹介</a></li>
-                    <li><a href="contact.html" class="active">お問い合わせ</a></li>
-                </ul>
-                <button class="mobile-menu-toggle" aria-label="メニューを開く">
+                <div class="nav-wrap" id="nav-wrap">
+                    <ul class="nav-menu" id="nav-menu" role="menubar">
+                        <li role="none"><a href="index.html#services" role="menuitem">教室のご案内</a></li>
+                        <li role="none"><a href="instructor.html" role="menuitem">法人・行政の方</a></li>
+                        <li role="none"><a href="rental.html" role="menuitem">スペース貸出</a></li>
+                        <li role="none"><a href="index.html#about" role="menuitem">代表紹介</a></li>
+                        <li role="none"><a href="index.html#faq" role="menuitem">よくある質問</a></li>
+                    </ul>
+                    <a href="https://lin.ee/tkYJ7Cw" class="nav-line-btn" target="_blank" rel="noopener" aria-label="LINEで相談する（外部リンク）">LINEで相談</a>
+                </div>
+                <button
+                    class="mobile-menu-toggle"
+                    id="menu-toggle"
+                    aria-label="メニューを開く"
+                    aria-expanded="false"
+                    aria-controls="nav-wrap"
+                >
                     <span></span>
                     <span></span>
                     <span></span>
@@ -444,338 +71,383 @@
         </nav>
     </header>
 
-    <main>
-        <div class="container">
-            <div class="form-container">
-                <h1 class="form-title">お問い合わせフォーム</h1>
-                <p class="form-subtitle">
-                    TERACO.LABOのサービスについてお気軽にお問い合わせください。<br>
-                    24時間以内にご連絡いたします。
-                </p>
-
-                <form id="contactForm">
-                    <!-- 基本情報 -->
-                    <div class="form-group">
-                        <label for="name" class="form-label">お名前<span class="required">*</span></label>
-                        <input type="text" id="name" name="name" class="form-input" required>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="phone" class="form-label">電話番号<span class="required">*</span></label>
-                            <input type="tel" id="phone" name="phone" class="form-input" placeholder="090-1234-5678" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="email" class="form-label">メールアドレス<span class="required">*</span></label>
-                            <input type="email" id="email" name="email" class="form-input" required>
-                        </div>
-                    </div>
-
-                    <!-- サービス選択 -->
-                    <div class="form-group">
-                        <label class="form-label">ご興味のあるサービス<span class="required">*</span></label>
-                        <div class="service-options">
-                            <label class="service-option">
-                                <input type="radio" name="service" value="smartphone" required>
-                                <div class="service-name">スマホ教室</div>
-                                <div class="service-description">基本操作からアプリ活用まで</div>
-                            </label>
-                            <label class="service-option">
-                                <input type="radio" name="service" value="ai" required>
-                                <div class="service-name">パソコンAI教室</div>
-                                <div class="service-description">AIツールの使い方を学ぶ</div>
-                            </label>
-                            <label class="service-option">
-                                <input type="radio" name="service" value="instructor" required>
-                                <div class="service-name">外部講師</div>
-                                <div class="service-description">企業・団体向け研修</div>
-                            </label>
-                            <label class="service-option">
-                                <input type="radio" name="service" value="video" required>
-                                <div class="service-name">映像制作</div>
-                                <div class="service-description">プロモーション動画制作</div>
-                            </label>
-                            <label class="service-option">
-                                <input type="radio" name="service" value="rental" required>
-                                <div class="service-name">レンタルスペース</div>
-                                <div class="service-description">会議室・撮影スタジオ</div>
-                            </label>
-                            <label class="service-option">
-                                <input type="radio" name="service" value="other" required>
-                                <div class="service-name">その他</div>
-                                <div class="service-description">一般的なお問い合わせ</div>
-                            </label>
-                        </div>
-                        
-                        <!-- サービス別詳細項目 -->
-                        <div id="service-details-smartphone" class="service-details">
-                            <h4>📱 スマホ教室 詳細設定</h4>
-                            <div class="detail-group">
-                                <label class="detail-label">講座</label>
-                                <select name="smartphone-course" class="form-select">
-                                    <option value="">選択してください</option>
-                                    <option value="manabi2">まなび2（45分×月2回／5,000円）</option>
-                                    <option value="manabi4">まなび4（45分×月4回／8,000円）</option>
-                                    <option value="terako2">てらこ2（90分×月2回／8,000円）</option>
-                                    <option value="terako4">てらこ4（90分×月4回／12,000円）</option>
-                                </select>
-                            </div>
-                            <div class="detail-group">
-                                <label class="detail-label">学びたい内容（複数選択可）</label>
-                                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.5rem; margin-top: 0.5rem;">
-                                    <label style="display: flex; align-items: center; gap: 0.5rem;"><input type="checkbox" name="smartphone-topics" value="basic-operation">基本操作</label>
-                                    <label style="display: flex; align-items: center; gap: 0.5rem;"><input type="checkbox" name="smartphone-topics" value="line">LINE使い方</label>
-                                    <label style="display: flex; align-items: center; gap: 0.5rem;"><input type="checkbox" name="smartphone-topics" value="camera">写真・カメラ</label>
-                                    <label style="display: flex; align-items: center; gap: 0.5rem;"><input type="checkbox" name="smartphone-topics" value="apps">アプリ活用</label>
-                                    <label style="display: flex; align-items: center; gap: 0.5rem;"><input type="checkbox" name="smartphone-topics" value="security">セキュリティ</label>
-                                    <label style="display: flex; align-items: center; gap: 0.5rem;"><input type="checkbox" name="smartphone-topics" value="other">その他</label>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div id="service-details-ai" class="service-details">
-                            <h4>🤖 パソコンAI教室 詳細設定</h4>
-                            <div class="detail-row">
-                                <div class="detail-group">
-                                    <label class="detail-label">講座</label>
-                                    <select name="ai-course" class="form-select">
-                                        <option value="">選択してください</option>
-                                        <option value="basic2">ベーシック2（45分×月2回／5,000円）</option>
-                                        <option value="basic4">ベーシック4（45分×月4回／9,000円）</option>
-                                        <option value="advance2">アドバンス2（90分×月2回／9,000円）</option>
-                                        <option value="advance4">アドバンス4（90分×月4回／14,000円）</option>
-                                    </select>
-                                </div>
-                                <div class="detail-group">
-                                    <label class="detail-label">経験レベル</label>
-                                    <select name="ai-level" class="form-select">
-                                        <option value="">選択してください</option>
-                                        <option value="beginner">初心者（AIを触ったことがない）</option>
-                                        <option value="basic">基礎（少し使ったことがある）</option>
-                                        <option value="intermediate">中級（業務で活用したい）</option>
-                                        <option value="advanced">上級（専門的な活用）</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="detail-group">
-                                <label class="detail-label">興味のあるAIツール（複数選択可）</label>
-                                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.5rem; margin-top: 0.5rem;">
-                                    <label style="display: flex; align-items: center; gap: 0.5rem;"><input type="checkbox" name="ai-tools" value="chatgpt">ChatGPT</label>
-                                    <label style="display: flex; align-items: center; gap: 0.5rem;"><input type="checkbox" name="ai-tools" value="claude">Claude</label>
-                                    <label style="display: flex; align-items: center; gap: 0.5rem;"><input type="checkbox" name="ai-tools" value="midjourney">画像生成AI</label>
-                                    <label style="display: flex; align-items: center; gap: 0.5rem;"><input type="checkbox" name="ai-tools" value="copilot">プログラミング支援</label>
-                                    <label style="display: flex; align-items: center; gap: 0.5rem;"><input type="checkbox" name="ai-tools" value="business">業務効率化</label>
-                                    <label style="display: flex; align-items: center; gap: 0.5rem;"><input type="checkbox" name="ai-tools" value="other">その他</label>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div id="service-details-instructor" class="service-details">
-                            <h4>👨‍🏫 外部講師 詳細設定</h4>
-                            <div class="detail-row">
-                                <div class="detail-group">
-                                    <label class="detail-label">研修タイプ</label>
-                                    <select name="instructor-type" class="form-select">
-                                        <option value="">選択してください</option>
-                                        <option value="smartphone">スマホ研修</option>
-                                        <option value="ai">AI活用研修</option>
-                                        <option value="digital">デジタルリテラシー</option>
-                                        <option value="custom">カスタム研修</option>
-                                    </select>
-                                </div>
-                                <div class="detail-group">
-                                    <label class="detail-label">参加人数</label>
-                                    <select name="instructor-participants" class="form-select">
-                                        <option value="">選択してください</option>
-                                        <option value="small">1-10名</option>
-                                        <option value="medium">11-30名</option>
-                                        <option value="large">31-50名</option>
-                                        <option value="xlarge">51名以上</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="detail-row">
-                                <div class="detail-group">
-                                    <label class="detail-label">所属・団体名</label>
-                                    <input type="text" name="instructor-organization" class="form-input" placeholder="例：○○株式会社、○○自治会">
-                                </div>
-                                <div class="detail-group">
-                                    <label class="detail-label">実施希望時期</label>
-                                    <select name="instructor-timing" class="form-select">
-                                        <option value="">選択してください</option>
-                                        <option value="asap">できるだけ早く</option>
-                                        <option value="1month">1ヶ月以内</option>
-                                        <option value="3months">3ヶ月以内</option>
-                                        <option value="planning">計画段階</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div id="service-details-video" class="service-details">
-                            <h4>🎬 映像制作 詳細設定</h4>
-                            <div class="detail-row">
-                                <div class="detail-group">
-                                    <label class="detail-label">映像タイプ</label>
-                                    <select name="video-type" class="form-select">
-                                        <option value="">選択してください</option>
-                                        <option value="promotion">プロモーション動画</option>
-                                        <option value="corporate">企業紹介動画</option>
-                                        <option value="event">イベント撮影</option>
-                                        <option value="tutorial">教育・チュートリアル</option>
-                                        <option value="commercial">CM・広告動画</option>
-                                        <option value="other">その他</option>
-                                    </select>
-                                </div>
-                                <div class="detail-group">
-                                    <label class="detail-label">映像の長さ</label>
-                                    <select name="video-duration" class="form-select">
-                                        <option value="">選択してください</option>
-                                        <option value="short">30秒以内</option>
-                                        <option value="medium">1-3分</option>
-                                        <option value="long">3-10分</option>
-                                        <option value="extended">10分以上</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="detail-row">
-                                <div class="detail-group">
-                                    <label class="detail-label">予算範囲</label>
-                                    <select name="video-budget" class="form-select">
-                                        <option value="">選択してください</option>
-                                        <option value="low">10万円以下</option>
-                                        <option value="medium">10-30万円</option>
-                                        <option value="high">30-50万円</option>
-                                        <option value="premium">50万円以上</option>
-                                        <option value="consultation">要相談</option>
-                                    </select>
-                                </div>
-                                <div class="detail-group">
-                                    <label class="detail-label">使用目的</label>
-                                    <select name="video-purpose" class="form-select">
-                                        <option value="">選択してください</option>
-                                        <option value="web">ウェブサイト</option>
-                                        <option value="social">SNS・YouTube</option>
-                                        <option value="tv">テレビ・放送</option>
-                                        <option value="presentation">プレゼンテーション</option>
-                                        <option value="other">その他</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div id="service-details-rental" class="service-details">
-                            <h4>🏢 レンタルスペース 詳細設定</h4>
-                            <div class="detail-row">
-                                <div class="detail-group">
-                                    <label class="detail-label">利用目的</label>
-                                    <select name="rental-purpose" class="form-select">
-                                        <option value="">選択してください</option>
-                                        <option value="meeting">会議・打ち合わせ</option>
-                                        <option value="seminar">セミナー・研修</option>
-                                        <option value="workshop">ワークショップ</option>
-                                        <option value="filming">撮影・収録</option>
-                                        <option value="event">イベント開催</option>
-                                        <option value="other">その他</option>
-                                    </select>
-                                </div>
-                                <div class="detail-group">
-                                    <label class="detail-label">利用人数</label>
-                                    <select name="rental-capacity" class="form-select">
-                                        <option value="">選択してください</option>
-                                        <option value="5">5名</option>
-                                        <option value="6">6名</option>
-                                        <option value="7">7名</option>
-                                        <option value="8">8名</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="detail-group">
-                                <label class="detail-label">利用時間</label>
-                                <div class="detail-row">
-                                    <div>
-                                        <label class="detail-label" style="font-size: 0.8rem; margin-bottom: 0.2rem;">開始時間</label>
-                                        <select name="rental-start-time" class="form-select">
-                                            <option value="">選択してください</option>
-                                            <option value="10:00">10:00</option>
-                                            <option value="11:00">11:00</option>
-                                            <option value="12:00">12:00</option>
-                                            <option value="13:00">13:00</option>
-                                            <option value="14:00">14:00</option>
-                                            <option value="15:00">15:00</option>
-                                            <option value="16:00">16:00</option>
-                                            <option value="17:00">17:00</option>
-                                            <option value="18:00">18:00</option>
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <label class="detail-label" style="font-size: 0.8rem; margin-bottom: 0.2rem;">終了時間</label>
-                                        <select name="rental-end-time" class="form-select">
-                                            <option value="">選択してください</option>
-                                            <option value="11:00">11:00</option>
-                                            <option value="12:00">12:00</option>
-                                            <option value="13:00">13:00</option>
-                                            <option value="14:00">14:00</option>
-                                            <option value="15:00">15:00</option>
-                                            <option value="16:00">16:00</option>
-                                            <option value="17:00">17:00</option>
-                                            <option value="18:00">18:00</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div id="service-details-other" class="service-details">
-                            <h4>💬 その他のお問い合わせ</h4>
-                            <div class="detail-group">
-                                <label class="detail-label">お問い合わせ種別</label>
-                                <select name="other-type" class="form-select">
-                                    <option value="">選択してください</option>
-                                    <option value="general">一般的なご質問</option>
-                                    <option value="partnership">提携・協業について</option>
-                                    <option value="media">取材・メディア関連</option>
-                                    <option value="feedback">ご意見・ご要望</option>
-                                    <option value="technical">技術的なお問い合わせ</option>
-                                    <option value="other">その他</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 希望日程 -->
-                    <div class="form-group">
-                        <label for="preferred-date" class="form-label">ご希望日程</label>
-                        <input type="date" id="preferred-date" name="preferred-date" class="form-input">
-                    </div>
-
-                    <!-- 詳細・要望 -->
-                    <div class="form-group">
-                        <label for="message" class="form-label">お問い合わせ内容<span class="required">*</span></label>
-                        <textarea id="message" name="message" class="form-textarea" placeholder="上記で選択した内容が自動で入力されます。追加でご質問やご要望があればご記入ください。" required readonly style="background: #f9f9f9;"></textarea>
-                        <div style="margin-top: 0.5rem;">
-                            <label for="user-message" class="form-label" style="font-size: 0.9rem; margin-bottom: 0.3rem;">追加のご質問・ご要望</label>
-                            <textarea id="user-message" class="form-textarea" placeholder="追加でご質問やご要望がございましたら、こちらにお書きください。" style="min-height: 80px;"></textarea>
-                        </div>
-                    </div>
-
-                    <button type="submit" class="submit-button" id="submitBtn">
-                        お問い合わせを送信
-                    </button>
-                    
-                    <p style="text-align: center; margin-top: 1rem; color: #e74c3c; font-size: 0.9rem; line-height: 1.4;">
-                        数時間経っても確認メールが届かない場合は、再度お申し込みいただくか直接お電話ください。
-                    </p>
-                </form>
-
-                <div id="responseMessage"></div>
-                <div class="call-footer" aria-label="電話でお問い合わせ">
-                    <p style="color:#333; margin-bottom:0.25rem;">お急ぎの方はお電話ください</p>
-                    <p><a href="tel:090-6738-1469">📞 090-6738-1469</a></p>
+    <main id="main-content">
+        <div class="page-hero">
+            <div class="container">
+                <div class="page-hero-inner reveal" style="padding-bottom:20px;">
+                    <p class="page-eyebrow">お問い合わせ</p>
+                    <h1 class="page-title">お問い合わせフォーム</h1>
+                    <p class="page-lead">TERACO.LABOのサービスについてお気軽にお問い合わせください。<br>24時間以内にご連絡いたします。</p>
                 </div>
             </div>
         </div>
+
+        <section class="tl-section bg-white">
+            <div class="container">
+                <div class="form-container reveal">
+                    <form id="contactForm">
+                        <!-- 基本情報 -->
+                        <div class="form-group">
+                            <label for="name" class="form-label">お名前<span class="required">*</span></label>
+                            <input type="text" id="name" name="name" class="form-input" required>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="phone" class="form-label">電話番号<span class="required">*</span></label>
+                                <input type="tel" id="phone" name="phone" class="form-input" placeholder="090-1234-5678" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="email" class="form-label">メールアドレス<span class="required">*</span></label>
+                                <input type="email" id="email" name="email" class="form-input" required>
+                            </div>
+                        </div>
+
+                        <!-- サービス選択 -->
+                        <div class="form-group">
+                            <label class="form-label">ご興味のあるサービス<span class="required">*</span></label>
+                            <div class="service-options">
+                                <label class="service-option">
+                                    <input type="radio" name="service" value="smartphone" required>
+                                    <div class="service-name">スマホ教室</div>
+                                    <div class="service-description">基本操作からアプリ活用まで</div>
+                                </label>
+                                <label class="service-option">
+                                    <input type="radio" name="service" value="ai" required>
+                                    <div class="service-name">パソコンAI教室</div>
+                                    <div class="service-description">AIツールの使い方を学ぶ</div>
+                                </label>
+                                <label class="service-option">
+                                    <input type="radio" name="service" value="instructor" required>
+                                    <div class="service-name">外部講師</div>
+                                    <div class="service-description">企業・団体向け研修</div>
+                                </label>
+                                <label class="service-option">
+                                    <input type="radio" name="service" value="video" required>
+                                    <div class="service-name">映像制作</div>
+                                    <div class="service-description">プロモーション動画制作</div>
+                                </label>
+                                <label class="service-option">
+                                    <input type="radio" name="service" value="rental" required>
+                                    <div class="service-name">レンタルスペース</div>
+                                    <div class="service-description">会議室・撮影スタジオ</div>
+                                </label>
+                                <label class="service-option">
+                                    <input type="radio" name="service" value="other" required>
+                                    <div class="service-name">その他</div>
+                                    <div class="service-description">一般的なお問い合わせ</div>
+                                </label>
+                            </div>
+
+                            <!-- サービス別詳細項目 -->
+                            <div id="service-details-smartphone" class="service-details">
+                                <h4>スマホ教室 詳細設定</h4>
+                                <div class="detail-group">
+                                    <label class="detail-label">講座</label>
+                                    <select name="smartphone-course" class="form-select">
+                                        <option value="">選択してください</option>
+                                        <option value="manabi2">まなび2（45分×月2回／5,000円）</option>
+                                        <option value="manabi4">まなび4（45分×月4回／8,000円）</option>
+                                        <option value="terako2">てらこ2（90分×月2回／8,000円）</option>
+                                        <option value="terako4">てらこ4（90分×月4回／12,000円）</option>
+                                    </select>
+                                </div>
+                                <div class="detail-group">
+                                    <label class="detail-label">学びたい内容（複数選択可）</label>
+                                    <div class="checkbox-grid">
+                                        <label><input type="checkbox" name="smartphone-topics" value="basic-operation">基本操作</label>
+                                        <label><input type="checkbox" name="smartphone-topics" value="line">LINE使い方</label>
+                                        <label><input type="checkbox" name="smartphone-topics" value="camera">写真・カメラ</label>
+                                        <label><input type="checkbox" name="smartphone-topics" value="apps">アプリ活用</label>
+                                        <label><input type="checkbox" name="smartphone-topics" value="security">セキュリティ</label>
+                                        <label><input type="checkbox" name="smartphone-topics" value="other">その他</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div id="service-details-ai" class="service-details">
+                                <h4>パソコンAI教室 詳細設定</h4>
+                                <div class="detail-row">
+                                    <div class="detail-group">
+                                        <label class="detail-label">講座</label>
+                                        <select name="ai-course" class="form-select">
+                                            <option value="">選択してください</option>
+                                            <option value="basic2">ベーシック2（45分×月2回／5,000円）</option>
+                                            <option value="basic4">ベーシック4（45分×月4回／9,000円）</option>
+                                            <option value="advance2">アドバンス2（90分×月2回／9,000円）</option>
+                                            <option value="advance4">アドバンス4（90分×月4回／14,000円）</option>
+                                        </select>
+                                    </div>
+                                    <div class="detail-group">
+                                        <label class="detail-label">経験レベル</label>
+                                        <select name="ai-level" class="form-select">
+                                            <option value="">選択してください</option>
+                                            <option value="beginner">初心者（AIを触ったことがない）</option>
+                                            <option value="basic">基礎（少し使ったことがある）</option>
+                                            <option value="intermediate">中級（業務で活用したい）</option>
+                                            <option value="advanced">上級（専門的な活用）</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="detail-group">
+                                    <label class="detail-label">興味のあるAIツール（複数選択可）</label>
+                                    <div class="checkbox-grid">
+                                        <label><input type="checkbox" name="ai-tools" value="chatgpt">ChatGPT</label>
+                                        <label><input type="checkbox" name="ai-tools" value="claude">Claude</label>
+                                        <label><input type="checkbox" name="ai-tools" value="midjourney">画像生成AI</label>
+                                        <label><input type="checkbox" name="ai-tools" value="copilot">プログラミング支援</label>
+                                        <label><input type="checkbox" name="ai-tools" value="business">業務効率化</label>
+                                        <label><input type="checkbox" name="ai-tools" value="other">その他</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div id="service-details-instructor" class="service-details">
+                                <h4>外部講師 詳細設定</h4>
+                                <div class="detail-row">
+                                    <div class="detail-group">
+                                        <label class="detail-label">研修タイプ</label>
+                                        <select name="instructor-type" class="form-select">
+                                            <option value="">選択してください</option>
+                                            <option value="smartphone">スマホ研修</option>
+                                            <option value="ai">AI活用研修</option>
+                                            <option value="digital">デジタルリテラシー</option>
+                                            <option value="custom">カスタム研修</option>
+                                        </select>
+                                    </div>
+                                    <div class="detail-group">
+                                        <label class="detail-label">参加人数</label>
+                                        <select name="instructor-participants" class="form-select">
+                                            <option value="">選択してください</option>
+                                            <option value="small">1-10名</option>
+                                            <option value="medium">11-30名</option>
+                                            <option value="large">31-50名</option>
+                                            <option value="xlarge">51名以上</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="detail-row">
+                                    <div class="detail-group">
+                                        <label class="detail-label">所属・団体名</label>
+                                        <input type="text" name="instructor-organization" class="form-input" placeholder="例：○○株式会社、○○自治会">
+                                    </div>
+                                    <div class="detail-group">
+                                        <label class="detail-label">実施希望時期</label>
+                                        <select name="instructor-timing" class="form-select">
+                                            <option value="">選択してください</option>
+                                            <option value="asap">できるだけ早く</option>
+                                            <option value="1month">1ヶ月以内</option>
+                                            <option value="3months">3ヶ月以内</option>
+                                            <option value="planning">計画段階</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div id="service-details-video" class="service-details">
+                                <h4>映像制作 詳細設定</h4>
+                                <div class="detail-row">
+                                    <div class="detail-group">
+                                        <label class="detail-label">映像タイプ</label>
+                                        <select name="video-type" class="form-select">
+                                            <option value="">選択してください</option>
+                                            <option value="promotion">プロモーション動画</option>
+                                            <option value="corporate">企業紹介動画</option>
+                                            <option value="event">イベント撮影</option>
+                                            <option value="tutorial">教育・チュートリアル</option>
+                                            <option value="commercial">CM・広告動画</option>
+                                            <option value="other">その他</option>
+                                        </select>
+                                    </div>
+                                    <div class="detail-group">
+                                        <label class="detail-label">映像の長さ</label>
+                                        <select name="video-duration" class="form-select">
+                                            <option value="">選択してください</option>
+                                            <option value="short">30秒以内</option>
+                                            <option value="medium">1-3分</option>
+                                            <option value="long">3-10分</option>
+                                            <option value="extended">10分以上</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="detail-row">
+                                    <div class="detail-group">
+                                        <label class="detail-label">予算範囲</label>
+                                        <select name="video-budget" class="form-select">
+                                            <option value="">選択してください</option>
+                                            <option value="low">10万円以下</option>
+                                            <option value="medium">10-30万円</option>
+                                            <option value="high">30-50万円</option>
+                                            <option value="premium">50万円以上</option>
+                                            <option value="consultation">要相談</option>
+                                        </select>
+                                    </div>
+                                    <div class="detail-group">
+                                        <label class="detail-label">使用目的</label>
+                                        <select name="video-purpose" class="form-select">
+                                            <option value="">選択してください</option>
+                                            <option value="web">ウェブサイト</option>
+                                            <option value="social">SNS・YouTube</option>
+                                            <option value="tv">テレビ・放送</option>
+                                            <option value="presentation">プレゼンテーション</option>
+                                            <option value="other">その他</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div id="service-details-rental" class="service-details">
+                                <h4>レンタルスペース 詳細設定</h4>
+                                <div class="detail-row">
+                                    <div class="detail-group">
+                                        <label class="detail-label">利用目的</label>
+                                        <select name="rental-purpose" class="form-select">
+                                            <option value="">選択してください</option>
+                                            <option value="meeting">会議・打ち合わせ</option>
+                                            <option value="seminar">セミナー・研修</option>
+                                            <option value="workshop">ワークショップ</option>
+                                            <option value="filming">撮影・収録</option>
+                                            <option value="event">イベント開催</option>
+                                            <option value="other">その他</option>
+                                        </select>
+                                    </div>
+                                    <div class="detail-group">
+                                        <label class="detail-label">利用人数</label>
+                                        <select name="rental-capacity" class="form-select">
+                                            <option value="">選択してください</option>
+                                            <option value="5">5名</option>
+                                            <option value="6">6名</option>
+                                            <option value="7">7名</option>
+                                            <option value="8">8名</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="detail-group">
+                                    <label class="detail-label">利用時間</label>
+                                    <div class="detail-row">
+                                        <div>
+                                            <label class="detail-label" style="font-size:0.8rem;margin-bottom:0.2rem;">開始時間</label>
+                                            <select name="rental-start-time" class="form-select">
+                                                <option value="">選択してください</option>
+                                                <option value="10:00">10:00</option>
+                                                <option value="11:00">11:00</option>
+                                                <option value="12:00">12:00</option>
+                                                <option value="13:00">13:00</option>
+                                                <option value="14:00">14:00</option>
+                                                <option value="15:00">15:00</option>
+                                                <option value="16:00">16:00</option>
+                                                <option value="17:00">17:00</option>
+                                                <option value="18:00">18:00</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label class="detail-label" style="font-size:0.8rem;margin-bottom:0.2rem;">終了時間</label>
+                                            <select name="rental-end-time" class="form-select">
+                                                <option value="">選択してください</option>
+                                                <option value="11:00">11:00</option>
+                                                <option value="12:00">12:00</option>
+                                                <option value="13:00">13:00</option>
+                                                <option value="14:00">14:00</option>
+                                                <option value="15:00">15:00</option>
+                                                <option value="16:00">16:00</option>
+                                                <option value="17:00">17:00</option>
+                                                <option value="18:00">18:00</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div id="service-details-other" class="service-details">
+                                <h4>その他のお問い合わせ</h4>
+                                <div class="detail-group">
+                                    <label class="detail-label">お問い合わせ種別</label>
+                                    <select name="other-type" class="form-select">
+                                        <option value="">選択してください</option>
+                                        <option value="general">一般的なご質問</option>
+                                        <option value="partnership">提携・協業について</option>
+                                        <option value="media">取材・メディア関連</option>
+                                        <option value="feedback">ご意見・ご要望</option>
+                                        <option value="technical">技術的なお問い合わせ</option>
+                                        <option value="other">その他</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 希望日程 -->
+                        <div class="form-group">
+                            <label for="preferred-date" class="form-label">ご希望日程</label>
+                            <input type="date" id="preferred-date" name="preferred-date" class="form-input">
+                        </div>
+
+                        <!-- 詳細・要望 -->
+                        <div class="form-group">
+                            <label for="message" class="form-label">お問い合わせ内容<span class="required">*</span></label>
+                            <textarea id="message" name="message" class="form-textarea" placeholder="上記で選択した内容が自動で入力されます。追加でご質問やご要望があればご記入ください。" required readonly style="background:var(--cream);"></textarea>
+                            <div style="margin-top:0.5rem;">
+                                <label for="user-message" class="form-label" style="font-size:0.9rem;margin-bottom:0.3rem;">追加のご質問・ご要望</label>
+                                <textarea id="user-message" class="form-textarea" placeholder="追加でご質問やご要望がございましたら、こちらにお書きください。" style="min-height:80px;"></textarea>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="submit-button" id="submitBtn">
+                            お問い合わせを送信
+                        </button>
+
+                        <p style="text-align:center;margin-top:1rem;color:#a94442;font-size:0.9rem;line-height:1.4;">
+                            数時間経っても確認メールが届かない場合は、再度お申し込みいただくか直接お電話ください。
+                        </p>
+                    </form>
+
+                    <div id="responseMessage"></div>
+                    <div class="call-footer" aria-label="電話でお問い合わせ">
+                        <p>お急ぎの方はお電話ください</p>
+                        <p><a href="tel:090-6738-1469">090-6738-1469</a></p>
+                    </div>
+                </div>
+                <div class="back-to-top">
+                    <a href="index.html">← TOPへ戻る</a>
+                </div>
+            </div>
+        </section>
     </main>
+
+    <footer class="access-footer">
+        <div class="container">
+            <div class="access-grid reveal">
+                <div>
+                    <h2 class="access-heading">見学・体験、いつでもどうぞ。</h2>
+                    <div class="access-info">
+                        <a href="https://maps.google.com/?q=宮崎県西都市大字三宅9437-9" target="_blank" rel="noopener">宮崎県西都市大字三宅9437-9（駐車場あり）</a>
+                        <span>電話 <a href="tel:090-6738-1469">090-6738-1469</a>｜メール <a href="mailto:fujisaki@teraco-labo.com">fujisaki@teraco-labo.com</a></span>
+                    </div>
+                    <div class="access-actions">
+                        <a href="https://lin.ee/tkYJ7Cw" class="btn-line-footer" target="_blank" rel="noopener" aria-label="LINEで相談する（外部リンク）">LINEで相談する</a>
+                        <a href="contact.html" class="btn-outline-footer">お問い合わせフォーム</a>
+                    </div>
+                </div>
+                <div class="access-qr">
+                    <img src="images/line-qr.png" alt="LINE QRコード" width="110" height="110" loading="lazy">
+                    <span>QRからLINE友だち追加</span>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <span>&copy; 2025 TERACO.LABO. All rights reserved.</span>
+                <a href="https://teraco-labo.github.io/line-outou/" class="footer-library-link" target="_blank" rel="noopener">てらこ図書館</a>
+            </div>
+        </div>
+    </footer>
+
+    <div class="sticky-cta" role="group" aria-label="お問い合わせ手段">
+        <a href="tel:090-6738-1469" class="sticky-btn sticky-btn-phone" aria-label="電話で問い合わせ：090-6738-1469">
+            電話する
+        </a>
+        <a href="https://lin.ee/tkYJ7Cw" class="sticky-btn sticky-btn-line" target="_blank" rel="noopener" aria-label="LINEで相談する（外部リンク）">
+            LINEで相談
+        </a>
+    </div>
 
     <script>
         // EmailJS初期化
@@ -791,7 +463,7 @@
             const serviceRadios = document.querySelectorAll('input[name="service"]');
             const preferredDate = document.getElementById('preferred-date');
             const messageField = document.getElementById('message');
-            
+
             let selectedService = '';
             let selectedServiceValue = '';
             serviceRadios.forEach(radio => {
@@ -801,16 +473,16 @@
                     selectedServiceValue = radio.value;
                 }
             });
-            
+
             const dateValue = preferredDate.value;
             const userMessageField = document.getElementById('user-message');
             const userMessage = userMessageField ? userMessageField.value : '';
-            
+
             // 自動集約メッセージ生成
             let autoMessage = '';
             if (selectedService) {
                 autoMessage += `■選択サービス: ${selectedService}\n`;
-                
+
                 // サービス別詳細情報を取得
                 const serviceDetails = getServiceDetails(selectedServiceValue);
                 if (serviceDetails) {
@@ -823,63 +495,63 @@
             if (userMessage.trim()) {
                 autoMessage += `\n■追加のご質問・ご要望:\n${userMessage}`;
             }
-            
+
             messageField.value = autoMessage;
         }
-        
+
         // サービス別詳細情報を取得
         function getServiceDetails(serviceType) {
             let details = '';
-            
+
             switch(serviceType) {
                 case 'smartphone':
                     const course = getSelectValue('smartphone-course');
                     const topics = getCheckboxValues('smartphone-topics');
-                    
+
                     if (course) details += `コース: ${course}\n`;
                     if (topics.length > 0) details += `学びたい内容: ${topics.join(', ')}\n`;
                     break;
-                    
+
                 case 'ai':
                     const aiCourse = getSelectValue('ai-course');
                     const level = getSelectValue('ai-level');
                     const tools = getCheckboxValues('ai-tools');
-                    
+
                     if (aiCourse) details += `コース: ${aiCourse}\n`;
                     if (level) details += `経験レベル: ${level}\n`;
                     if (tools.length > 0) details += `興味のあるAIツール: ${tools.join(', ')}\n`;
                     break;
-                    
+
                 case 'instructor':
                     const instructorType = getSelectValue('instructor-type');
                     const participants = getSelectValue('instructor-participants');
                     const organization = getInputValue('instructor-organization');
                     const timing = getSelectValue('instructor-timing');
-                    
+
                     if (instructorType) details += `研修タイプ: ${instructorType}\n`;
                     if (participants) details += `参加人数: ${participants}\n`;
                     if (organization) details += `所属・団体名: ${organization}\n`;
                     if (timing) details += `実施希望時期: ${timing}\n`;
                     break;
-                    
+
                 case 'video':
                     const videoType = getSelectValue('video-type');
                     const duration = getSelectValue('video-duration');
                     const budget = getSelectValue('video-budget');
                     const purpose = getSelectValue('video-purpose');
-                    
+
                     if (videoType) details += `映像タイプ: ${videoType}\n`;
                     if (duration) details += `映像の長さ: ${duration}\n`;
                     if (budget) details += `予算範囲: ${budget}\n`;
                     if (purpose) details += `使用目的: ${purpose}\n`;
                     break;
-                    
+
                 case 'rental':
                     const rentalPurpose = getSelectValue('rental-purpose');
                     const capacity = getSelectValue('rental-capacity');
                     const startTime = getSelectValue('rental-start-time');
                     const endTime = getSelectValue('rental-end-time');
-                    
+
                     if (rentalPurpose) details += `利用目的: ${rentalPurpose}\n`;
                     if (capacity) details += `利用人数: ${capacity}\n`;
                     if (startTime && endTime) {
@@ -900,16 +572,16 @@
                         details += `終了時間: ${endTime}\n`;
                     }
                     break;
-                    
+
                 case 'other':
                     const otherType = getSelectValue('other-type');
                     if (otherType) details += `お問い合わせ種別: ${otherType}\n`;
                     break;
             }
-            
+
             return details.trim();
         }
-        
+
         // ヘルパー関数
         function getSelectValue(name) {
             const select = document.querySelector(`[name="${name}"]`);
@@ -919,12 +591,12 @@
             }
             return '';
         }
-        
+
         function getInputValue(name) {
             const input = document.querySelector(`[name="${name}"]`);
             return input ? input.value.trim() : '';
         }
-        
+
         function getCheckboxValues(name) {
             const checkboxes = document.querySelectorAll(`[name="${name}"]:checked`);
             return Array.from(checkboxes).map(cb => {
@@ -932,7 +604,7 @@
                 return label.replace(cb.value, '').trim();
             });
         }
-        
+
         // サービス選択の視覚的フィードバック＋詳細表示＋自動集約
         document.querySelectorAll('.service-option input[type="radio"]').forEach(radio => {
             radio.addEventListener('change', function() {
@@ -942,19 +614,19 @@
                 });
                 // 選択された選択肢に selected クラスを追加
                 this.closest('.service-option').classList.add('selected');
-                
+
                 // 全ての詳細セクションを非表示
                 document.querySelectorAll('.service-details').forEach(detail => {
                     detail.classList.remove('active');
                 });
-                
+
                 // 選択されたサービスの詳細セクションを表示
                 const selectedService = this.value;
                 const detailSection = document.getElementById(`service-details-${selectedService}`);
                 if (detailSection) {
                     detailSection.classList.add('active');
                 }
-                
+
                 // 自動集約実行
                 updateMessageField();
             });
@@ -1006,13 +678,13 @@
             }
             // 初期状態ではメッセージ欄は空のまま（ユーザー操作時に反映）
         });
-        
+
         // 日程変更時の自動集約
         document.getElementById('preferred-date').addEventListener('change', updateMessageField);
-        
+
         // ユーザーメッセージ変更時の自動集約
         document.getElementById('user-message').addEventListener('input', updateMessageField);
-        
+
         // 詳細項目の変更時に自動集約実行
         document.addEventListener('change', function(e) {
             if (e.target.matches('select[name*="-"], input[name*="-"]')) {
@@ -1027,28 +699,28 @@
         // フォーム送信処理
         document.getElementById('contactForm').addEventListener('submit', async function(e) {
             e.preventDefault();
-            
+
             const submitBtn = document.getElementById('submitBtn');
             const responseMessage = document.getElementById('responseMessage');
-            
+
             // ボタンを無効化
             submitBtn.disabled = true;
             submitBtn.textContent = '送信中...';
-            
+
             // フォームデータを収集
             const formElement = new FormData(this);
             const data = Object.fromEntries(formElement.entries());
-            
+
             // デバッグ：フォームデータの確認
             console.log('フォームから取得したrawデータ:', data);
             console.log('data.service:', data.service);
             console.log('data.preferred-date:', data['preferred-date']);
             console.log('data.message:', data.message);
-            
+
             try {
                 // Loading state
-                responseMessage.innerHTML = '<div style="text-align: center; color: #5b52ff;">送信中...</div>';
-                
+                responseMessage.innerHTML = '<div style="text-align: center; color: var(--forest);">送信中...</div>';
+
                 // サービス名の変換
                 const serviceNames = {
                     'smartphone': 'スマホ教室',
@@ -1058,7 +730,7 @@
                     'rental': 'レンタルスペース',
                     'other': 'その他お問い合わせ'
                 };
-                
+
                 // シンプルなEmailJS用データ（message欄にすべて集約済み）
                 const emailData = {
                     name: data.name,
@@ -1067,32 +739,32 @@
                     message: data.message, // すべての情報が集約済み
                     submission_date: new Date().toLocaleString('ja-JP')
                 };
-                
+
                 console.log('送信データ詳細:', emailData);
-                
+
                 // 新しいテンプレートで送信
                 console.log('管理者メール送信開始...');
                 const EMAIL_SERVICE_ID = window.EMAILJS_SERVICE_ID || 'TERACO_Gmail';
                 await emailjs.send(EMAIL_SERVICE_ID, 'template_5p9czck', emailData);
                 console.log('管理者メール送信成功');
-                
+
                 console.log('ユーザーメール送信開始...');
                 await emailjs.send(EMAIL_SERVICE_ID, 'template_xmm6v7c', emailData);
                 console.log('ユーザーメール送信成功');
-                
+
                 // 成功メッセージを表示
                 responseMessage.innerHTML = `
                     <div class="success-message">
                         お問い合わせありがとうございます。確認メールをお送りしました。24時間以内にご連絡いたします。
                     </div>
                 `;
-                
+
                 // フォームをリセット
                 this.reset();
                 document.querySelectorAll('.service-option').forEach(option => {
                     option.classList.remove('selected');
                 });
-                
+
             } catch (error) {
                 console.error('送信エラー:', error);
                 responseMessage.innerHTML = `
@@ -1108,47 +780,63 @@
                 }, 2000);
             }
         });
-        
+
         // ハンバーガーメニューの開閉
-        const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
-        const navMenu = document.querySelector('.nav-menu');
-        
-        if (mobileMenuToggle && navMenu) {
-            mobileMenuToggle.addEventListener('click', function() {
-                this.classList.toggle('active');
-                navMenu.classList.toggle('active');
-            });
-            
-            // メニュー項目をクリックしたときにメニューを閉じる
-            const menuLinks = navMenu.querySelectorAll('a');
-            menuLinks.forEach(link => {
-                link.addEventListener('click', function() {
-                    mobileMenuToggle.classList.remove('active');
-                    navMenu.classList.remove('active');
+        (function () {
+            'use strict';
+            var toggle = document.getElementById('menu-toggle');
+            var wrap   = document.getElementById('nav-wrap');
+
+            if (toggle && wrap) {
+                toggle.addEventListener('click', function () {
+                    var open = wrap.classList.toggle('active');
+                    toggle.classList.toggle('active', open);
+                    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+                    toggle.setAttribute('aria-label', open ? 'メニューを閉じる' : 'メニューを開く');
                 });
-            });
-            
-            // モバイルメニュー外をクリックしたときに閉じる
-            document.addEventListener('click', function(e) {
-                if (!mobileMenuToggle.contains(e.target) && !navMenu.contains(e.target)) {
-                    mobileMenuToggle.classList.remove('active');
-                    navMenu.classList.remove('active');
-                }
-            });
-            
-            // ESCキーでメニューを閉じる
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape') {
-                    mobileMenuToggle.classList.remove('active');
-                    navMenu.classList.remove('active');
-                }
-            });
-        }
+
+                wrap.querySelectorAll('a').forEach(function (a) {
+                    a.addEventListener('click', function () {
+                        wrap.classList.remove('active');
+                        toggle.classList.remove('active');
+                        toggle.setAttribute('aria-expanded', 'false');
+                        toggle.setAttribute('aria-label', 'メニューを開く');
+                    });
+                });
+
+                document.addEventListener('click', function (e) {
+                    if (!toggle.contains(e.target) && !wrap.contains(e.target)) {
+                        wrap.classList.remove('active');
+                        toggle.classList.remove('active');
+                        toggle.setAttribute('aria-expanded', 'false');
+                    }
+                });
+
+                document.addEventListener('keydown', function (e) {
+                    if (e.key === 'Escape' && wrap.classList.contains('active')) {
+                        wrap.classList.remove('active');
+                        toggle.classList.remove('active');
+                        toggle.setAttribute('aria-expanded', 'false');
+                        toggle.focus();
+                    }
+                });
+            }
+
+            var revealEls = document.querySelectorAll('.reveal');
+            if ('IntersectionObserver' in window && revealEls.length) {
+                var io = new IntersectionObserver(function (entries) {
+                    entries.forEach(function (entry) {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('visible');
+                            io.unobserve(entry.target);
+                        }
+                    });
+                }, { threshold: 0.1, rootMargin: '0px 0px -28px 0px' });
+                revealEls.forEach(function (el) { io.observe(el); });
+            } else {
+                revealEls.forEach(function (el) { el.classList.add('visible'); });
+            }
+        }());
     </script>
-    <!-- スティッキーモバイルCTAバー（theme-green.cssで制御） -->
-    <div class="sticky-cta" role="group" aria-label="お問い合わせ手段">
-        <a href="tel:090-6738-1469" class="sticky-btn sticky-btn-phone" aria-label="電話で問い合わせ">📞 電話する</a>
-        <a href="https://lin.ee/tkYJ7Cw" class="sticky-btn sticky-btn-line" target="_blank" rel="noopener" aria-label="LINEで相談する">LINEで相談</a>
-    </div>
 </body>
 </html>

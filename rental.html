@@ -25,402 +25,41 @@
         gtag('js', new Date());
         gtag('config', 'G-3GCZQ39LS1');
     </script>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
 
-        body {
-            font-family: 'M PLUS Rounded 1c', 'Hiragino Sans', 'Yu Gothic', 'Meiryo', sans-serif;
-            line-height: 1.6;
-            color: #333;
-            background: linear-gradient(to right, #5b52ff, #1fffa1);
-            background-attachment: fixed;
-            background-repeat: no-repeat;
-            background-size: cover;
-            min-height: 100vh;
-        }
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700;900&family=Shippori+Mincho:wght@600;700&display=swap" rel="stylesheet">
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-
-        header {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            position: fixed;
-            top: 0;
-            width: 100%;
-            z-index: 1000;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        nav {
-            padding: 1rem 0;
-        }
-
-        nav .container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo h1 {
-            font-size: 1.8rem;
-            font-weight: bold;
-            color: #5b52ff;
-            margin-bottom: 0.2rem;
-        }
-
-        .logo p {
-            font-size: 0.9rem;
-            color: #666;
-        }
-
-        .nav-menu {
-            display: flex;
-            list-style: none;
-            gap: 1rem;
-            justify-content: flex-end;
-            align-items: center;
-            margin: 0;
-            padding: 0;
-        }
-
-        .nav-menu a {
-            text-decoration: none;
-            color: #333;
-            font-weight: 500;
-            transition: color 0.3s ease;
-            padding: 0.5rem 0.8rem;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-            font-size: 0.9rem;
-            white-space: nowrap;
-        }
-
-        .nav-menu a:hover,
-        .nav-menu a.active {
-            color: #5b52ff;
-            background: rgba(91, 82, 255, 0.1);
-        }
-
-        .top-nav-bar {
-            padding: 0.75rem 0;
-        }
-        .back-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.4rem;
-            background: transparent;
-            color: #16a34a;
-            border: 1.5px solid #16a34a;
-            padding: 0.45rem 1.2rem;
-            text-decoration: none;
-            border-radius: 25px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            transition: all 0.2s ease;
-        }
-
-        .back-link:hover {
-            background: #16a34a;
-            color: white;
-            transform: translateX(-3px);
-        }
-
-        /* ハンバーガーメニューボタン */
-        .mobile-menu-toggle {
-            display: none;
-            flex-direction: column;
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 0.5rem;
-            width: 30px;
-            height: 30px;
-            justify-content: space-between;
-        }
-
-        .mobile-menu-toggle span {
-            display: block;
-            height: 3px;
-            width: 100%;
-            background: #5b52ff;
-            border-radius: 3px;
-            transition: all 0.3s ease;
-        }
-
-        .mobile-menu-toggle.active span:nth-child(1) {
-            transform: rotate(45deg) translate(5px, 5px);
-        }
-
-        .mobile-menu-toggle.active span:nth-child(2) {
-            opacity: 0;
-        }
-
-        .mobile-menu-toggle.active span:nth-child(3) {
-            transform: rotate(-45deg) translate(7px, -6px);
-        }
-
-        main {
-            padding: 120px 0 80px;
-        }
-
-        .service-detail {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 24px;
-            padding: 3rem;
-            margin: 2rem 0;
-            backdrop-filter: blur(20px);
-            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.1);
-        }
-
-        .service-title {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
-            color: #5b52ff;
-            text-align: center;
-        }
-
-        .service-subtitle {
-            font-size: 1.2rem;
-            color: #666;
-            text-align: center;
-            margin-bottom: 3rem;
-            line-height: 1.8;
-        }
-
-        .features-section {
-            margin: 3rem 0;
-        }
-
-        .features-title {
-            font-size: 1.8rem;
-            color: #5b52ff;
-            margin-bottom: 2rem;
-            text-align: center;
-        }
-
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2rem;
-            margin: 2rem 0;
-        }
-
-        .feature-card {
-            background: #f8f9fa;
-            padding: 2rem;
-            border-radius: 16px;
-            text-align: center;
-            transition: all 0.3s ease;
-        }
-
-        .feature-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-        }
-
-        .feature-card h4 {
-            color: #5b52ff;
-            margin-bottom: 1rem;
-            font-size: 1.2rem;
-        }
-
-        .feature-card p {
-            color: #666;
-            line-height: 1.6;
-        }
-
-        .space-info {
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            padding: 3rem;
-            border-radius: 20px;
-            margin: 3rem 0;
-        }
-
-        .info-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            margin-top: 2rem;
-        }
-
-        .info-item {
-            background: white;
-            padding: 2rem;
-            border-radius: 16px;
-            border-left: 4px solid #5b52ff;
-        }
-
-        .info-item h4 {
-            color: #5b52ff;
-            margin-bottom: 1rem;
-        }
-
-        .info-item ul {
-            list-style: none;
-            padding: 0;
-        }
-
-        .info-item li {
-            padding: 0.5rem 0;
-            border-bottom: 1px solid #eee;
-        }
-
-        .info-item li:last-child {
-            border-bottom: none;
-        }
-
-        .info-item li:before {
-            content: "・ ";
-            color: #5b52ff;
-            font-weight: bold;
-        }
-
-        .pricing-section {
-            background: linear-gradient(135deg, #5b52ff 0%, #1fffa1 100%);
-            color: white;
-            padding: 3rem;
-            border-radius: 20px;
-            margin: 3rem 0;
-        }
-
-        .pricing-title {
-            font-size: 2rem;
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-
-        .pricing-table {
-            background: rgba(255, 255, 255, 0.15);
-            padding: 2rem;
-            border-radius: 16px;
-            backdrop-filter: blur(10px);
-            border: 2px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .pricing-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .pricing-row:last-child {
-            border-bottom: none;
-        }
-
-        .contact-section {
-            background: #f8f9fa;
-            padding: 3rem;
-            border-radius: 20px;
-            text-align: center;
-            margin: 3rem 0;
-        }
-        /* 問い合わせ導線の統一レイアウト */
-        .contact-actions { display:flex; justify-content:center; align-items:center; gap:0.75rem; flex-wrap:wrap; margin-top:1.25rem; }
-        /* LINEも他ボタンと同デザイン（contact-btn）で統一 */
-        .line-qr-small { margin-top:1rem; text-align:center; color:#666; font-size:0.9rem; }
-
-        .contact-btn {
-            display: inline-block;
-            background: linear-gradient(135deg, #5b52ff 0%, #1fffa1 100%);
-            color: white;
-            padding: 1rem 2rem;
-            text-decoration: none;
-            border-radius: 50px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            margin: 0.5rem;
-        }
-
-        .contact-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-        }
-
-        @media (max-width: 768px) {
-            .service-title {
-                font-size: 2rem;
-            }
-            
-            .service-detail {
-                padding: 2rem;
-            }
-            
-            .pricing-row {
-                flex-direction: column;
-                text-align: center;
-                gap: 0.5rem;
-            }
-            
-            .nav-menu {
-                display: none;
-                position: fixed;
-                top: 80px;
-                left: 0;
-                right: 0;
-                background: rgba(255, 255, 255, 0.98);
-                backdrop-filter: blur(20px);
-                flex-direction: column;
-                padding: 1rem;
-                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-                z-index: 999;
-            }
-            
-            .nav-menu.active {
-                display: flex;
-            }
-            
-            .nav-menu li {
-                margin: 0.5rem 0;
-            }
-            
-            .nav-menu a {
-                display: block;
-                padding: 1rem;
-                font-size: 1.1rem;
-                text-align: center;
-                border-bottom: 1px solid rgba(91, 82, 255, 0.1);
-            }
-            
-            .mobile-menu-toggle {
-                display: flex;
-            }
-        }
-    </style>
-    <link rel="stylesheet" href="theme-white.css">
-    <link rel="stylesheet" href="theme-green.css">
+    <link rel="stylesheet" href="theme-warm.css">
 </head>
 <body>
+    <a href="#main-content" class="skip-link">メインコンテンツへスキップ</a>
+
     <header>
         <nav>
             <div class="container">
                 <div class="logo">
-                    <a href="index.html" aria-label="TERACO.LABO ホーム" style="text-decoration: none; color: inherit; display:flex; align-items:center;">
-                        <img src="images/teraco-labo-logo-new.png" alt="TERACO.LABO ロゴ">
+                    <a href="index.html" aria-label="TERACO.LABO トップページへ">
+                        <img src="images/teraco-labo-logo-main.png" alt="TERACO.LABO ロゴ">
                     </a>
                 </div>
-                <ul class="nav-menu">
-                    <li><a href="smartphone.html">スマホ教室</a></li>
-                    <li><a href="ai.html">パソコンAI教室</a></li>
-                    <li><a href="instructor.html">外部講師</a></li>
-                    <li><a href="video.html">映像制作</a></li>
-                    <li><a href="video.html">ドローン</a></li>
-                    <li><a href="rental.html" class="active">レンタルスペース</a></li>
-                    
-                    <li><a href="index.html#about">代表紹介</a></li>
-                    <li><a href="contact.html">お問い合わせ</a></li>
-                </ul>
-                <button class="mobile-menu-toggle" aria-label="メニューを開く">
+                <div class="nav-wrap" id="nav-wrap">
+                    <ul class="nav-menu" id="nav-menu" role="menubar">
+                        <li role="none"><a href="index.html#services" role="menuitem">教室のご案内</a></li>
+                        <li role="none"><a href="instructor.html" role="menuitem">法人・行政の方</a></li>
+                        <li role="none"><a href="rental.html" role="menuitem" class="active">スペース貸出</a></li>
+                        <li role="none"><a href="index.html#about" role="menuitem">代表紹介</a></li>
+                        <li role="none"><a href="index.html#faq" role="menuitem">よくある質問</a></li>
+                    </ul>
+                    <a href="https://lin.ee/tkYJ7Cw" class="nav-line-btn" target="_blank" rel="noopener" aria-label="LINEで相談する（外部リンク）">LINEで相談</a>
+                </div>
+                <button
+                    class="mobile-menu-toggle"
+                    id="menu-toggle"
+                    aria-label="メニューを開く"
+                    aria-expanded="false"
+                    aria-controls="nav-wrap"
+                >
                     <span></span>
                     <span></span>
                     <span></span>
@@ -429,96 +68,109 @@
         </nav>
     </header>
 
-    <main>
-        <div class="container">
-            <div class="service-detail">
-                <div class="hero-image" style="width: 100%; height: 300px; background-image: url('images/rental-space.png'); background-size: contain; background-position: center; background-repeat: no-repeat; border-radius: 16px; margin-bottom: 3rem; background-color: #f8f9fa;"></div>
-                
-                <h1 class="service-title">レンタルスペース</h1>
-                <p class="service-subtitle">少人数の教室・勉強会・ワークショップに最適な落ち着いた空間、講師や先生の営利利用も可能です。</p>
+    <main id="main-content">
 
-                <div class="features-section">
-                    <h3 class="features-title">スペースの特徴</h3>
-                    <div class="features-grid">
-                        <div class="feature-card">
-                            <h4>定員8名</h4>
-                            <p>少人数での密度の濃い学習や会議に最適なサイズです。</p>
-                        </div>
-                        <div class="feature-card">
-                            <h4>駐車場無料</h4>
-                            <p>お車でお越しの際も安心。無料駐車場をご利用いただけます。</p>
-                        </div>
-                        <div class="feature-card">
-                            <h4>大型モニター完備</h4>
-                            <p>プレゼンテーションや映像視聴に便利な大型モニターを設置。</p>
-                        </div>
-                        <div class="feature-card">
-                            <h4>落ち着いた環境</h4>
-                            <p>集中して学習や作業ができる静かで快適な空間です。</p>
-                        </div>
+        <div class="page-hero">
+            <div class="container">
+                <img class="page-hero-photo reveal" src="images/rental-space.png" alt="レンタルスペースの様子">
+                <div class="page-hero-inner reveal">
+                    <p class="page-eyebrow">どなたでも｜1時間〜</p>
+                    <h1 class="page-title">レンタルスペース</h1>
+                    <p class="page-lead">少人数の教室・勉強会・ワークショップに最適な落ち着いた空間、講師や先生の営利利用も可能です。</p>
+                </div>
+            </div>
+        </div>
+
+        <section class="tl-section">
+            <div class="container">
+                <div class="tl-head reveal">
+                    <h2 class="tl-title">スペースの特徴</h2>
+                </div>
+                <div class="text-card-grid">
+                    <div class="text-card reveal">
+                        <h4>定員8名</h4>
+                        <p>少人数での密度の濃い学習や会議に最適なサイズです。</p>
+                    </div>
+                    <div class="text-card reveal">
+                        <h4>駐車場無料</h4>
+                        <p>お車でお越しの際も安心。無料駐車場をご利用いただけます。</p>
+                    </div>
+                    <div class="text-card reveal">
+                        <h4>大型モニター完備</h4>
+                        <p>プレゼンテーションや映像視聴に便利な大型モニターを設置。</p>
+                    </div>
+                    <div class="text-card reveal">
+                        <h4>落ち着いた環境</h4>
+                        <p>集中して学習や作業ができる静かで快適な空間です。</p>
                     </div>
                 </div>
+            </div>
+        </section>
 
-                <div class="space-info">
-                    <h3 style="text-align: center; margin-bottom: 2rem; color: #5b52ff;">スペース詳細</h3>
-                    <div class="info-grid">
-                        <div class="info-item">
-                            <h4>設備・備品</h4>
-                            <ul>
-                                <li>大型モニター（HDMI・AirPlay2接続可能）</li>
-                                <li>テーブル・椅子（8名分）</li>
-                                <li>Wi-Fi完備</li>
-                                <li>エアコン</li>
-                                <li>延長コード・電源タップ</li>
-                            </ul>
-                        </div>
-                        <div class="info-item">
-                            <h4>利用用途例</h4>
-                            <ul>
-                                <li>少人数セミナー・勉強会</li>
-                                <li>ワークショップ・講座</li>
-                                <li>会議・打ち合わせ</li>
-                                <li>読書会・サークル活動</li>
-                                <li>個人指導・コーチング</li>
-                                <li>撮影・配信</li>
-                            </ul>
-                        </div>
-                        <div class="info-item">
-                            <h4>アクセス</h4>
-                            <ul>
-                                <li>宮崎県西都市大字三宅9437-9</li>
-                                <li>西都ICから車で約10分</li>
-                                <li>無料駐車場完備</li>
-                                <li>公共交通機関でのアクセス可</li>
-                                <li>静かな住宅地に立地</li>
-                            </ul>
-                        </div>
-                        <div class="info-item">
-                            <h4>利用時間</h4>
-                            <ul>
-                                <li>平日：10:00〜18:00</li>
-                                <li>土日祝：10:00〜18:00</li>
-                                <li>1時間単位での利用可能</li>
-                                <li>事前予約制</li>
-                                <li>当日予約も相談可</li>
-                            </ul>
-                        </div>
+        <section class="tl-section bg-white">
+            <div class="container">
+                <div class="tl-head reveal">
+                    <h2 class="tl-title">スペース詳細</h2>
+                </div>
+                <div class="feature-grid">
+                    <div class="feature-card2 reveal">
+                        <h4>設備・備品</h4>
+                        <ul>
+                            <li>大型モニター（HDMI・AirPlay2接続可能）</li>
+                            <li>テーブル・椅子（8名分）</li>
+                            <li>Wi-Fi完備</li>
+                            <li>エアコン</li>
+                            <li>延長コード・電源タップ</li>
+                        </ul>
+                    </div>
+                    <div class="feature-card2 reveal">
+                        <h4>利用用途例</h4>
+                        <ul>
+                            <li>少人数セミナー・勉強会</li>
+                            <li>ワークショップ・講座</li>
+                            <li>会議・打ち合わせ</li>
+                            <li>読書会・サークル活動</li>
+                            <li>個人指導・コーチング</li>
+                            <li>撮影・配信</li>
+                        </ul>
+                    </div>
+                    <div class="feature-card2 reveal">
+                        <h4>アクセス</h4>
+                        <ul>
+                            <li>宮崎県西都市大字三宅9437-9</li>
+                            <li>西都ICから車で約10分</li>
+                            <li>無料駐車場完備</li>
+                            <li>公共交通機関でのアクセス可</li>
+                            <li>静かな住宅地に立地</li>
+                        </ul>
+                    </div>
+                    <div class="feature-card2 reveal">
+                        <h4>利用時間</h4>
+                        <ul>
+                            <li>平日：10:00〜18:00</li>
+                            <li>土日祝：10:00〜18:00</li>
+                            <li>1時間単位での利用可能</li>
+                            <li>事前予約制</li>
+                            <li>当日予約も相談可</li>
+                        </ul>
                     </div>
                 </div>
+            </div>
+        </section>
 
-                <div class="pricing-section">
-                    <h3 class="pricing-title">利用料金</h3>
-                    <div class="pricing-table" style="text-align: center;">
-                        <div class="pricing-row" style="justify-content: center; gap: 3rem;">
-                            <span><strong>1時間</strong></span>
-                            <span><strong>3,000円〜（1人600円）</strong></span>
-                        </div>
-                    </div>
+        <section class="tl-section" id="plans">
+            <div class="container">
+                <div class="tl-head reveal">
+                    <h2 class="tl-title">利用料金</h2>
+                </div>
+                <div class="simple-price-band reveal" style="max-width:420px;margin:0 auto;">
+                    <span class="amount">3,000円〜</span>
+                    <span class="unit">/ 1時間（1人600円）</span>
                 </div>
 
-                <div style="margin: 3rem 0; padding: 2rem; background: #f8f9fa; border-radius: 12px; border-left: 4px solid #ffc107;">
-                    <h4 style="color: #856404; margin-bottom: 1rem;">【ご利用にあたっての注意事項】</h4>
-                    <ul style="list-style: none; padding: 0; color: #333; line-height: 1.8;">
+                <div class="notice-box reveal" style="max-width:640px;margin:28px auto 0;">
+                    <h4>【ご利用にあたっての注意事項】</h4>
+                    <ul>
                         <li>・ご利用は5名様以上、料金は3,000円から承っております。</li>
                         <li>・ご予約は、前日の17:00までにお願いいたします。</li>
                         <li>・トイレは徒歩圏内のコンビニエンスストアをご利用ください。オーナー不在時は、施設内のトイレはご利用いただけません。</li>
@@ -527,76 +179,125 @@
                         <li>・万が一家屋や機材に著しい破損があった場合、修理・交換にかかる費用をご請求させていただくことがございます。</li>
                     </ul>
                 </div>
+            </div>
+        </section>
 
-                <div class="contact-section">
+        <section class="tl-section bg-white">
+            <div class="container">
+                <div class="contact-band reveal">
                     <h3>スペース予約・お問い合わせ</h3>
-                    <p>ご利用希望日時をお知らせください。<br>
-                    空き状況を確認してご連絡いたします。</p>
-                    
-                    <div class="contact-actions">
-                        <a href="contact.html?service=rental" class="contact-btn">✉️ メールで予約・お問い合わせ</a>
-                        <a href="tel:090-6738-1469" class="contact-btn">📞 電話する</a>
-                        <a href="https://lin.ee/tkYJ7Cw" target="_blank" class="contact-btn">💬 LINEで相談</a>
+                    <p>ご利用希望日時をお知らせください。<br>空き状況を確認してご連絡いたします。</p>
+                    <div class="contact-actions2">
+                        <a href="contact.html?service=rental" class="btn-forest">メールで予約・お問い合わせ</a>
+                        <a href="tel:090-6738-1469" class="btn-outline-forest">電話する</a>
+                        <a href="https://lin.ee/tkYJ7Cw" target="_blank" rel="noopener" class="btn-line-solid">LINEで相談</a>
                     </div>
-                    
-                    <div style="margin-top: 2rem; font-size: 0.9rem; color: #666;">
-                        <strong>連絡先</strong><br>
-                        fujisaki@teraco-labo.com<br>
-                        090-6738-1469<br>
+                    <div class="contact-info2">
+                        fujisaki@teraco-labo.com｜090-6738-1469<br>
                         宮崎県西都市大字三宅9437-9
                     </div>
                 </div>
+                <div class="back-to-top">
+                    <a href="index.html">← TOPへ戻る</a>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="access-footer">
+        <div class="container">
+            <div class="access-grid reveal">
+                <div>
+                    <h2 class="access-heading">見学・体験、いつでもどうぞ。</h2>
+                    <div class="access-info">
+                        <a href="https://maps.google.com/?q=宮崎県西都市大字三宅9437-9" target="_blank" rel="noopener">宮崎県西都市大字三宅9437-9（駐車場あり）</a>
+                        <span>電話 <a href="tel:090-6738-1469">090-6738-1469</a>｜メール <a href="mailto:fujisaki@teraco-labo.com">fujisaki@teraco-labo.com</a></span>
+                    </div>
+                    <div class="access-actions">
+                        <a href="https://lin.ee/tkYJ7Cw" class="btn-line-footer" target="_blank" rel="noopener" aria-label="LINEで相談する（外部リンク）">LINEで相談する</a>
+                        <a href="contact.html" class="btn-outline-footer">お問い合わせフォーム</a>
+                    </div>
+                </div>
+                <div class="access-qr">
+                    <img src="images/line-qr.png" alt="LINE QRコード" width="110" height="110" loading="lazy">
+                    <span>QRからLINE友だち追加</span>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <span>&copy; 2025 TERACO.LABO. All rights reserved.</span>
+                <a href="https://teraco-labo.github.io/line-outou/" class="footer-library-link" target="_blank" rel="noopener">てらこ図書館</a>
             </div>
         </div>
+    </footer>
 
-    <div class="top-nav-bar" style="margin-top:2.5rem; padding-bottom:1rem;">
-        <a href="index.html" class="back-link">← TOPへ戻る</a>
-    </div>
-    </main>
-    
-    <script>
-        // ハンバーガーメニューの開閉
-        document.addEventListener('DOMContentLoaded', function() {
-            const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
-            const navMenu = document.querySelector('.nav-menu');
-            
-            if (mobileMenuToggle && navMenu) {
-                mobileMenuToggle.addEventListener('click', function() {
-                    this.classList.toggle('active');
-                    navMenu.classList.toggle('active');
-                });
-                
-                // メニュー項目をクリックしたときにメニューを閉じる
-                const menuLinks = navMenu.querySelectorAll('a');
-                menuLinks.forEach(link => {
-                    link.addEventListener('click', function() {
-                        mobileMenuToggle.classList.remove('active');
-                        navMenu.classList.remove('active');
-                    });
-                });
-                
-                // モバイルメニュー外をクリックしたときに閉じる
-                document.addEventListener('click', function(e) {
-                    if (!mobileMenuToggle.contains(e.target) && !navMenu.contains(e.target)) {
-                        mobileMenuToggle.classList.remove('active');
-                        navMenu.classList.remove('active');
-                    }
-                });
-                
-                // ESCキーでメニューを閉じる
-                document.addEventListener('keydown', function(e) {
-                    if (e.key === 'Escape') {
-                        mobileMenuToggle.classList.remove('active');
-                        navMenu.classList.remove('active');
-                    }
-                });
-            }
-        });
-    </script>
-    <!-- スティッキーモバイルCTAバー（theme-green.cssで制御） -->
     <div class="sticky-cta" role="group" aria-label="お問い合わせ手段">
-        <a href="tel:090-6738-1469" class="sticky-btn sticky-btn-phone" aria-label="電話で問い合わせ">📞 電話する</a>
-        <a href="https://lin.ee/tkYJ7Cw" class="sticky-btn sticky-btn-line" target="_blank" rel="noopener" aria-label="LINEで相談する">LINEで相談</a>
+        <a href="tel:090-6738-1469" class="sticky-btn sticky-btn-phone" aria-label="電話で問い合わせ：090-6738-1469">
+            電話する
+        </a>
+        <a href="https://lin.ee/tkYJ7Cw" class="sticky-btn sticky-btn-line" target="_blank" rel="noopener" aria-label="LINEで相談する（外部リンク）">
+            LINEで相談
+        </a>
     </div>
+
+    <script>
+    (function () {
+        'use strict';
+
+        var toggle = document.getElementById('menu-toggle');
+        var wrap   = document.getElementById('nav-wrap');
+
+        if (toggle && wrap) {
+            toggle.addEventListener('click', function () {
+                var open = wrap.classList.toggle('active');
+                toggle.classList.toggle('active', open);
+                toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+                toggle.setAttribute('aria-label', open ? 'メニューを閉じる' : 'メニューを開く');
+            });
+
+            wrap.querySelectorAll('a').forEach(function (a) {
+                a.addEventListener('click', function () {
+                    wrap.classList.remove('active');
+                    toggle.classList.remove('active');
+                    toggle.setAttribute('aria-expanded', 'false');
+                    toggle.setAttribute('aria-label', 'メニューを開く');
+                });
+            });
+
+            document.addEventListener('click', function (e) {
+                if (!toggle.contains(e.target) && !wrap.contains(e.target)) {
+                    wrap.classList.remove('active');
+                    toggle.classList.remove('active');
+                    toggle.setAttribute('aria-expanded', 'false');
+                }
+            });
+
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape' && wrap.classList.contains('active')) {
+                    wrap.classList.remove('active');
+                    toggle.classList.remove('active');
+                    toggle.setAttribute('aria-expanded', 'false');
+                    toggle.focus();
+                }
+            });
+        }
+
+        var revealEls = document.querySelectorAll('.reveal');
+        if ('IntersectionObserver' in window && revealEls.length) {
+            var io = new IntersectionObserver(function (entries) {
+                entries.forEach(function (entry) {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        io.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.1, rootMargin: '0px 0px -28px 0px' });
+            revealEls.forEach(function (el) { io.observe(el); });
+        } else {
+            revealEls.forEach(function (el) { el.classList.add('visible'); });
+        }
+    }());
+    </script>
 </body>
 </html>
