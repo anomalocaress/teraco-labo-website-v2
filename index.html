@@ -312,12 +312,6 @@
         font-family: var(--font-serif); font-size: 28px; font-weight: 700; color: var(--tl-text);
         margin: 10px 0 12px;
     }
-    .about2-name .studio {
-        font-family: var(--font-sans); font-size: 14px; font-weight: 500; color: var(--tl-muted);
-        margin-left: 10px;
-    }
-    .about2-name .studio-link { color: var(--tl-muted); text-decoration: none; border-bottom: 1px dotted var(--tl-muted); }
-    .about2-name .studio-link:hover { color: var(--forest); border-color: var(--forest); }
     .about2-bio { font-size: 14px; line-height: 2; color: var(--body-text); margin-bottom: 14px; }
     .about2-chips { display: flex; gap: 10px; flex-wrap: wrap; }
     .about2-chip {
@@ -527,13 +521,10 @@
     /* theme-white.css は <main> 内の無指定 <a> に青下線を強制する（main a:not(...)）。
        新デザインの独自クラスは除外リストに無いため、個別に打ち消す */
     .btn-forest, .btn-line-solid,
-    .svc-card, .biz-thumb, .biz-cta,
-    .about2-name .studio-link {
+    .svc-card, .biz-thumb, .biz-cta {
         text-decoration: none !important;
     }
     .biz-cta { color: var(--deep) !important; }
-    .about2-name .studio-link { color: var(--tl-muted) !important; }
-    .about2-name .studio-link:hover { color: var(--forest) !important; }
     .faq2-footer a { color: var(--forest) !important; text-decoration: underline !important; }
 
     header { background: var(--cream) !important; backdrop-filter: none !important; border-bottom: 1px solid var(--tl-border) !important; box-shadow: none !important; min-height: 0 !important; }
@@ -691,12 +682,13 @@
                 <div class="about2-grid reveal">
                     <img class="about2-photo" src="images/fujisaki-portrait.jpg" alt="代表 藤﨑秀一">
                     <div>
-                        <p class="about2-label">代表紹介｜映像作家・講師</p>
-                        <h2 class="about2-name">藤﨑 秀一<a href="https://www.youtube.com/@fujisaki_eizo_design" target="_blank" rel="noopener" class="studio studio-link detail-link">藤﨑映像デザイン</a></h2>
-                        <p class="about2-bio">通信業界に20年以上従事し、3万人以上の接客・サポートを経験。地域おこし協力隊の任期中に映像制作事業で起業しました。いまは高齢者向けスマホ講座から企業のAI研修まで、年間300講座・延べ1,000人以上を指導。「何度聞いても大丈夫」が信条です。</p>
+                        <p class="about2-label">代表紹介｜講師・映像作家</p>
+                        <h2 class="about2-name">藤﨑 秀一</h2>
+                        <p class="about2-bio">通信業界に20年以上従事し、3万人以上の接客・サポートを経験。地域おこし協力隊の任期中に映像制作事業で起業しました。いまは高齢者向けスマホ講座から学生向けのAI研修まで、年間300講座・延べ1,000人以上を指導。「何度聞いても大丈夫」が信条です。</p>
                         <div class="about2-chips">
-                            <span class="about2-chip">地域おこし協力隊 3年満了</span>
-                            <span class="about2-chip">接客・サポート3万人以上</span>
+                            <span class="about2-chip">携帯ショップ店長歴22年</span>
+                            <span class="about2-chip">接客・サポート年間3万人</span>
+                            <span class="about2-chip">地域おこし協力隊3年満了</span>
                             <span class="about2-chip">西都市を拠点に県内出張対応</span>
                         </div>
                     </div>
