@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://teraco-labo.com/sitemap.xml
