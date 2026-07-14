@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI講座 完全実施キット（塾・学校・自治体向け）｜TERACO.LABO</title>
+    <meta name="description" content="AIに詳しくない先生でも、明日から50分のAI授業ができる。スライド・講師台本・ワークシート・つまずき対応まで揃った、高校生向けAI講座の完全実施キット。パイロット校を先着3校限定で募集中。">
+    <link rel="canonical" href="https://teraco-labo.com/kit.html">
+
+    <!-- OGP -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://teraco-labo.com/kit.html">
+    <meta property="og:title" content="AI講座 完全実施キット（塾・学校・自治体向け）| TERACO.LABO">
+    <meta property="og:description" content="AIに詳しくない先生でも、明日から50分のAI授業ができる。現場で磨いた授業一式。パイロット校を先着3校限定で募集中。">
+    <meta property="og:image" content="https://teraco-labo.com/images/teraco-labo-logo-main.png">
+    <meta property="og:locale" content="ja_JP">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="AI講座 完全実施キット（塾・学校・自治体向け）| TERACO.LABO">
+    <meta name="twitter:description" content="AIに詳しくない先生でも、明日から50分のAI授業ができる。現場で磨いた授業一式。">
+
+    <!-- Google Analytics 4 -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-3GCZQ39LS1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-3GCZQ39LS1');
+    </script>
+
+    <!-- EmailJS -->
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700;900&family=Shippori+Mincho:wght@600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="theme-warm.css">
+
+    <style>
+    /* ===== kit.html 固有スタイル（B2B専用・接頭辞 kit- で衝突回避） ===== */
+
+    /* 簡素ヘッダー（B2B来訪者を問い合わせに集中させる） */
+    .kit-header {
+        position: sticky; top: 0; z-index: 1000;
+        background: var(--white); border-bottom: 1px solid var(--tl-border);
+        padding: 14px 0;
+    }
+    .kit-header .container { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+    .kit-header .kit-logo { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+    .kit-header .kit-logo img { height: 40px; width: auto; }
+    .kit-header .kit-logo-sub { font-size: .72rem; color: var(--tl-muted); letter-spacing: .1em; line-height: 1.4; }
+    .kit-header-cta {
+        background: var(--forest); color: var(--white); text-decoration: none;
+        padding: 10px 22px; border-radius: 999px; font-weight: 700; font-size: .88rem;
+        white-space: nowrap; transition: background .25s var(--ease);
+    }
+    .kit-header-cta:hover { background: var(--forest-dark); }
+
+    .kit-eyebrow {
+        display: inline-block; font-size: .8rem; font-weight: 700;
+        letter-spacing: .18em; color: var(--forest); margin-bottom: 14px;
+    }
+
+    /* ヒーロー */
+    .kit-hero { padding: 88px 0 76px; text-align: center; }
+    .kit-hero h1 {
+        font-family: var(--font-serif); font-size: clamp(1.65rem, 4vw, 2.5rem);
+        line-height: 1.55; margin-bottom: 20px; text-wrap: balance;
+    }
+    .kit-hero .kit-sub { color: var(--body-text); max-width: 640px; margin: 0 auto 12px; }
+    .kit-product-name {
+        font-family: var(--font-serif); font-weight: 700; font-size: 1.1rem;
+        color: var(--forest-dark); margin-bottom: 34px;
+    }
+    .kit-hero-ctas { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+    .kit-hero-trust {
+        display: flex; gap: 10px 26px; justify-content: center; flex-wrap: wrap;
+        margin-top: 36px; font-size: .85rem; color: var(--tl-muted);
+    }
+    .kit-hero-trust span::before { content: "◆ "; color: var(--forest); font-size: .7em; vertical-align: 1px; }
+
+    /* 課題 */
+    .kit-pain-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; }
+    .kit-pain-card {
+        background: var(--white); border: 1px solid var(--tl-border); border-radius: 14px;
+        padding: 26px 24px; box-shadow: var(--shadow-card);
+    }
+    .kit-pain-card h3 { font-family: var(--font-serif); font-size: 1.05rem; margin-bottom: 8px; color: var(--forest-dark); }
+    .kit-pain-card p { font-size: .92rem; color: var(--body-text); }
+    .kit-pain-answer {
+        text-align: center; margin-top: 40px; font-family: var(--font-serif);
+        font-size: 1.25rem; font-weight: 700; line-height: 2;
+    }
+    .kit-pain-answer strong { color: var(--forest); }
+
+    /* キットの中身 */
+    .kit-group { margin-bottom: 34px; }
+    .kit-group:last-child { margin-bottom: 0; }
+    .kit-group-title {
+        font-size: .85rem; font-weight: 700; letter-spacing: .14em;
+        color: var(--forest); margin-bottom: 14px;
+        padding-bottom: 8px; border-bottom: 1px solid var(--tl-border);
+    }
+    .kit-items { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px; }
+    .kit-item {
+        background: var(--cream); border: 1px solid var(--tl-border); border-radius: 10px;
+        padding: 13px 16px; font-size: .92rem; font-weight: 500;
+    }
+    .kit-item small { display: block; font-weight: 400; font-size: .8rem; color: var(--tl-muted); margin-top: 2px; }
+
+    /* 単元表 */
+    .kit-table-wrap { overflow-x: auto; }
+    .kit-table {
+        border-collapse: collapse; width: 100%; background: var(--white);
+        border-radius: 12px; overflow: hidden; box-shadow: var(--shadow-card);
+    }
+    .kit-table th, .kit-table td {
+        padding: 13px 18px; text-align: left; font-size: .93rem;
+        border-bottom: 1px solid var(--tl-border);
+    }
+    .kit-table th { background: var(--deep); color: #f0ede4; font-weight: 700; font-size: .85rem; letter-spacing: .06em; }
+    .kit-table tbody tr:last-child td { border-bottom: none; }
+    .kit-table td:first-child { font-weight: 700; color: var(--forest-dark); white-space: nowrap; }
+    .kit-time-chips { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 26px; }
+    .kit-time-chip {
+        border: 1px solid var(--chip-border); background: var(--white);
+        border-radius: 999px; padding: 7px 18px; font-size: .85rem; color: var(--body-text);
+    }
+
+    /* 開発者 */
+    .kit-dev-flex { display: flex; gap: 40px; align-items: flex-start; flex-wrap: wrap; }
+    .kit-dev-photo { flex: 0 0 190px; }
+    .kit-dev-photo img { border-radius: 14px; border: 1px solid var(--tl-border); }
+    .kit-dev-body { flex: 1 1 380px; }
+    .kit-dev-body h3 { font-family: var(--font-serif); font-size: 1.3rem; margin-bottom: 4px; }
+    .kit-dev-role { font-size: .85rem; color: var(--tl-muted); margin-bottom: 14px; }
+    .kit-dev-body p { color: var(--body-text); font-size: .95rem; margin-bottom: 16px; }
+    .kit-dev-chips { display: flex; gap: 8px; flex-wrap: wrap; }
+    .kit-dev-chip {
+        font-size: .8rem; border: 1px solid var(--chip-border);
+        border-radius: 999px; padding: 5px 14px; background: var(--white); color: var(--body-text);
+    }
+
+    /* パイロット募集 */
+    .kit-pilot-box {
+        background: var(--deep); color: #f0ede4; border-radius: 18px;
+        padding: 48px 40px; text-align: center;
+    }
+    .kit-pilot-box .kit-eyebrow { color: #8fc3a4; }
+    .kit-pilot-box h2 { font-family: var(--font-serif); color: #fff; font-size: 1.6rem; margin-bottom: 12px; }
+    .kit-pilot-box p { color: #c4cec7; max-width: 620px; margin: 0 auto 26px; font-size: .95rem; }
+    .kit-pilot-box p strong { color: #fff; }
+    .kit-pilot-terms { display: flex; gap: 10px 22px; justify-content: center; flex-wrap: wrap; margin-bottom: 30px; font-size: .87rem; color: #dfe6e1; }
+    .kit-pilot-terms span::before { content: "✓ "; color: #8fc3a4; font-weight: 700; }
+    .kit-pilot-box .btn-forest { background: #fff; color: var(--deep); }
+    .kit-pilot-box .btn-forest:hover { background: #e8e4d8; }
+
+    /* 料金 */
+    .kit-price-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+    .kit-price-card {
+        background: var(--white); border: 1px solid var(--tl-border); border-radius: 14px;
+        padding: 30px 26px; box-shadow: var(--shadow-card); text-align: center;
+    }
+    .kit-price-card h3 { font-family: var(--font-serif); font-size: 1.05rem; margin-bottom: 4px; }
+    .kit-price-scope { font-size: .82rem; color: var(--tl-muted); margin-bottom: 16px; }
+    .kit-price-value { font-family: var(--font-serif); font-size: 1.35rem; font-weight: 700; color: var(--forest-dark); margin-bottom: 14px; }
+    .kit-price-card ul { list-style: none; text-align: left; font-size: .87rem; color: var(--body-text); display: grid; gap: 6px; padding: 0; }
+    .kit-price-card li::before { content: "・"; color: var(--forest); }
+
+    /* サンプル請求フォーム */
+    .kit-form-card {
+        background: var(--white); border: 1px solid var(--tl-border); border-radius: 16px;
+        padding: 40px 36px; max-width: 640px; margin: 0 auto; box-shadow: var(--shadow-card);
+    }
+    .kit-form-row { margin-bottom: 18px; }
+    .kit-form-row label { display: block; font-size: .88rem; font-weight: 700; margin-bottom: 6px; }
+    .kit-form-row .kit-required { color: #b3402e; font-size: .78rem; margin-left: 4px; }
+    .kit-form-row input, .kit-form-row select, .kit-form-row textarea {
+        width: 100%; padding: 11px 14px; border: 1px solid var(--chip-border);
+        border-radius: 8px; font-size: .95rem; font-family: inherit;
+        background: var(--cream); color: var(--tl-text);
+    }
+    .kit-form-row textarea { min-height: 90px; resize: vertical; }
+    .kit-form-row input:focus, .kit-form-row select:focus, .kit-form-row textarea:focus {
+        outline: 2px solid var(--forest); outline-offset: 1px;
+    }
+    .kit-submit-btn {
+        width: 100%; border: none; cursor: pointer; font-family: inherit;
+        background: var(--forest); color: var(--white);
+        padding: 15px 34px; border-radius: 999px; font-weight: 700; font-size: 1rem;
+        transition: background .25s var(--ease);
+    }
+    .kit-submit-btn:hover { background: var(--forest-dark); }
+    .kit-submit-btn:disabled { opacity: .6; cursor: wait; }
+    .kit-form-privacy { font-size: .78rem; color: var(--tl-muted); text-align: center; margin-top: 12px; line-height: 1.7; }
+    .kit-form-response { margin-top: 16px; }
+    .kit-form-response .success-message {
+        background: #eef5ef; border: 1px solid var(--forest); color: var(--forest-dark);
+        border-radius: 10px; padding: 14px 18px; font-size: .92rem;
+    }
+    .kit-form-response .error-message {
+        background: #fbeeec; border: 1px solid #c56; color: #93372a;
+        border-radius: 10px; padding: 14px 18px; font-size: .92rem;
+    }
+
+    /* FAQ */
+    .kit-faq-list { max-width: 720px; margin: 0 auto; display: grid; gap: 14px; }
+    .kit-faq-list details {
+        background: var(--white); border: 1px solid var(--tl-border);
+        border-radius: 12px; padding: 18px 22px;
+    }
+    .kit-faq-list summary { font-weight: 700; cursor: pointer; font-size: .97rem; }
+    .kit-faq-list summary::marker { color: var(--forest); }
+    .kit-faq-list details p { margin-top: 10px; font-size: .92rem; color: var(--body-text); }
+
+    /* フッター（B2B簡易版） */
+    .kit-footer { background: var(--deep); color: #c4cec7; padding: 46px 0; text-align: center; font-size: .85rem; }
+    .kit-footer .kit-f-brand { font-family: var(--font-serif); color: #fff; font-size: 1.1rem; margin-bottom: 8px; }
+    .kit-footer a { color: #8fc3a4; }
+
+    @media (max-width: 640px) {
+        .kit-hero { padding: 60px 0 52px; }
+        .kit-pilot-box { padding: 36px 22px; }
+        .kit-form-card { padding: 30px 22px; }
+        .kit-header .kit-logo-sub { display: none; }
+    }
+    </style>
+</head>
+<body>
+    <a href="#main-content" class="skip-link">メインコンテンツへスキップ</a>
+
+    <header class="kit-header">
+        <div class="container">
+            <a href="index.html" class="kit-logo" aria-label="TERACO.LABO トップページへ">
+                <img src="images/teraco-labo-logo-main.png" alt="TERACO.LABO ロゴ">
+                <span class="kit-logo-sub">教材キット<br>塾・学校・自治体向け</span>
+            </a>
+            <a href="#sample" class="kit-header-cta">サンプル単元を請求</a>
+        </div>
+    </header>
+
+    <main id="main-content">
+
+        <!-- ヒーロー -->
+        <section class="kit-hero">
+            <div class="container">
+                <span class="kit-eyebrow">塾・学校・自治体向け 授業パッケージ</span>
+                <h1>AIに詳しくない先生でも、<br>明日から50分のAI授業ができる。</h1>
+                <p class="kit-sub">スライド・講師台本・ワークシート・時間配分・つまずき対応まで。年間300講座の現場で磨いた「そのまま使える授業一式」です。</p>
+                <p class="kit-product-name">高校生のための「未来を描く」AI講座 完全実施キット</p>
+                <div class="kit-hero-ctas">
+                    <a class="btn-forest" href="#sample">サンプル単元を無料で受け取る</a>
+                    <a class="btn-outline-forest" href="#pilot">導入について相談する</a>
+                </div>
+                <div class="kit-hero-trust">
+                    <span>年間300講座・延べ1,000人以上を指導</span>
+                    <span>Google クチコミ 4.7★</span>
+                    <span>宮崎県西都市で教室を運営</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- 課題 -->
+        <section class="tl-section" style="background: var(--band);">
+            <div class="container">
+                <div class="tl-head reveal">
+                    <span class="kit-eyebrow">こんなお悩みはありませんか</span>
+                    <h2 class="tl-title">AI講座、やりたいけれど手が回らない</h2>
+                </div>
+                <div class="kit-pain-grid">
+                    <div class="kit-pain-card reveal">
+                        <h3>準備する時間がない</h3>
+                        <p>スライドを一から作り、ワークを考え、想定質問まで用意する余裕は普段の業務の中にはありません。</p>
+                    </div>
+                    <div class="kit-pain-card reveal">
+                        <h3>AIは専門外で不安</h3>
+                        <p>生徒に聞かれて答えられなかったら…。エラーが出たら…。専門でないからこそ一歩が踏み出せません。</p>
+                    </div>
+                    <div class="kit-pain-card reveal">
+                        <h3>単発で終わってしまう</h3>
+                        <p>一度きりの体験で終わり、探究や進路につながる「授業」として積み上がっていきません。</p>
+                    </div>
+                </div>
+                <p class="kit-pain-answer reveal">このキットが売るのは教材ではなく、<br><strong>「明日から授業を実施できる安心」</strong>です。</p>
+            </div>
+        </section>
+
+        <!-- キットの中身 -->
+        <section class="tl-section bg-white">
+            <div class="container">
+                <div class="tl-head reveal">
+                    <span class="kit-eyebrow">キットの中身</span>
+                    <h2 class="tl-title">授業に必要なもの、ぜんぶ入り</h2>
+                    <p class="tl-lead">「本人しか使えない教材」ではなく、AI分野に詳しくない第三者が短時間の準備で授業を成立させられることを完成条件にしています。</p>
+                </div>
+                <div class="kit-group reveal">
+                    <div class="kit-group-title">授業を進めるもの</div>
+                    <div class="kit-items">
+                        <div class="kit-item">授業用スライド<small>全単元分・投影してそのまま使える</small></div>
+                        <div class="kit-item">講師台本（スピーカーノート）<small>読むだけで進行が成立する詳細版</small></div>
+                        <div class="kit-item">授業進行表・時間配分<small>導入→展開→まとめの分刻み設計</small></div>
+                        <div class="kit-item">生徒への問いかけ例<small>想定回答・追加質問つき</small></div>
+                    </div>
+                </div>
+                <div class="kit-group reveal">
+                    <div class="kit-group-title">生徒に配るもの</div>
+                    <div class="kit-items">
+                        <div class="kit-item">生徒用ワークシート</div>
+                        <div class="kit-item">配布資料</div>
+                        <div class="kit-item">プロンプト集<small>コピーしてすぐ使える</small></div>
+                        <div class="kit-item">実施後アンケート<small>学習成果を測れる設計</small></div>
+                    </div>
+                </div>
+                <div class="kit-group reveal">
+                    <div class="kit-group-title">困ったときのもの</div>
+                    <div class="kit-items">
+                        <div class="kit-item">講師向け準備チェックリスト</div>
+                        <div class="kit-item">つまずいた生徒へのフォロー例</div>
+                        <div class="kit-item">よくあるエラーと対処法<small>現場で実際に起きたものベース</small></div>
+                        <div class="kit-item">45分・90分への調整ガイド</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- カリキュラム -->
+        <section class="tl-section">
+            <div class="container">
+                <div class="tl-head reveal">
+                    <span class="kit-eyebrow">カリキュラム</span>
+                    <h2 class="tl-title">全6単元（全6回・標準：50分×6コマ）</h2>
+                    <p class="tl-lead">総合的な探究の時間・情報・キャリア教育・放課後講座など、既存の教育活動にコマ単位で組み込めます。</p>
+                </div>
+                <div class="kit-table-wrap reveal">
+                    <table class="kit-table">
+                        <thead><tr><th>単元</th><th>テーマ</th><th>生徒の成果物</th></tr></thead>
+                        <tbody>
+                            <tr><td>第1回</td><td>AIの基本を知る</td><td>AIとの対話ログ</td></tr>
+                            <tr><td>第2回</td><td>画像生成を体験する</td><td>オリジナル画像作品</td></tr>
+                            <tr><td>第3回</td><td>音楽・音声生成を試す</td><td>オリジナル楽曲</td></tr>
+                            <tr><td>第4回</td><td>ゲーム・アプリを企画する</td><td>企画シート</td></tr>
+                            <tr><td>第5回</td><td>AIの注意点を学ぶ</td><td>リスクチェック表</td></tr>
+                            <tr><td>第6回</td><td>発表・振り返り</td><td>発表スライド</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="kit-time-chips reveal">
+                    <span class="kit-time-chip">45分授業（小・中学校）対応</span>
+                    <span class="kit-time-chip">90分講座（イベント・公民館）対応</span>
+                    <span class="kit-time-chip">30分体験版（文化祭・体験会）対応</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- 開発者 -->
+        <section class="tl-section bg-white">
+            <div class="container">
+                <div class="tl-head reveal">
+                    <span class="kit-eyebrow">開発者</span>
+                    <h2 class="tl-title">机上の教材ではなく、現場から生まれた教材</h2>
+                </div>
+                <div class="kit-dev-flex reveal">
+                    <div class="kit-dev-photo">
+                        <img src="images/fujisaki-profile.jpg" alt="TERACO.LABO 代表 藤﨑秀一" loading="lazy" onerror="this.style.display='none'">
+                    </div>
+                    <div class="kit-dev-body">
+                        <h3>藤﨑 秀一</h3>
+                        <p class="kit-dev-role">TERACO.LABO 代表｜スマホ・AI講師、映像作家</p>
+                        <p>通信業界に20年以上従事し、3万人以上の接客・サポートを経験。現在は宮崎県西都市で教室を運営しながら、高齢者向けスマホ講座から学生向けAI研修まで年間300講座・延べ1,000人以上を指導。このキットには「初心者がどこで困るか」「講師がどこで詰まるか」という現場の記録がそのまま反映されています。</p>
+                        <div class="kit-dev-chips">
+                            <span class="kit-dev-chip">年間300講座・延べ1,000人指導</span>
+                            <span class="kit-dev-chip">市役所等の委託講座 実施</span>
+                            <span class="kit-dev-chip">小学生〜シニアまで指導経験</span>
+                            <span class="kit-dev-chip">Google クチコミ 4.7★</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- パイロット募集 -->
+        <section class="tl-section" id="pilot">
+            <div class="container">
+                <div class="kit-pilot-box reveal">
+                    <span class="kit-eyebrow">パイロット導入 先着3校限定</span>
+                    <h2>パイロット校・パイロット塾を募集しています</h2>
+                    <p>正式販売に先立ち、キットを実際の授業で使っていただける塾・学校・団体を<strong>先着3校限定</strong>で募集します。貴校の先生に実施していただき、準備時間・進行のしやすさ・生徒の反応をご一緒に検証させてください。</p>
+                    <div class="kit-pilot-terms">
+                        <span>パイロット特別価格</span>
+                        <span>導入前後の個別サポートつき</span>
+                        <span>結果は貴校にもフィードバック</span>
+                    </div>
+                    <a class="btn-forest" href="#sample">パイロット導入について問い合わせる</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- 料金 -->
+        <section class="tl-section" style="background: var(--band);">
+            <div class="container">
+                <div class="tl-head reveal">
+                    <span class="kit-eyebrow">ライセンス</span>
+                    <h2 class="tl-title">利用範囲に合わせた3つのプラン</h2>
+                    <p class="tl-lead">価格はパイロット検証後に確定します。現在はパイロット特別条件でご案内中です。</p>
+                </div>
+                <div class="kit-price-grid">
+                    <div class="kit-price-card reveal">
+                        <h3>個人講師</h3>
+                        <p class="kit-price-scope">購入者ご本人 1名</p>
+                        <p class="kit-price-value">個別にご案内</p>
+                        <ul>
+                            <li>キット一式（全6単元）</li>
+                            <li>45分・90分調整ガイド</li>
+                            <li>導入時のメール相談</li>
+                        </ul>
+                    </div>
+                    <div class="kit-price-card reveal">
+                        <h3>教室ライセンス</h3>
+                        <p class="kit-price-scope">1教室・複数講師</p>
+                        <p class="kit-price-value">個別にご案内</p>
+                        <ul>
+                            <li>個人プランのすべて</li>
+                            <li>教室内の複数講師で利用可</li>
+                            <li>講師向け事前レクチャー</li>
+                        </ul>
+                    </div>
+                    <div class="kit-price-card reveal">
+                        <h3>法人・自治体</h3>
+                        <p class="kit-price-scope">複数校舎・複数拠点</p>
+                        <p class="kit-price-value">個別見積もり</p>
+                        <ul>
+                            <li>教室プランのすべて</li>
+                            <li>研修・運営支援つき提案</li>
+                            <li>請書・見積書など調達対応</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- サンプル請求 -->
+        <section class="tl-section bg-white" id="sample">
+            <div class="container">
+                <div class="tl-head reveal">
+                    <span class="kit-eyebrow">まずは中身をご覧ください</span>
+                    <h2 class="tl-title">サンプル単元を無料でお送りします</h2>
+                    <p class="tl-lead">第1回「AIの基本を知る」のスライド・台本・ワークシートを実物のままお送りします。貴校で使えるか、じっくりご確認ください。</p>
+                </div>
+                <form class="kit-form-card reveal" id="kit-sample-form" novalidate>
+                    <div class="kit-form-row">
+                        <label for="kit-name">お名前<span class="kit-required">必須</span></label>
+                        <input id="kit-name" name="name" type="text" autocomplete="name" required>
+                    </div>
+                    <div class="kit-form-row">
+                        <label for="kit-org">ご所属（塾・学校・団体名）<span class="kit-required">必須</span></label>
+                        <input id="kit-org" name="org" type="text" autocomplete="organization" required>
+                    </div>
+                    <div class="kit-form-row">
+                        <label for="kit-email">メールアドレス<span class="kit-required">必須</span></label>
+                        <input id="kit-email" name="email" type="email" autocomplete="email" required>
+                    </div>
+                    <div class="kit-form-row">
+                        <label for="kit-phone">お電話番号（任意）</label>
+                        <input id="kit-phone" name="phone" type="tel" autocomplete="tel">
+                    </div>
+                    <div class="kit-form-row">
+                        <label for="kit-interest">ご関心</label>
+                        <select id="kit-interest" name="interest">
+                            <option>サンプルだけまず見たい</option>
+                            <option>パイロット導入に興味がある</option>
+                            <option>複数拠点での導入を検討したい</option>
+                            <option>講師派遣もあわせて相談したい</option>
+                        </select>
+                    </div>
+                    <div class="kit-form-row">
+                        <label for="kit-message">ご質問・ご要望（任意）</label>
+                        <textarea id="kit-message" name="message"></textarea>
+                    </div>
+                    <button class="kit-submit-btn" type="submit" id="kit-submit-btn">サンプル単元を受け取る</button>
+                    <div class="kit-form-response" id="kit-form-response" aria-live="polite"></div>
+                    <p class="kit-form-privacy">
+                        ご入力いただいた情報は、サンプル送付と教材のご案内以外には使用しません。<br>
+                        サンプル単元は授業でのお試し利用のみ可能です（編集・二次配布はご遠慮ください）。
+                    </p>
+                </form>
+            </div>
+        </section>
+
+        <!-- FAQ -->
+        <section class="tl-section">
+            <div class="container">
+                <div class="tl-head reveal">
+                    <span class="kit-eyebrow">よくあるご質問</span>
+                    <h2 class="tl-title">導入前の疑問にお答えします</h2>
+                </div>
+                <div class="kit-faq-list reveal">
+                    <details>
+                        <summary>AIをほとんど使ったことがない講師でも実施できますか？</summary>
+                        <p>はい、それがこのキットの完成条件です。台本は読むだけで進行が成立する詳細さで、操作画面・想定エラー・生徒への声かけまで記載しています。ご不安な場合は導入時レクチャー（オンライン）もご利用いただけます。</p>
+                    </details>
+                    <details>
+                        <summary>授業時間が50分ではないのですが対応できますか？</summary>
+                        <p>45分授業向けの調整表と、イベント向け90分版の進行案が同梱されています。30分の体験版構成もご用意しています。</p>
+                    </details>
+                    <details>
+                        <summary>教材の編集やカスタマイズはできますか？</summary>
+                        <p>ご購入いただいたキットは、貴校・貴教室での授業に合わせて自由にカスタマイズいただけます。ただし、教材そのものの再配布・転売、教材としての再販売はできません。教材を使った事業展開（商用パートナー）をご希望の方は別途ご相談ください。無料サンプルは授業でのお試し利用のみ可能で、編集・二次配布はご遠慮ください。</p>
+                    </details>
+                    <details>
+                        <summary>生徒が使うAIツールの利用料はかかりますか？</summary>
+                        <p>無料プランの範囲で実施できるよう設計しています。学校の端末環境（タブレット／PC、フィルタリング等）に合わせた事前チェックリストをお渡しします。</p>
+                    </details>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="kit-footer">
+        <div class="container">
+            <p class="kit-f-brand">TERACO.LABO</p>
+            <p>宮崎県西都市大字三宅9437-9｜<a href="mailto:fujisaki@teraco-labo.com">fujisaki@teraco-labo.com</a></p>
+            <p style="margin-top:10px">教室サイトはこちら → <a href="index.html">teraco-labo.com</a></p>
+        </div>
+    </footer>
+
+    <script>
+    (function () {
+        'use strict';
+
+        // EmailJS初期化（contact.html と同一基盤）
+        emailjs.init({ publicKey: "zcA2Cp6c3OstOeY5o" });
+
+        // スクロールリビール
+        var revealEls = document.querySelectorAll('.reveal');
+        if ('IntersectionObserver' in window && revealEls.length) {
+            var io = new IntersectionObserver(function (entries) {
+                entries.forEach(function (entry) {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        io.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.1, rootMargin: '0px 0px -28px 0px' });
+            revealEls.forEach(function (el) { io.observe(el); });
+        } else {
+            revealEls.forEach(function (el) { el.classList.add('visible'); });
+        }
+
+        // サンプル請求フォーム送信
+        var form = document.getElementById('kit-sample-form');
+        var submitBtn = document.getElementById('kit-submit-btn');
+        var responseBox = document.getElementById('kit-form-response');
+
+        form.addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            var name = document.getElementById('kit-name').value.trim();
+            var org = document.getElementById('kit-org').value.trim();
+            var email = document.getElementById('kit-email').value.trim();
+            var phone = document.getElementById('kit-phone').value.trim();
+            var interest = document.getElementById('kit-interest').value;
+            var userMessage = document.getElementById('kit-message').value.trim();
+
+            if (!name || !org || !email) {
+                responseBox.innerHTML = '<div class="error-message">お名前・ご所属・メールアドレスは必須です。</div>';
+                return;
+            }
+
+            var message =
+                '【教材キット サンプル請求】\n' +
+                '■ご所属: ' + org + '\n' +
+                '■ご関心: ' + interest + '\n' +
+                (userMessage ? '■ご質問・ご要望:\n' + userMessage + '\n' : '');
+
+            var emailData = {
+                name: name,
+                email: email,
+                phone: phone || '-',
+                message: message,
+                submission_date: new Date().toLocaleString('ja-JP')
+            };
+
+            submitBtn.disabled = true;
+            responseBox.innerHTML = '<div style="text-align:center;color:var(--forest);">送信中...</div>';
+
+            try {
+                var EMAIL_SERVICE_ID = window.EMAILJS_SERVICE_ID || 'TERACO_Gmail';
+                await emailjs.send(EMAIL_SERVICE_ID, 'template_5p9czck', emailData);
+                await emailjs.send(EMAIL_SERVICE_ID, 'template_xmm6v7c', emailData);
+                responseBox.innerHTML = '<div class="success-message">ありがとうございます。確認メールをお送りしました。サンプル単元は2営業日以内にメールでお届けします。</div>';
+                form.reset();
+            } catch (err) {
+                console.error('送信エラー:', err);
+                responseBox.innerHTML = '<div class="error-message">送信に失敗しました。お手数ですが fujisaki@teraco-labo.com まで直接ご連絡ください。</div>';
+            } finally {
+                submitBtn.disabled = false;
+            }
+        });
+    }());
+    </script>
+</body>
+</html>
