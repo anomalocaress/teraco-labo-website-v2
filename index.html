@@ -259,23 +259,38 @@
     /* =========================================================
        対象別入口
     ========================================================= */
-    .audience-gateway { padding: 28px 0 4px; }
+    .audience-gateway {
+        padding: 0;
+        background: var(--white);
+        border-bottom: 1px solid var(--tl-border);
+    }
+    .audience-gateway .container {
+        display: grid; grid-template-columns: 150px 1fr;
+        align-items: stretch;
+    }
     .audience-title {
+        display: flex; align-items: center;
         font-size: 12px; font-weight: 700; letter-spacing: .14em;
-        color: var(--tl-muted); text-align: center; margin-bottom: 12px;
+        color: var(--tl-muted); border-right: 1px solid var(--tl-border);
     }
-    .audience-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+    .audience-grid { display: grid; grid-template-columns: repeat(2, 1fr); }
     .audience-route {
-        display: flex; align-items: center; justify-content: space-between; gap: 18px;
-        min-height: 96px; padding: 20px 24px; border: 1px solid var(--tl-border);
-        border-radius: 12px; background: var(--white); color: inherit; text-decoration: none;
-        box-shadow: var(--shadow-card); transition: transform .25s var(--ease), box-shadow .25s ease;
+        position: relative; display: flex; align-items: center;
+        min-height: 92px; padding: 17px 30px;
+        color: inherit; text-decoration: none;
+        transition: background-color .2s ease;
     }
-    .audience-route:hover { transform: translateY(-3px); box-shadow: var(--shadow-card-hover); }
+    .audience-route + .audience-route { border-left: 1px solid var(--tl-border); }
+    .audience-route::after {
+        content: ""; position: absolute; left: 30px; right: 30px; bottom: 0;
+        height: 3px; background: var(--forest); transform: scaleX(0);
+        transform-origin: left; transition: transform .22s var(--ease);
+    }
+    .audience-route:hover { background: #fbfaf6; }
+    .audience-route:hover::after { transform: scaleX(1); }
     .audience-route:focus-visible { outline: 3px solid var(--forest); outline-offset: 2px; }
     .audience-route-label { display: block; font-size: 12px; font-weight: 700; color: var(--forest); margin-bottom: 3px; }
     .audience-route-title { display: block; font-family: var(--font-serif); font-size: 18px; font-weight: 700; }
-    .audience-route-arrow { flex: 0 0 auto; color: var(--forest); font-size: 24px; line-height: 1; }
 
     /* =========================================================
        SECTION 共通
@@ -306,32 +321,38 @@
     .svc-link { align-self: flex-start; margin-top: 4px; font-size: 13.5px; font-weight: 700; color: var(--forest); }
 
     /* 法人・行政・教育機関向け */
-    .business-section { background: var(--deep); color: var(--white); }
+    .business-section { background: var(--band); color: var(--tl-text); }
     .business-head { text-align: center; margin-bottom: 30px; }
-    .business-head .tl-title { color: var(--white); }
-    .business-head p { color: var(--footer-sub); font-size: 14px; margin-top: 8px; }
-    .business-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+    .business-head .tl-title { color: var(--tl-text); }
+    .business-head p { color: var(--body-text); font-size: 14px; margin-top: 8px; }
+    .business-grid { display: grid; grid-template-columns: 1.35fr 1fr 1fr; gap: 18px; align-items: stretch; }
     .business-card {
-        position: relative; min-height: 250px; border-radius: 12px; overflow: hidden;
-        color: var(--white); text-decoration: none; display: flex; align-items: flex-end;
-        isolation: isolate; transition: transform .28s var(--ease), box-shadow .28s ease;
-    }
-    .business-card::after {
-        content: ""; position: absolute; inset: 0; z-index: -1;
-        background: linear-gradient(to top, rgba(25,35,29,.96) 0%, rgba(25,35,29,.72) 46%, rgba(25,35,29,.12) 100%);
+        min-height: 100%; border-radius: 12px; overflow: hidden;
+        color: var(--tl-text); text-decoration: none; background: var(--white);
+        display: flex; flex-direction: column;
+        border: 1px solid var(--tl-border); box-shadow: var(--shadow-card);
+        transition: transform .28s var(--ease), box-shadow .28s ease, border-color .2s ease;
     }
     .business-card img {
-        position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%;
-        object-fit: cover; transition: transform .35s var(--ease);
+        width: 100%; height: 175px; object-fit: cover;
+        transition: transform .35s var(--ease);
     }
-    .business-card:hover { transform: translateY(-5px); box-shadow: 0 14px 30px rgba(0,0,0,.28); }
+    .business-card--featured { border: 2px solid var(--forest); }
+    .business-card--featured img { height: 205px; }
+    .business-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-card-hover); border-color: #c9d8ce; }
     .business-card:hover img { transform: scale(1.035); }
-    .business-card:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
-    .business-card-body { padding: 24px 22px; width: 100%; }
-    .business-card-label { display: block; color: #b8d9c3; font-size: 11px; font-weight: 700; letter-spacing: .1em; margin-bottom: 5px; }
-    .business-card h3 { color: var(--white); font-size: 19px; font-weight: 700; margin-bottom: 5px; }
-    .business-card p { color: #dce4df; font-size: 13px; line-height: 1.7; }
-    .business-card-link { display: block; color: var(--white); font-size: 13px; font-weight: 700; margin-top: 12px; }
+    .business-card:focus-visible { outline: 3px solid var(--forest); outline-offset: 3px; }
+    .business-card-body { padding: 22px 22px 24px; width: 100%; display: flex; flex: 1; flex-direction: column; }
+    .business-card-label { display: block; color: var(--forest); font-size: 11px; font-weight: 700; letter-spacing: .08em; margin-bottom: 5px; }
+    .business-card h3 { color: var(--tl-text); font-size: 19px; font-weight: 700; margin-bottom: 7px; }
+    .business-card--featured h3 { font-family: var(--font-serif); font-size: 23px; }
+    .business-card p { color: var(--body-text); font-size: 13px; line-height: 1.75; }
+    .business-card-link { display: block; color: var(--forest); font-size: 13px; font-weight: 700; margin-top: auto; padding-top: 16px; }
+    .business-card-status {
+        display: inline-flex; align-self: flex-start; margin-bottom: 10px;
+        padding: 4px 9px; border-radius: 4px; background: #eaf1ec;
+        color: var(--forest); font-size: 11px; font-weight: 700;
+    }
 
     /* =========================================================
        代表紹介
@@ -481,16 +502,20 @@
         .trust-num { font-size: 26px; }
         .trust-label { font-size: 12.5px; }
 
-        .audience-gateway { padding: 22px 0 0; }
+        .audience-gateway .container { grid-template-columns: 1fr; padding: 0; }
+        .audience-title { justify-content: center; min-height: 42px; border-right: 0; border-bottom: 1px solid var(--tl-border); }
         .audience-grid { grid-template-columns: 1fr; }
-        .audience-route { min-height: 84px; padding: 17px 19px; }
+        .audience-route { min-height: 76px; padding: 14px 24px; }
+        .audience-route + .audience-route { border-left: 0; border-top: 1px solid var(--tl-border); }
+        .audience-route::after { left: 24px; right: 24px; }
 
         .tl-section { padding: 52px 0; }
         .tl-title { font-size: 22px; }
 
         .svc-grid { grid-template-columns: 1fr; }
         .business-grid { grid-template-columns: 1fr; }
-        .business-card { min-height: 230px; }
+        .business-card { min-height: 0; }
+        .business-card img, .business-card--featured img { height: 190px; }
 
         .about2-grid { grid-template-columns: 1fr; text-align: center; }
         .about2-photo { width: 200px; height: 226px; margin: 0 auto; }
@@ -544,10 +569,10 @@
     .hero2-lead { color: var(--body-text) !important; }
     .tl-desc { color: var(--tl-muted) !important; }
     .svc-body p { color: var(--body-text) !important; }
-    .business-head p { color: var(--footer-sub) !important; }
-    .business-card p { color: #dce4df !important; }
-    .business-card-label { color: #b8d9c3 !important; }
-    .business-card-link { color: var(--white) !important; }
+    .business-head p { color: var(--body-text) !important; }
+    .business-card p { color: var(--body-text) !important; }
+    .business-card-label { color: var(--forest) !important; }
+    .business-card-link { color: var(--forest) !important; }
     .about2-label { color: var(--forest) !important; }
     .about2-bio { color: var(--body-text) !important; }
     .voice-text { color: var(--nav-text) !important; }
@@ -564,7 +589,7 @@
         text-decoration: none !important;
     }
     .audience-route { color: inherit !important; }
-    .business-card { color: var(--white) !important; }
+    .business-card { color: var(--tl-text) !important; }
     .faq2-footer a { color: var(--forest) !important; text-decoration: underline !important; }
 
     header { background: var(--cream) !important; backdrop-filter: none !important; border-bottom: 1px solid var(--tl-border) !important; box-shadow: none !important; min-height: 0 !important; }
@@ -627,7 +652,7 @@
              HERO
         =================================================== -->
         <section id="home" class="hero2" aria-label="メインビジュアル">
-            <img class="hero2-img" src="images/smartphone-class.png" alt="教室の様子">
+            <img class="hero2-img" src="images/smartphone-class-clean-v2.jpg" alt="スマホとタブレットを使う学習環境">
             <div class="hero2-gradient" aria-hidden="true"></div>
             <div class="container">
                 <div class="hero2-content">
@@ -663,16 +688,14 @@
                     <a href="#services" class="audience-route detail-link">
                         <span>
                             <span class="audience-route-label">個人・ご家族の方</span>
-                            <span class="audience-route-title">教室・講座を探している</span>
+                            <span class="audience-route-title">教室で学びたい</span>
                         </span>
-                        <span class="audience-route-arrow" aria-hidden="true">→</span>
                     </a>
                     <a href="#business" class="audience-route detail-link">
                         <span>
                             <span class="audience-route-label">学校・塾・法人・行政の方</span>
-                            <span class="audience-route-title">授業・研修を導入したい</span>
+                            <span class="audience-route-title">教材・研修を導入したい</span>
                         </span>
-                        <span class="audience-route-arrow" aria-hidden="true">→</span>
                     </a>
                 </div>
             </div>
@@ -690,7 +713,7 @@
 
                 <div class="svc-grid">
                     <a href="smartphone.html" class="svc-card service-card reveal d1" aria-label="スマホ・タブレット教室の詳細を見る">
-                        <img class="svc-img" src="images/smartphone-class.png" alt="スマホ教室" loading="lazy">
+                        <img class="svc-img" src="images/smartphone-class-clean-v2.jpg" alt="スマホとタブレットを使う学習環境" loading="lazy">
                         <div class="svc-body">
                             <div class="svc-label">個人向け｜体験会受付中</div>
                             <h3>スマホ・タブレット教室</h3>
@@ -700,7 +723,7 @@
                     </a>
 
                     <a href="ai.html" class="svc-card service-card reveal d2" aria-label="パソコンAI教室の詳細を見る">
-                        <img class="svc-img" src="images/ai-school.png" alt="AI教室" loading="lazy">
+                        <img class="svc-img" src="images/ai-school-clean-v2.jpg" alt="パソコンで創作を学ぶ環境" loading="lazy">
                         <div class="svc-body">
                             <div class="svc-label">個人向け｜生成AI</div>
                             <h3>パソコンAI教室</h3>
@@ -730,25 +753,26 @@
             <div class="container">
                 <div class="business-head reveal">
                     <h2 class="tl-title">法人・行政・教育機関の皆さまへ</h2>
-                    <p>研修、授業教材、映像制作。目的に合うサービスをお選びください。</p>
+                    <p>AI講座教材を中心に、研修・講師派遣、映像制作まで支援します。</p>
                 </div>
                 <div class="business-grid">
-                    <a href="instructor.html" class="business-card detail-link reveal d1" aria-label="研修・講師派遣の詳細を見る">
-                        <img src="images/instructor.png" alt="企業・行政向け研修の様子" loading="lazy">
+                    <a href="kit.html" class="business-card business-card--featured detail-link reveal d1" aria-label="AI講座 完全実施キットの詳細を見る">
+                        <img src="images/ai-school-clean-v2.jpg" alt="AI講座教材を使った学習環境" loading="lazy">
+                        <div class="business-card-body">
+                            <span class="business-card-label">学校・塾・自治体向け｜新規事業</span>
+                            <span class="business-card-status">2026年9月以降 正式提供予定</span>
+                            <h3>AI講座 教材キット</h3>
+                            <p>AIに詳しくない先生でも授業を進められる、スライド・講師台本・ワーク・運営資料をまとめた授業一式です。</p>
+                            <span class="business-card-link">先行案内・実証導入を見る →</span>
+                        </div>
+                    </a>
+                    <a href="instructor.html" class="business-card detail-link reveal d2" aria-label="研修・講師派遣の詳細を見る">
+                        <img src="images/instructor-clean-v2.jpg" alt="企業・行政向け研修会場" loading="lazy">
                         <div class="business-card-body">
                             <span class="business-card-label">企業・行政・団体向け</span>
                             <h3>研修・講師派遣</h3>
                             <p>AI活用、ICT、スマホ講座を目的や対象に合わせて企画・実施します。</p>
                             <span class="business-card-link">サービスを見る →</span>
-                        </div>
-                    </a>
-                    <a href="kit.html" class="business-card detail-link reveal d2" aria-label="AI講座 完全実施キットの詳細を見る">
-                        <img src="images/ai-school.png" alt="学生向けAI講座の様子" loading="lazy">
-                        <div class="business-card-body">
-                            <span class="business-card-label">学校・塾・自治体向け</span>
-                            <h3>AI講座 教材キット</h3>
-                            <p>AIに詳しくない先生でも授業を進められる、台本・ワーク付きの授業一式です。</p>
-                            <span class="business-card-link">先行案内を見る →</span>
                         </div>
                     </a>
                     <a href="video.html" class="business-card detail-link reveal d3" aria-label="映像制作・ドローン撮影の詳細を見る">
