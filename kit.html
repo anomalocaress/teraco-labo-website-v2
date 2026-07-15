@@ -18,6 +18,69 @@
     <meta name="twitter:title" content="AI講座 完全実施キット（塾・学校・自治体向け）| TERACO.LABO">
     <meta name="twitter:description" content="AIに詳しくない先生でも、明日から50分のAI授業ができる。現場で磨いた授業一式。">
 
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "Organization",
+          "@id": "https://teraco-labo.com/#organization",
+          "name": "TERACO.LABO",
+          "url": "https://teraco-labo.com/",
+          "email": "fujisaki@teraco-labo.com",
+          "address": {
+            "@type": "PostalAddress",
+            "addressLocality": "西都市",
+            "addressRegion": "宮崎県",
+            "streetAddress": "大字三宅9437-9",
+            "addressCountry": "JP"
+          }
+        },
+        {
+          "@type": "Service",
+          "@id": "https://teraco-labo.com/kit.html#service",
+          "name": "高校生のための『未来を描く』AI講座 完全実施キット",
+          "description": "授業用スライド、講師台本、ワークシート、時間配分、つまずき対応をまとめた、塾・学校・自治体向けのAI授業パッケージです。",
+          "provider": { "@id": "https://teraco-labo.com/#organization" },
+          "audience": {
+            "@type": "EducationalAudience",
+            "educationalRole": "teacher"
+          },
+          "areaServed": "JP"
+        },
+        {
+          "@type": "FAQPage",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "AIをほとんど使ったことがない講師でも実施できますか？",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "はい。台本は読むだけで進行が成立する詳細さで、操作画面・想定エラー・生徒への声かけまで記載します。導入時レクチャーも用意します。"
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "授業時間が50分ではないのですが対応できますか？",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "45分授業向けの調整表、90分版の進行案、30分の体験版構成を用意します。"
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "教材の編集やカスタマイズはできますか？",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "有料キットは購入した学校・教室内での授業に合わせてカスタマイズできます。教材そのものの再配布、転売、教材としての再販売はできません。"
+              }
+            }
+          ]
+        }
+      ]
+    }
+    </script>
+
     <!-- Google Analytics 4 -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-3GCZQ39LS1"></script>
     <script>
@@ -70,14 +133,18 @@
     .kit-hero .kit-sub { color: var(--body-text); max-width: 640px; margin: 0 auto 12px; }
     .kit-product-name {
         font-family: var(--font-serif); font-weight: 700; font-size: 1.1rem;
-        color: var(--forest-dark); margin-bottom: 34px;
+        color: var(--forest-dark); margin-bottom: 10px;
     }
+    .kit-launch-note { color: var(--tl-muted); font-size: .85rem; margin-bottom: 34px; }
     .kit-hero-ctas { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
     .kit-hero-trust {
         display: flex; gap: 10px 26px; justify-content: center; flex-wrap: wrap;
         margin-top: 36px; font-size: .85rem; color: var(--tl-muted);
     }
-    .kit-hero-trust span::before { content: "◆ "; color: var(--forest); font-size: .7em; vertical-align: 1px; }
+    .kit-hero-trust span::before {
+        content: ""; display: inline-block; width: 6px; height: 6px;
+        margin-right: 7px; background: var(--forest); transform: rotate(45deg); vertical-align: 2px;
+    }
 
     /* 課題 */
     .kit-pain-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; }
@@ -151,7 +218,7 @@
     .kit-pilot-box p { color: #c4cec7; max-width: 620px; margin: 0 auto 26px; font-size: .95rem; }
     .kit-pilot-box p strong { color: #fff; }
     .kit-pilot-terms { display: flex; gap: 10px 22px; justify-content: center; flex-wrap: wrap; margin-bottom: 30px; font-size: .87rem; color: #dfe6e1; }
-    .kit-pilot-terms span::before { content: "✓ "; color: #8fc3a4; font-weight: 700; }
+    .kit-pilot-terms span::before { content: "・"; color: #8fc3a4; font-weight: 700; }
     .kit-pilot-box .btn-forest { background: #fff; color: var(--deep); }
     .kit-pilot-box .btn-forest:hover { background: #e8e4d8; }
 
@@ -248,13 +315,14 @@
                 <h1>AIに詳しくない先生でも、<br>明日から50分のAI授業ができる。</h1>
                 <p class="kit-sub">スライド・講師台本・ワークシート・時間配分・つまずき対応まで。年間300講座の現場で磨いた「そのまま使える授業一式」です。</p>
                 <p class="kit-product-name">高校生のための「未来を描く」AI講座 完全実施キット</p>
+                <p class="kit-launch-note">正式提供は2026年9月以降を予定しています。開発・検証状況により時期を変更する場合があります。</p>
                 <div class="kit-hero-ctas">
                     <a class="btn-forest" href="#sample">サンプル単元を無料で受け取る</a>
                     <a class="btn-outline-forest" href="#pilot">導入について相談する</a>
                 </div>
                 <div class="kit-hero-trust">
                     <span>年間300講座・延べ1,000人以上を指導</span>
-                    <span>Google クチコミ 4.7★</span>
+                    <span>Google クチコミ 4.7 / 5</span>
                     <span>宮崎県西都市で教室を運営</span>
                 </div>
             </div>
@@ -361,7 +429,7 @@
                 </div>
                 <div class="kit-dev-flex reveal">
                     <div class="kit-dev-photo">
-                        <img src="images/fujisaki-profile.jpg" alt="TERACO.LABO 代表 藤﨑秀一" loading="lazy" onerror="this.style.display='none'">
+                        <img src="images/fujisaki-portrait.jpg" alt="TERACO.LABO 代表 藤﨑秀一" loading="lazy">
                     </div>
                     <div class="kit-dev-body">
                         <h3>藤﨑 秀一</h3>
@@ -371,7 +439,7 @@
                             <span class="kit-dev-chip">年間300講座・延べ1,000人指導</span>
                             <span class="kit-dev-chip">市役所等の委託講座 実施</span>
                             <span class="kit-dev-chip">小学生〜シニアまで指導経験</span>
-                            <span class="kit-dev-chip">Google クチコミ 4.7★</span>
+                            <span class="kit-dev-chip">Google クチコミ 4.7 / 5</span>
                         </div>
                     </div>
                 </div>
@@ -480,7 +548,8 @@
                     <div class="kit-form-response" id="kit-form-response" aria-live="polite"></div>
                     <p class="kit-form-privacy">
                         ご入力いただいた情報は、サンプル送付と教材のご案内以外には使用しません。<br>
-                        サンプル単元は授業でのお試し利用のみ可能です（編集・二次配布はご遠慮ください）。
+                        サンプル単元は授業でのお試し利用のみ可能です（編集・二次配布はご遠慮ください）。<br>
+                        <a href="privacy.html">プライバシーポリシー</a>
                     </p>
                 </form>
             </div>
@@ -520,16 +589,13 @@
         <div class="container">
             <p class="kit-f-brand">TERACO.LABO</p>
             <p>宮崎県西都市大字三宅9437-9｜<a href="mailto:fujisaki@teraco-labo.com">fujisaki@teraco-labo.com</a></p>
-            <p style="margin-top:10px">教室サイトはこちら → <a href="index.html">teraco-labo.com</a></p>
+            <p style="margin-top:10px"><a href="index.html">教室サイト</a>｜<a href="privacy.html">プライバシーポリシー</a></p>
         </div>
     </footer>
 
     <script>
     (function () {
         'use strict';
-
-        // EmailJS初期化（contact.html と同一基盤）
-        emailjs.init({ publicKey: "zcA2Cp6c3OstOeY5o" });
 
         // スクロールリビール
         var revealEls = document.querySelectorAll('.reveal');
@@ -551,6 +617,15 @@
         var form = document.getElementById('kit-sample-form');
         var submitBtn = document.getElementById('kit-submit-btn');
         var responseBox = document.getElementById('kit-form-response');
+
+        if (!window.emailjs) {
+            submitBtn.disabled = true;
+            responseBox.innerHTML = '<div class="error-message">現在フォームを利用できません。fujisaki@teraco-labo.com まで直接ご連絡ください。</div>';
+            return;
+        }
+
+        // EmailJS初期化（contact.html と同一基盤）
+        emailjs.init({ publicKey: "zcA2Cp6c3OstOeY5o" });
 
         form.addEventListener('submit', async function (e) {
             e.preventDefault();
@@ -589,6 +664,12 @@
                 await emailjs.send(EMAIL_SERVICE_ID, 'template_5p9czck', emailData);
                 await emailjs.send(EMAIL_SERVICE_ID, 'template_xmm6v7c', emailData);
                 responseBox.innerHTML = '<div class="success-message">ありがとうございます。確認メールをお送りしました。サンプル単元は2営業日以内にメールでお届けします。</div>';
+                if (typeof gtag === 'function') {
+                    gtag('event', 'generate_lead', {
+                        form_name: 'kit_sample_request',
+                        interest: interest
+                    });
+                }
                 form.reset();
             } catch (err) {
                 console.error('送信エラー:', err);
