@@ -23,7 +23,7 @@ function authorizeMe() {
 function doGet(e) {
   var p = (e && e.parameter) || {};
   var action = p.action || 'overview';
-  if (action === 'version') return jsonOut({ok: true, version: 'v46', timestamp: new Date().toISOString()});
+  if (action === 'version') return jsonOut({ok: true, version: 'v49', timestamp: new Date().toISOString()});
   if (action === 'overview') return jsonOut(getOverview(p.name || '', Number(p.days) || CONFIG.OVERVIEW_DAYS));
   if (action === 'admin_summary') return jsonOut(getAdminSummary(p.passcode));
   if (action === 'attendance_history') return jsonOut(getAttendanceHistory(p.passcode, p.name || '', p.email || '', Number(p.months) || 3));
