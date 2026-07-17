@@ -326,6 +326,13 @@ btnRefresh.addEventListener('click', () => {
     existingPanel.classList.add('hidden');
     existingList.innerHTML = '';
 
+    // ── 受講履歴パネルも非表示に ──
+    const myHistoryPanel = document.getElementById('myHistoryPanel');
+    if (myHistoryPanel) {
+      myHistoryPanel.classList.add('hidden');
+      document.getElementById('myHistoryContent').innerHTML = '';
+    }
+
     // ── 時間パネルを非表示に ──
     const timePanelWrap = document.getElementById('timePanelWrap');
     if (timePanelWrap) {
@@ -389,9 +396,13 @@ async function checkReservations() {
     // Load real data with shorter timeout
     await loadOverview({ preserveSelection: true });
 
+    // 1回の確認で「予約内容の確認」と「受講履歴」を両方表示する
+    loadMyHistory();
+
     if (state.existing.length === 0) {
-      alert('現在、登録されている予約はありません。');
       existingPanel.classList.add('hidden');
+      showMessage('現在、登録されている予約はありません。');
+      document.getElementById('myHistoryPanel')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     } else {
       existingPanel.classList.remove('hidden');
       // Scroll to existing panel
@@ -1507,17 +1518,88 @@ function renderAdminSummary(days) {
 
 // --- 受講履歴検索 ---
 
-let historyPeriodMonths = 3;
+let historyPeriodMonths = 3;    // 管理者側の受講履歴の期間
+let myHistoryPeriodMonths = 3;  // 予約者側の受講履歴の期間
 
-document.querySelectorAll('.history-period-btn').forEach(btn => {
+// 管理者側の期間ボタン
+document.querySelectorAll('#adminHistoryPeriodGroup .history-period-btn').forEach(btn => {
   btn.addEventListener('click', () => {
-    document.querySelectorAll('.history-period-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('#adminHistoryPeriodGroup .history-period-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     historyPeriodMonths = Number(btn.dataset.months);
   });
 });
 
+// 予約者側の期間ボタン（押したその場で再取得）
+document.querySelectorAll('#myHistoryPeriodGroup .history-period-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('#myHistoryPeriodGroup .history-period-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    myHistoryPeriodMonths = Number(btn.dataset.months);
+    loadMyHistory();
+  });
+});
+
 document.getElementById('btnHistorySearch').addEventListener('click', searchAttendanceHistory);
+
+/**
+ * 「受講履歴（過去）」と「今後の予約」を1回のリクエストでまとめて取得する。
+ * 個人情報をURLに載せないため POST を使う。
+ */
+async function fetchAttendanceData({ name, email, months, passcode }) {
+  const res = await fetch(API_BASE, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    body: JSON.stringify({
+      action: 'attendance_history',
+      name: name,
+      months: months,
+      passcode: passcode || null,
+      email: email || null
+    }),
+    mode: 'cors',
+    cache: 'no-cache',
+    redirect: 'follow'
+  });
+  if (!res.ok) throw new Error('サーバーが応答していません');
+  return await res.json();
+}
+
+// 予約者向け：予約確認と一緒に受講履歴を表示する
+async function loadMyHistory() {
+  const panel = document.getElementById('myHistoryPanel');
+  const content = document.getElementById('myHistoryContent');
+  if (!panel || !content) return;
+
+  if (!state.displayName) { panel.classList.add('hidden'); return; }
+  panel.classList.remove('hidden');
+
+  const adminCode = sessionStorage.getItem('teraco_admin_code');
+  const email = state.googleUser ? state.googleUser.email : '';
+
+  // 受講履歴はGoogleログインが必要（管理者はパスコードで免除）
+  if (!email && !adminCode) {
+    content.innerHTML = `<div style="text-align:center; padding:18px; color:#555; font-size:17px; background:#f5f5f5; border-radius:10px; line-height:1.7;">
+      受講履歴を見るには<br><strong>STEP 1 の「Google でログイン」</strong>を押してください。</div>`;
+    return;
+  }
+
+  content.innerHTML = '<div style="text-align:center; padding:16px; color:#999;">受講履歴を読み込み中...</div>';
+  try {
+    const data = await fetchAttendanceData({
+      name: state.displayName, email: email, months: myHistoryPeriodMonths, passcode: adminCode
+    });
+    content.innerHTML = '';
+    if (!data.ok) {
+      content.innerHTML = `<div style="text-align:center; padding:18px; color:#666; font-size:16px;">${data.message || '受講履歴を取得できませんでした。'}</div>`;
+      return;
+    }
+    renderHistoryInto(content, data);
+  } catch (e) {
+    console.error(e);
+    content.innerHTML = '<div style="text-align:center; padding:18px; color:#666; font-size:16px;">受講履歴の取得に失敗しました。電波の良い場所で再度お試しください。</div>';
+  }
+}
 
 async function searchAttendanceHistory() {
   const name = (document.getElementById('historyNameInput').value || '').trim();
@@ -1533,17 +1615,10 @@ async function searchAttendanceHistory() {
     return;
   }
 
-  setLoading(true, '受講履歴を検索しています...');
+  setLoading(true, '予約と受講履歴を検索しています...');
 
   try {
-    const url = new URL(API_BASE);
-    url.searchParams.append('action', 'attendance_history');
-    url.searchParams.append('passcode', code);
-    url.searchParams.append('name', name);
-    url.searchParams.append('months', String(historyPeriodMonths));
-
-    const res = await fetch(url.toString());
-    const data = await res.json();
+    const data = await fetchAttendanceData({ name: name, months: historyPeriodMonths, passcode: code });
 
     if (!data.ok) {
       alert(data.message || 'エラーが発生しました。');
@@ -1560,12 +1635,53 @@ async function searchAttendanceHistory() {
   }
 }
 
+// 管理者向け：1回の検索で「今後の予約」と「受講履歴」を両方表示
 function renderAttendanceHistory(data) {
   const panel = document.getElementById('historyResultPanel');
   const content = document.getElementById('historyResultContent');
   panel.classList.remove('hidden');
   content.innerHTML = '';
 
+  renderUpcomingInto(content, data);
+  renderHistoryInto(content, data);
+}
+
+// 今後の予約（予約内容の確認）を描画
+function renderUpcomingInto(content, data) {
+  const list = data.upcoming || [];
+
+  const head = document.createElement('div');
+  head.style.cssText = 'font-weight:bold; font-size:17px; margin-bottom:4px; padding:12px; background:var(--green-weak); border-radius:8px; color:var(--green-deep);';
+  head.textContent = `${data.name}さん ／ 今後の予約：${list.length}件`;
+  content.appendChild(head);
+
+  if (!list.length) {
+    const empty = document.createElement('div');
+    empty.style.cssText = 'text-align:center; padding:14px; color:#999; font-size:15px; margin-bottom:20px;';
+    empty.textContent = '今後の予約はありません。';
+    content.appendChild(empty);
+    return;
+  }
+
+  const box = document.createElement('div');
+  box.className = 'history-result-month';
+  box.style.marginTop = '8px';
+  list.forEach(ev => {
+    const d = new Date(ev.start);
+    const time = `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+    const item = document.createElement('div');
+    item.className = 'history-item';
+    item.innerHTML = `
+      <span class="history-item-date">${formatDayLabelFromKey(ev.start.slice(0, 10))} ${time}〜</span>
+      <span class="history-item-class">${ev.class_title || ev.label || ''}</span>
+    `;
+    box.appendChild(item);
+  });
+  content.appendChild(box);
+}
+
+// 受講履歴（過去）を月ごとに描画
+function renderHistoryInto(content, data) {
   const months = data.period_months || historyPeriodMonths;
   const periodLabel = months === 12 ? '1年' : `${months}ヶ月`;
   const total = data.total || 0;
@@ -1575,7 +1691,7 @@ function renderAttendanceHistory(data) {
 
   // サマリーヘッダー
   const summary = document.createElement('div');
-  summary.style.cssText = 'font-weight:bold; font-size:17px; margin-bottom:4px; padding:12px 12px 8px; background:#f5f5f5; border-radius:8px 8px 0 0; color:#333;';
+  summary.style.cssText = 'font-weight:bold; font-size:17px; margin:20px 0 4px; padding:12px 12px 8px; background:#f5f5f5; border-radius:8px 8px 0 0; color:#333;';
   summary.textContent = `${data.name}さん ／ 過去${periodLabel}の受講回数：${total}回`;
   content.appendChild(summary);
 

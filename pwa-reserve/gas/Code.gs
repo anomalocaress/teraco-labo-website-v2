@@ -1,4 +1,4 @@
-// TERACO予約システム v48 (コース別時間帯対応: 個人レッスン=月火木10-17/水金17のみ, グループ=水金10/14/16)
+// TERACO予約システム v49 (受講履歴＋今後の予約を1回で取得。予約者はGoogleログインで自分の履歴を閲覧可)
 
 var CONFIG = {
   TIMEZONE: 'Asia/Tokyo',
@@ -154,35 +154,49 @@ function getAdminSummary(passcode) {
 }
 
 /**
- * 管理者用：指定した受講者の過去の受講履歴を取得
- * @param {string} passcode  管理者パスコード
+ * 「受講履歴（過去）」と「予約内容の確認（今後）」を1回でまとめて取得
+ * - 管理者：パスコードが一致すれば任意の受講者を検索できる
+ * - 予約者：Googleログイン（メールアドレス）が必要。未ログインなら履歴は返さない
+ * @param {string} passcode  管理者パスコード（予約者は空）
  * @param {string} name      検索する受講者名
- * @param {string} email     受講者のメールアドレス（省略可）
+ * @param {string} email     Googleログインのメールアドレス（予約者は必須）
  * @param {number} months    遡る月数（1/3/6/12）
  */
 function getAttendanceHistory(passcode, name, email, months) {
-  if (passcode !== CONFIG.ADMIN_PASSCODE) return { ok: false, message: 'パスコードが正しくありません' };
+  var isAdmin = (passcode && passcode === CONFIG.ADMIN_PASSCODE);
   if (!name || !name.trim()) return { ok: false, message: '検索する名前を入力してください' };
+
+  var mail = (email || '').trim();
+  // 予約者が受講履歴を見るにはGoogleログインが必要（管理者はパスコードで免除）
+  if (!isAdmin && !mail) {
+    return { ok: false, need_login: true, message: '受講履歴を見るには、Googleでログインしてください。' };
+  }
 
   var cal = CalendarApp.getCalendarById(CONFIG.CALENDAR_ID);
   var now = new Date();
-  var end = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1); // 今日を含める
+  var todayS = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   var start = new Date(now.getFullYear(), now.getMonth() - months, now.getDate());
-
   var userName = name.trim();
-  var events = findUserEvents(cal, userName, start, end, email || '');
 
-  // 日付の新しい順にソート
-  events.sort(function(a, b) { return new Date(b.start).getTime() - new Date(a.start).getTime(); });
+  // 受講履歴（指定期間前 〜 現在）
+  var history = findUserEvents(cal, userName, start, now, mail);
+  history.sort(function(a, b) { return new Date(b.start).getTime() - new Date(a.start).getTime(); });
+
+  // 予約内容の確認（現在 〜 120日先）
+  var upcoming = findUserEvents(cal, userName, now, addDays(todayS, 120), mail);
+  upcoming.sort(function(a, b) { return new Date(a.start).getTime() - new Date(b.start).getTime(); });
 
   return {
     ok: true,
     name: userName,
-    history: events,
-    total: events.length,
+    is_admin: !!isAdmin,
+    history: history,
+    total: history.length,
+    upcoming: upcoming,
+    upcoming_total: upcoming.length,
     period_months: months,
     period_start: Utilities.formatDate(start, CONFIG.TIMEZONE, 'yyyy/MM/dd'),
-    period_end: Utilities.formatDate(new Date(end.getTime() - 24 * 60 * 60 * 1000), CONFIG.TIMEZONE, 'yyyy/MM/dd')
+    period_end: Utilities.formatDate(now, CONFIG.TIMEZONE, 'yyyy/MM/dd')
   };
 }
 

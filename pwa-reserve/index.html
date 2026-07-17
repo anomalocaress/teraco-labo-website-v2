@@ -960,6 +960,18 @@
               style="color:var(--error); border-color:var(--error);">選択した予約を取り消す</button>
           </div>
         </div>
+
+        <!-- 受講履歴（予約者向け・Googleログイン時のみ表示） -->
+        <div id="myHistoryPanel" class="hidden" style="margin-top:28px; border-top:2px solid #eee; padding-top:20px;">
+          <h3>これまでの受講履歴</h3>
+          <div class="history-period-group" id="myHistoryPeriodGroup">
+            <button class="history-period-btn" data-months="1">1ヶ月</button>
+            <button class="history-period-btn active" data-months="3">3ヶ月</button>
+            <button class="history-period-btn" data-months="6">6ヶ月</button>
+            <button class="history-period-btn" data-months="12">1年</button>
+          </div>
+          <div id="myHistoryContent" style="margin-top:16px;"></div>
+        </div>
       </div>
 
       <!-- Admin Dashboard Panel -->
@@ -985,7 +997,7 @@
             <h3>📋 受講履歴検索</h3>
             <input type="text" id="historyNameInput" placeholder="例：田中花子"
               style="font-size:18px; padding:14px; border:2px solid #ccc; border-radius:10px; width:100%; margin-bottom:12px;">
-            <div class="history-period-group">
+            <div class="history-period-group" id="adminHistoryPeriodGroup">
               <button class="history-period-btn" data-months="1">1ヶ月</button>
               <button class="history-period-btn active" data-months="3">3ヶ月</button>
               <button class="history-period-btn" data-months="6">6ヶ月</button>
@@ -1025,7 +1037,7 @@
     <div class="spinner"></div>
     <div id="loadingText">処理中です...</div>
   </div>
-  <script src="main.js?v=44.0"></script>
+  <script src="main.js?v=44.1"></script>
   <script>if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js'); }</script>
 </body>
 
