@@ -1648,7 +1648,9 @@ function renderAttendanceHistory(data) {
 
 // 今後の予約（予約内容の確認）を描画
 function renderUpcomingInto(content, data) {
-  const list = data.upcoming || [];
+  // GAS未再デプロイ（旧版）では upcoming が返らない。誤って「0件」と出さないよう非表示にする
+  if (!Array.isArray(data.upcoming)) return;
+  const list = data.upcoming;
 
   const head = document.createElement('div');
   head.style.cssText = 'font-weight:bold; font-size:17px; margin-bottom:4px; padding:12px; background:var(--green-weak); border-radius:8px; color:var(--green-deep);';
