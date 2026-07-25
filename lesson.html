@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>個人レッスン（マンツーマン50分）西都市｜TERACO.LABO</title>
-    <meta name="description" content="TERACO.LABOの個人レッスン。マンツーマン50分、聞きたいことだけをその場で解決。スマホ・パソコン・AIまで、火曜・木曜の予約制。入会金なし。宮崎県西都市。">
+    <meta name="description" content="TERACO.LABOの個人レッスン。マンツーマン50分・単発8,000円から、月謝制・チケット制もご用意。スマホ・パソコン・AIまで聞きたいことだけをその場で解決。入会金なし。宮崎県西都市。">
     <link rel="canonical" href="https://teraco-labo.com/lesson.html">
 
     <!-- OGP -->
@@ -17,6 +17,42 @@
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="個人レッスン（マンツーマン50分） | TERACO.LABO">
     <meta name="twitter:description" content="聞きたいことだけを50分。あなたのペースでマンツーマン。宮崎県西都市。">
+
+    <!-- JSON-LD: 個人レッスンの料金 -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Service",
+      "name": "個人レッスン（マンツーマン50分）",
+      "serviceType": "スマホ・パソコン・AIの個人指導",
+      "description": "スマホ・タブレット・パソコン・AIのお困りごとを、1回50分の完全マンツーマンで解決する個人レッスンです。入会金なし。",
+      "provider": {
+        "@type": "LocalBusiness",
+        "name": "TERACO.LABO",
+        "url": "https://teraco-labo.com/",
+        "telephone": "090-6738-1469",
+        "address": {
+          "@type": "PostalAddress",
+          "addressCountry": "JP",
+          "addressRegion": "宮崎県",
+          "addressLocality": "西都市",
+          "streetAddress": "大字三宅9437-9"
+        }
+      },
+      "areaServed": { "@type": "AdministrativeArea", "name": "宮崎県西都市" },
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "個人レッスン 料金プラン",
+        "itemListElement": [
+          {"@type": "Offer", "name": "単発受講（50分×1回）", "price": "8000", "priceCurrency": "JPY"},
+          {"@type": "Offer", "name": "月間2回コース（50分×2回）", "price": "14000", "priceCurrency": "JPY"},
+          {"@type": "Offer", "name": "月間4回コース（50分×4回）", "price": "24000", "priceCurrency": "JPY"},
+          {"@type": "Offer", "name": "4回チケット（有効期限6ヶ月）", "price": "24000", "priceCurrency": "JPY"},
+          {"@type": "Offer", "name": "8回チケット（有効期限1年）", "price": "45000", "priceCurrency": "JPY"}
+        ]
+      }
+    }
+    </script>
 
     <!-- Google Analytics 4 -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-3GCZQ39LS1"></script>
@@ -64,6 +100,29 @@
     }
     .lsn-step h4 { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
     .lsn-step p { font-size: 13px; color: var(--body-text); line-height: 1.85; }
+
+    /* 料金グループ見出し */
+    .lsn-price-group { margin-bottom: 38px; }
+    .lsn-price-group:last-of-type { margin-bottom: 0; }
+    .lsn-price-group-title {
+        font-size: 15px; font-weight: 700; color: var(--forest);
+        text-align: center; margin-bottom: 18px;
+        padding-bottom: 10px; border-bottom: 1px solid var(--tl-border);
+    }
+    .lsn-price-group-title small {
+        display: block; font-size: 12px; font-weight: 400;
+        color: var(--tl-muted); margin-top: 4px; letter-spacing: 0;
+    }
+    /* おすすめ・一番お得のバッジ */
+    .lsn-badge {
+        display: inline-block; align-self: center;
+        background: var(--forest); color: var(--white);
+        font-size: 11px; font-weight: 700; letter-spacing: .06em;
+        padding: 3px 12px; border-radius: 999px; margin-bottom: 10px;
+    }
+    .lsn-badge--best { background: var(--deep); }
+    .lsn-price-card-spacer { height: 23px; }
+    .lsn-unit { font-size: 13px; font-weight: 700; color: var(--forest); margin-bottom: 8px; }
     </style>
 </head>
 <body>
@@ -227,7 +286,7 @@
             <div class="container">
                 <div class="tl-head reveal">
                     <h2 class="tl-title">開講日時</h2>
-                    <p class="tl-desc">ご予約時に、時間は個別に調整いたします。</p>
+                    <p class="tl-desc">下記が基本の受付日ですが、他の曜日・時間もご相談ください。</p>
                 </div>
                 <div class="lsn-schedule-wrap reveal">
                     <table class="lsn-schedule">
@@ -249,18 +308,92 @@
                     </table>
                 </div>
                 <div class="notice-box reveal" style="max-width:640px;margin:30px auto 0;">
-                    <h4>料金について</h4>
+                    <h4>日程について</h4>
                     <ul>
-                        <li>入会金はいただきません</li>
-                        <li>教室の会員さまは割引がございます</li>
-                        <li>料金はご予約時にご案内いたします。まずはお気軽にご相談ください</li>
+                        <li>上記が基本の受付日です。他の曜日・時間もご都合に合わせて調整できる場合がありますので、まずはご相談ください</li>
+                        <li>ご予約のたびに日時を決められるので、決まった曜日に通えない方でも続けられます</li>
                     </ul>
                 </div>
             </div>
         </section>
 
+        <!-- 料金 -->
+        <section class="tl-section" id="price">
+            <div class="container">
+                <div class="tl-head reveal">
+                    <h2 class="tl-title">料金</h2>
+                    <p class="tl-desc">1回50分、完全マンツーマン。通い方に合わせて3つの払い方から選べます。</p>
+                </div>
+
+                <div class="lsn-price-group reveal">
+                    <div class="lsn-price-group-title">
+                        都度払い・月謝制
+                        <small>まずは1回だけ、も歓迎です</small>
+                    </div>
+                    <div class="pricing-grid2">
+                        <div class="price-card">
+                            <div class="lsn-price-card-spacer"></div>
+                            <h4>単発受講</h4>
+                            <div class="price-amount">8,000円</div>
+                            <div class="price-detail">50分 × 1回<br>困ったその時に、1回だけ</div>
+                            <a class="btn-forest" href="contact.html?service=lesson">相談・予約する</a>
+                        </div>
+                        <div class="price-card">
+                            <div class="lsn-price-card-spacer"></div>
+                            <h4>月間2回コース</h4>
+                            <div class="price-amount">14,000円</div>
+                            <div class="price-detail">50分 × 月2回<br>1回あたり 7,000円</div>
+                            <a class="btn-forest" href="contact.html?service=lesson">相談・予約する</a>
+                        </div>
+                        <div class="price-card">
+                            <span class="lsn-badge">おすすめ</span>
+                            <h4>月間4回コース</h4>
+                            <div class="price-amount">24,000円</div>
+                            <div class="price-detail">50分 × 月4回<br>1回あたり 6,000円</div>
+                            <a class="btn-forest" href="contact.html?service=lesson">相談・予約する</a>
+                        </div>
+                    </div>
+                    <div class="price-note">
+                        ・月謝制は当月内の回数消化となります。
+                    </div>
+                </div>
+
+                <div class="lsn-price-group reveal">
+                    <div class="lsn-price-group-title">
+                        チケット制（まとめ買い）
+                        <small>ご自分のペースで、期限内に使えます</small>
+                    </div>
+                    <div class="pricing-grid2" style="max-width:660px;margin:0 auto;">
+                        <div class="price-card">
+                            <div class="lsn-price-card-spacer"></div>
+                            <h4>4回チケット</h4>
+                            <div class="price-amount">24,000円</div>
+                            <div class="price-detail">50分 × 4回／1回あたり 6,000円<br>有効期限：購入日から6ヶ月間</div>
+                            <a class="btn-forest" href="contact.html?service=lesson">相談・予約する</a>
+                        </div>
+                        <div class="price-card">
+                            <span class="lsn-badge lsn-badge--best">一番お得</span>
+                            <h4>8回チケット</h4>
+                            <div class="price-amount">45,000円</div>
+                            <div class="price-detail">50分 × 8回／1回あたり 5,625円<br>有効期限：購入日から1年間</div>
+                            <a class="btn-forest" href="contact.html?service=lesson">相談・予約する</a>
+                        </div>
+                    </div>
+                    <div class="price-note">
+                        ・有効期限：4回チケットは購入日から6ヶ月間、8回チケットは1年間です。
+                    </div>
+                </div>
+
+                <div class="price-note reveal" style="max-width:660px;margin:28px auto 0;">
+                    ・表示価格はすべて税込です。<br>
+                    ・個人レッスンは<strong>入会金なし</strong>でご利用いただけます。<br>
+                    ・スマホ・タブレット・パソコン・AI、どの内容でも同じ料金です。
+                </div>
+            </div>
+        </section>
+
         <!-- お客様の声 -->
-        <section class="tl-section" aria-label="お客様の声">
+        <section class="tl-section bg-white" aria-label="お客様の声">
             <div class="container">
                 <div class="tl-head reveal">
                     <h2 class="tl-title">お客様の声</h2>
@@ -286,7 +419,7 @@
         </section>
 
         <!-- お問い合わせ -->
-        <section class="tl-section bg-white">
+        <section class="tl-section">
             <div class="container">
                 <div class="contact-band reveal">
                     <h3>個人レッスンのご予約・ご相談</h3>
@@ -302,6 +435,7 @@
                     </div>
                     <div class="contact-info2">
                         fujisaki@teraco-labo.com｜090-6738-1469<br>
+                        お電話の受付時間：平日 10:00〜18:00（土日祝休）<br>
                         宮崎県西都市大字三宅9437-9
                     </div>
                 </div>
@@ -318,7 +452,7 @@
         <div class="container">
             <div class="access-grid reveal">
                 <div>
-                    <h2 class="access-heading">見学・体験、いつでもどうぞ。</h2>
+                    <h2 class="access-heading">無料見学・ご相談、いつでもどうぞ。</h2>
                     <div class="access-info">
                         <a href="https://maps.google.com/?q=宮崎県西都市大字三宅9437-9" target="_blank" rel="noopener">宮崎県西都市大字三宅9437-9（駐車場あり）</a>
                         <span>電話 <a href="tel:090-6738-1469">090-6738-1469</a>｜メール <a href="mailto:fujisaki@teraco-labo.com">fujisaki@teraco-labo.com</a></span>
