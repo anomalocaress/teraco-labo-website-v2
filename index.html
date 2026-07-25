@@ -201,7 +201,7 @@
     .hero2 {
         position: relative;
         margin-top: var(--header-h);
-        height: 460px;
+        height: 540px;
         overflow: hidden;
     }
     .hero2-img {
@@ -216,7 +216,7 @@
     .hero2-content {
         position: relative; z-index: 1;
         height: 100%;
-        display: flex; flex-direction: column; justify-content: center; gap: 1rem;
+        display: flex; flex-direction: column; justify-content: center; gap: 0.85rem;
         max-width: 580px;
     }
     .hero2-eyebrow {
@@ -227,7 +227,18 @@
         font-family: var(--font-serif); font-size: 38px; line-height: 1.55; font-weight: 700;
         color: var(--tl-text);
     }
+    .hero2-topics {
+        display: flex; flex-wrap: wrap; gap: 8px; list-style: none; margin: 0; padding: 0;
+    }
+    .hero2-topics li {
+        background: rgba(255,255,255,.72);
+        border: 1px solid var(--chip-border);
+        border-radius: 999px; padding: 6px 15px;
+        font-size: 13.5px; font-weight: 700; color: var(--forest-dark);
+        backdrop-filter: blur(2px);
+    }
     .hero2-lead { font-size: 16px; line-height: 2; color: var(--body-text); }
+    .hero2-place { font-size: 13px; color: var(--tl-muted); letter-spacing: .01em; }
     .hero2-actions { display: flex; gap: 0.85rem; flex-wrap: wrap; margin-top: 0.4rem; }
 
     .btn-forest, .btn-line-solid {
@@ -655,9 +666,16 @@
             <div class="hero2-gradient" aria-hidden="true"></div>
             <div class="container">
                 <div class="hero2-content">
-                    <p class="hero2-eyebrow">まちのデジタル寺子屋 ─ 宮崎県西都市</p>
+                    <p class="hero2-eyebrow">まちのデジタル寺子屋</p>
                     <h1 class="hero2-title">わからないこと、<br>何度でも聞いていい教室です。</h1>
-                    <p class="hero2-lead">スマホをはじめて持つ方も、AIを学びたい方も。<br>2〜8名の少人数で、あなたのペースに合わせます。</p>
+                    <ul class="hero2-topics" aria-label="学べる内容">
+                        <li>スマホ・タブレット</li>
+                        <li>パソコン</li>
+                        <li>AI・ChatGPT</li>
+                        <li>個人レッスン</li>
+                    </ul>
+                    <p class="hero2-lead">はじめての方も、もっと使いこなしたい方も。<br>2〜8名の少人数で、あなたのペースに合わせます。</p>
+                    <p class="hero2-place">宮崎県西都市の教室（駐車場あり）｜県内は出張も承ります</p>
                     <div class="hero2-actions">
                         <a href="#services" class="btn-forest btn-green">教室のご案内を見る</a>
                         <a href="https://lin.ee/tkYJ7Cw" class="btn-line-solid btn-line" target="_blank" rel="noopener" aria-label="LINEで気軽に相談する（外部リンク）">LINEで気軽に相談</a>
