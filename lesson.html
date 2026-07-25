@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>個人レッスン（マンツーマン50分）西都市｜TERACO.LABO</title>
+    <meta name="description" content="TERACO.LABOの個人レッスン。マンツーマン50分、聞きたいことだけをその場で解決。スマホ・パソコン・AIまで、火曜・木曜の予約制。入会金なし。宮崎県西都市。">
+    <link rel="canonical" href="https://teraco-labo.com/lesson.html">
+
+    <!-- OGP -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://teraco-labo.com/lesson.html">
+    <meta property="og:title" content="個人レッスン（マンツーマン50分） | TERACO.LABO">
+    <meta property="og:description" content="聞きたいことだけを50分。スマホ・パソコン・AIのお困りごとを、あなたのペースでマンツーマン。宮崎県西都市。">
+    <meta property="og:image" content="https://teraco-labo.com/images/smartphone-class.png">
+    <meta property="og:locale" content="ja_JP">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="個人レッスン（マンツーマン50分） | TERACO.LABO">
+    <meta name="twitter:description" content="聞きたいことだけを50分。あなたのペースでマンツーマン。宮崎県西都市。">
+
+    <!-- Google Analytics 4 -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-3GCZQ39LS1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-3GCZQ39LS1');
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700;900&family=Shippori+Mincho:wght@600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="theme-warm.css">
+
+    <style>
+    /* lesson.html 固有：開講スケジュール表（接頭辞 lsn- で衝突回避） */
+    .lsn-schedule-wrap { overflow-x: auto; }
+    .lsn-schedule {
+        border-collapse: collapse; width: 100%; background: var(--white);
+        border-radius: 14px; overflow: hidden; box-shadow: var(--shadow-card);
+    }
+    .lsn-schedule th, .lsn-schedule td {
+        padding: 14px 18px; text-align: left; font-size: 14px;
+        border-bottom: 1px solid var(--tl-border);
+    }
+    .lsn-schedule th {
+        background: var(--forest); color: var(--white);
+        font-weight: 700; font-size: 13px; letter-spacing: .06em;
+    }
+    .lsn-schedule tbody tr:last-child td { border-bottom: none; }
+    .lsn-schedule td:first-child { font-weight: 700; color: var(--forest); white-space: nowrap; }
+    .lsn-schedule td small { display: block; color: var(--tl-muted); font-size: 12px; margin-top: 2px; }
+
+    /* 3ステップ */
+    .lsn-steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 18px; }
+    .lsn-step {
+        background: var(--white); border: 1px solid var(--tl-border); border-radius: 14px;
+        padding: 24px 22px; box-shadow: var(--shadow-card);
+    }
+    .lsn-step-num {
+        font-family: var(--font-serif); font-size: 13px; font-weight: 700;
+        color: var(--forest); letter-spacing: .12em; margin-bottom: 8px;
+    }
+    .lsn-step h4 { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+    .lsn-step p { font-size: 13px; color: var(--body-text); line-height: 1.85; }
+    </style>
+</head>
+<body>
+    <a href="#main-content" class="skip-link">メインコンテンツへスキップ</a>
+
+    <header>
+        <nav>
+            <div class="container">
+                <div class="logo">
+                    <a href="index.html" aria-label="TERACO.LABO トップページへ">
+                        <img src="images/teraco-labo-logo-main.png" alt="TERACO.LABO ロゴ">
+                    </a>
+                </div>
+                <div class="nav-wrap" id="nav-wrap">
+                    <ul class="nav-menu" id="nav-menu" role="menubar">
+                        <li role="none"><a href="index.html#services" role="menuitem">教室のご案内</a></li>
+                        <li role="none"><a href="instructor.html" role="menuitem">法人・行政の方</a></li>
+                        <li role="none"><a href="lesson.html" role="menuitem" class="active">個人レッスン</a></li>
+                        <li role="none"><a href="index.html#about" role="menuitem">代表紹介</a></li>
+                        <li role="none"><a href="index.html#faq" role="menuitem">よくある質問</a></li>
+                    </ul>
+                    <a href="https://lin.ee/tkYJ7Cw" class="nav-line-btn" target="_blank" rel="noopener" aria-label="LINEで相談する（外部リンク）">LINEで相談</a>
+                </div>
+                <button
+                    class="mobile-menu-toggle"
+                    id="menu-toggle"
+                    aria-label="メニューを開く"
+                    aria-expanded="false"
+                    aria-controls="nav-wrap"
+                >
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <main id="main-content">
+
+        <!-- ページヒーロー -->
+        <div class="page-hero">
+            <div class="container">
+                <img class="page-hero-photo reveal" src="images/smartphone-class.png" alt="マンツーマンで学ぶ個人レッスンの様子">
+                <div class="page-hero-inner reveal">
+                    <p class="page-eyebrow">個人向け｜マンツーマン50分</p>
+                    <h1 class="page-title">個人レッスン</h1>
+                    <p class="page-lead">聞きたいことだけを、50分。<br>あなたの「困った」に合わせて進める、完全マンツーマンのレッスンです</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- こんな方に -->
+        <section class="tl-section">
+            <div class="container">
+                <div class="tl-head reveal">
+                    <h2 class="tl-title">こんな方におすすめです</h2>
+                    <p class="tl-desc">グループ講座とは別に、あなただけの時間をご用意します。</p>
+                </div>
+                <div class="text-card-grid">
+                    <div class="text-card reveal">
+                        <h4>みんなの前では聞きにくい</h4>
+                        <p>「こんなこと聞いていいのかな」と遠慮してしまう方。誰も見ていないので、何度でもどうぞ。</p>
+                    </div>
+                    <div class="text-card reveal">
+                        <h4>困りごとがはっきりしている</h4>
+                        <p>「この設定だけ直したい」「このアプリだけ使えるようになりたい」など、目的が決まっている方。</p>
+                    </div>
+                    <div class="text-card reveal">
+                        <h4>自分のペースで進めたい</h4>
+                        <p>まわりに合わせず、ゆっくりでも早くでも。あなたの理解に合わせて進みます。</p>
+                    </div>
+                    <div class="text-card reveal">
+                        <h4>決まった曜日に通いにくい</h4>
+                        <p>お仕事やご都合に合わせて、ご予約のたびに日時を調整できます。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 相談できること -->
+        <section class="tl-section bg-white">
+            <div class="container">
+                <div class="tl-head reveal">
+                    <h2 class="tl-title">相談できること</h2>
+                    <p class="tl-desc">スマホ・タブレット・パソコン・AIまで、何でもご相談ください。</p>
+                </div>
+                <div class="feature-grid">
+                    <div class="feature-card2 reveal">
+                        <h4>スマホ・タブレット</h4>
+                        <ul>
+                            <li>基本操作・文字入力</li>
+                            <li>LINE・メール・電話</li>
+                            <li>写真・動画の撮影と整理</li>
+                            <li>キャッシュレス決済</li>
+                            <li>アプリの入れ方・使い方</li>
+                        </ul>
+                    </div>
+                    <div class="feature-card2 reveal">
+                        <h4>パソコン</h4>
+                        <ul>
+                            <li>文書・表計算の基本</li>
+                            <li>インターネット・メール</li>
+                            <li>ファイルの整理・保存</li>
+                            <li>印刷・スキャン</li>
+                            <li>写真や動画の取り込み</li>
+                        </ul>
+                    </div>
+                    <div class="feature-card2 reveal">
+                        <h4>AI・ChatGPT</h4>
+                        <ul>
+                            <li>AIの始め方・使い方</li>
+                            <li>調べもの・文章づくり</li>
+                            <li>画像生成を試してみる</li>
+                            <li>仕事や趣味への活かし方</li>
+                            <li>安全な使い方・注意点</li>
+                        </ul>
+                    </div>
+                    <div class="feature-card2 reveal">
+                        <h4>お困りごと・トラブル</h4>
+                        <ul>
+                            <li>機種変更後の設定</li>
+                            <li>データの移行・バックアップ</li>
+                            <li>パスワードの管理</li>
+                            <li>迷惑メール・詐欺対策</li>
+                            <li>「急に使えなくなった」の解決</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- レッスンの流れ -->
+        <section class="tl-section">
+            <div class="container">
+                <div class="tl-head reveal">
+                    <h2 class="tl-title">レッスンの流れ</h2>
+                </div>
+                <div class="lsn-steps">
+                    <div class="lsn-step reveal">
+                        <div class="lsn-step-num">STEP 1</div>
+                        <h4>ご予約</h4>
+                        <p>お電話・LINE・フォームからご連絡ください。ご希望の曜日と時間帯をうかがって日時を調整します。</p>
+                    </div>
+                    <div class="lsn-step reveal">
+                        <div class="lsn-step-num">STEP 2</div>
+                        <h4>当日・50分のレッスン</h4>
+                        <p>お使いの機器をお持ちください。困っていることをお聞きして、その場で一緒に解決していきます。</p>
+                    </div>
+                    <div class="lsn-step reveal">
+                        <div class="lsn-step-num">STEP 3</div>
+                        <h4>おさらい</h4>
+                        <p>大事なところは手順をメモにしてお渡しします。次に困ったときも、ひとりで進められるように。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 開講日時 -->
+        <section class="tl-section bg-white" id="schedule">
+            <div class="container">
+                <div class="tl-head reveal">
+                    <h2 class="tl-title">開講日時</h2>
+                    <p class="tl-desc">ご予約時に、時間は個別に調整いたします。</p>
+                </div>
+                <div class="lsn-schedule-wrap reveal">
+                    <table class="lsn-schedule">
+                        <thead>
+                            <tr><th>曜日</th><th>時間帯</th><th>レッスン時間</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>火曜日</td>
+                                <td>午前 10:00〜12:00／午後 14:00〜17:00<small>この時間内でご予約時に調整します</small></td>
+                                <td>50分（マンツーマン）</td>
+                            </tr>
+                            <tr>
+                                <td>木曜日</td>
+                                <td>午前 10:00〜12:00／午後 14:00〜17:00<small>この時間内でご予約時に調整します</small></td>
+                                <td>50分（マンツーマン）</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="notice-box reveal" style="max-width:640px;margin:30px auto 0;">
+                    <h4>料金について</h4>
+                    <ul>
+                        <li>入会金はいただきません</li>
+                        <li>教室の会員さまは割引がございます</li>
+                        <li>料金はご予約時にご案内いたします。まずはお気軽にご相談ください</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- お客様の声 -->
+        <section class="tl-section" aria-label="お客様の声">
+            <div class="container">
+                <div class="tl-head reveal">
+                    <h2 class="tl-title">お客様の声</h2>
+                </div>
+                <div class="voice-grid2">
+                    <div class="voice-card2 reveal">
+                        <div class="stars">★★★★★</div>
+                        <p class="voice-text2">グループだと質問しづらくて個人レッスンに。聞きたいことだけをその場で解決できるので、50分があっという間です。</p>
+                        <div class="voice-meta2">60代 女性｜月1回ペースで受講</div>
+                    </div>
+                    <div class="voice-card2 reveal">
+                        <div class="stars">★★★★★</div>
+                        <p class="voice-text2">機種変更したあとの設定が全部わからなくなって駆け込みました。その日のうちに元どおり使えるようになって助かりました。</p>
+                        <div class="voice-meta2">70代 男性｜単発で受講</div>
+                    </div>
+                    <div class="voice-card2 reveal">
+                        <div class="stars">★★★★★</div>
+                        <p class="voice-text2">仕事でAIを使いたくて相談。私の業務に合わせた使い方を一緒に考えてもらえたのが良かったです。</p>
+                        <div class="voice-meta2">40代 女性｜AI活用の相談</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- お問い合わせ -->
+        <section class="tl-section bg-white">
+            <div class="container">
+                <div class="contact-band reveal">
+                    <h3>個人レッスンのご予約・ご相談</h3>
+                    <p>「こんなことでも大丈夫？」というご相談も歓迎です。<br>ご希望の曜日・時間帯をお聞かせください。</p>
+                    <div class="contact-actions2">
+                        <a href="contact.html?service=lesson" class="btn-forest">メールで予約・相談</a>
+                        <a href="tel:090-6738-1469" class="btn-outline-forest">電話する</a>
+                        <a href="https://lin.ee/tkYJ7Cw" target="_blank" rel="noopener" class="btn-line-solid">LINEで相談</a>
+                    </div>
+                    <div class="contact-qr-small">
+                        <img src="images/line-qr.png" alt="LINE友達追加QRコード">
+                        <span>QRコードでも追加できます</span>
+                    </div>
+                    <div class="contact-info2">
+                        fujisaki@teraco-labo.com｜090-6738-1469<br>
+                        宮崎県西都市大字三宅9437-9
+                    </div>
+                </div>
+                <div class="back-to-top">
+                    <a href="index.html">← TOPへ戻る</a>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- アクセス + フッター -->
+    <footer class="access-footer">
+        <div class="container">
+            <div class="access-grid reveal">
+                <div>
+                    <h2 class="access-heading">見学・体験、いつでもどうぞ。</h2>
+                    <div class="access-info">
+                        <a href="https://maps.google.com/?q=宮崎県西都市大字三宅9437-9" target="_blank" rel="noopener">宮崎県西都市大字三宅9437-9（駐車場あり）</a>
+                        <span>電話 <a href="tel:090-6738-1469">090-6738-1469</a>｜メール <a href="mailto:fujisaki@teraco-labo.com">fujisaki@teraco-labo.com</a></span>
+                    </div>
+                    <div class="access-actions">
+                        <a href="https://lin.ee/tkYJ7Cw" class="btn-line-footer" target="_blank" rel="noopener" aria-label="LINEで相談する（外部リンク）">LINEで相談する</a>
+                        <a href="contact.html" class="btn-outline-footer">お問い合わせフォーム</a>
+                    </div>
+                </div>
+                <div class="access-qr">
+                    <img src="images/line-qr.png" alt="LINE QRコード" width="110" height="110" loading="lazy">
+                    <span>QRからLINE友だち追加</span>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <span>&copy; 2025 TERACO.LABO. All rights reserved.</span>
+                <a href="https://teraco-labo.github.io/line-outou/" class="footer-library-link" target="_blank" rel="noopener">てらこ図書館</a>
+            </div>
+        </div>
+    </footer>
+
+    <div class="sticky-cta" role="group" aria-label="お問い合わせ手段">
+        <a href="tel:090-6738-1469" class="sticky-btn sticky-btn-phone" aria-label="電話で問い合わせ：090-6738-1469">
+            電話する
+        </a>
+        <a href="https://lin.ee/tkYJ7Cw" class="sticky-btn sticky-btn-line" target="_blank" rel="noopener" aria-label="LINEで相談する（外部リンク）">
+            LINEで相談
+        </a>
+    </div>
+
+    <script>
+    (function () {
+        'use strict';
+
+        var toggle = document.getElementById('menu-toggle');
+        var wrap   = document.getElementById('nav-wrap');
+
+        if (toggle && wrap) {
+            toggle.addEventListener('click', function () {
+                var open = wrap.classList.toggle('active');
+                toggle.classList.toggle('active', open);
+                toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+                toggle.setAttribute('aria-label', open ? 'メニューを閉じる' : 'メニューを開く');
+            });
+
+            wrap.querySelectorAll('a').forEach(function (a) {
+                a.addEventListener('click', function () {
+                    wrap.classList.remove('active');
+                    toggle.classList.remove('active');
+                    toggle.setAttribute('aria-expanded', 'false');
+                    toggle.setAttribute('aria-label', 'メニューを開く');
+                });
+            });
+
+            document.addEventListener('click', function (e) {
+                if (!toggle.contains(e.target) && !wrap.contains(e.target)) {
+                    wrap.classList.remove('active');
+                    toggle.classList.remove('active');
+                    toggle.setAttribute('aria-expanded', 'false');
+                }
+            });
+
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape' && wrap.classList.contains('active')) {
+                    wrap.classList.remove('active');
+                    toggle.classList.remove('active');
+                    toggle.setAttribute('aria-expanded', 'false');
+                    toggle.focus();
+                }
+            });
+        }
+
+        var revealEls = document.querySelectorAll('.reveal');
+        if ('IntersectionObserver' in window && revealEls.length) {
+            var io = new IntersectionObserver(function (entries) {
+                entries.forEach(function (entry) {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        io.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.1, rootMargin: '0px 0px -28px 0px' });
+            revealEls.forEach(function (el) { io.observe(el); });
+        } else {
+            revealEls.forEach(function (el) { el.classList.add('visible'); });
+        }
+    }());
+    </script>
+</body>
+</html>

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>お問い合わせ｜スマホ教室・AI教室 西都市 - TERACO.LABO</title>
-    <meta name="description" content="TERACO.LABOへのお問い合わせ・体験会のお申し込みはこちらから。スマホ教室・AI教室・外部講師・映像制作・レンタルスペース、いずれもお気軽にご相談ください。">
+    <meta name="description" content="TERACO.LABOへのお問い合わせ・体験会のお申し込みはこちらから。スマホ教室・AI教室・個人レッスン・外部講師・映像制作、いずれもお気軽にご相談ください。">
     <link rel="canonical" href="https://teraco-labo.com/contact.html">
 
     <!-- OGP -->
@@ -51,7 +51,7 @@
                     <ul class="nav-menu" id="nav-menu" role="menubar">
                         <li role="none"><a href="index.html#services" role="menuitem">教室のご案内</a></li>
                         <li role="none"><a href="instructor.html" role="menuitem">法人・行政の方</a></li>
-                        <li role="none"><a href="rental.html" role="menuitem">スペース貸出</a></li>
+                        <li role="none"><a href="lesson.html" role="menuitem">個人レッスン</a></li>
                         <li role="none"><a href="index.html#about" role="menuitem">代表紹介</a></li>
                         <li role="none"><a href="index.html#faq" role="menuitem">よくある質問</a></li>
                     </ul>
@@ -129,9 +129,9 @@
                                     <div class="service-description">プロモーション動画制作</div>
                                 </label>
                                 <label class="service-option">
-                                    <input type="radio" name="service" value="rental" required>
-                                    <div class="service-name">レンタルスペース</div>
-                                    <div class="service-description">会議室・撮影スタジオ</div>
+                                    <input type="radio" name="service" value="lesson" required>
+                                    <div class="service-name">個人レッスン</div>
+                                    <div class="service-description">マンツーマン50分</div>
                                 </label>
                                 <label class="service-option">
                                     <input type="radio" name="service" value="other" required>
@@ -297,64 +297,48 @@
                                 </div>
                             </div>
 
-                            <div id="service-details-rental" class="service-details">
-                                <h4>レンタルスペース 詳細設定</h4>
+                            <div id="service-details-lesson" class="service-details">
+                                <h4>個人レッスン 詳細設定</h4>
                                 <div class="detail-row">
                                     <div class="detail-group">
-                                        <label class="detail-label">利用目的</label>
-                                        <select name="rental-purpose" class="form-select">
+                                        <label class="detail-label">使いたい機器</label>
+                                        <select name="lesson-device" class="form-select">
                                             <option value="">選択してください</option>
-                                            <option value="meeting">会議・打ち合わせ</option>
-                                            <option value="seminar">セミナー・研修</option>
-                                            <option value="workshop">ワークショップ</option>
-                                            <option value="filming">撮影・収録</option>
-                                            <option value="event">イベント開催</option>
-                                            <option value="other">その他</option>
+                                            <option value="smartphone">スマートフォン</option>
+                                            <option value="tablet">タブレット</option>
+                                            <option value="pc">パソコン</option>
+                                            <option value="undecided">まだ決まっていない</option>
                                         </select>
                                     </div>
                                     <div class="detail-group">
-                                        <label class="detail-label">利用人数</label>
-                                        <select name="rental-capacity" class="form-select">
+                                        <label class="detail-label">ご希望の時間帯</label>
+                                        <select name="lesson-timeslot" class="form-select">
                                             <option value="">選択してください</option>
-                                            <option value="5">5名</option>
-                                            <option value="6">6名</option>
-                                            <option value="7">7名</option>
-                                            <option value="8">8名</option>
+                                            <option value="morning">午前（10:00〜12:00）</option>
+                                            <option value="afternoon">午後（14:00〜17:00）</option>
+                                            <option value="either">どちらでも可</option>
                                         </select>
                                     </div>
                                 </div>
                                 <div class="detail-group">
-                                    <label class="detail-label">利用時間</label>
-                                    <div class="detail-row">
-                                        <div>
-                                            <label class="detail-label" style="font-size:0.8rem;margin-bottom:0.2rem;">開始時間</label>
-                                            <select name="rental-start-time" class="form-select">
-                                                <option value="">選択してください</option>
-                                                <option value="10:00">10:00</option>
-                                                <option value="11:00">11:00</option>
-                                                <option value="12:00">12:00</option>
-                                                <option value="13:00">13:00</option>
-                                                <option value="14:00">14:00</option>
-                                                <option value="15:00">15:00</option>
-                                                <option value="16:00">16:00</option>
-                                                <option value="17:00">17:00</option>
-                                                <option value="18:00">18:00</option>
-                                            </select>
-                                        </div>
-                                        <div>
-                                            <label class="detail-label" style="font-size:0.8rem;margin-bottom:0.2rem;">終了時間</label>
-                                            <select name="rental-end-time" class="form-select">
-                                                <option value="">選択してください</option>
-                                                <option value="11:00">11:00</option>
-                                                <option value="12:00">12:00</option>
-                                                <option value="13:00">13:00</option>
-                                                <option value="14:00">14:00</option>
-                                                <option value="15:00">15:00</option>
-                                                <option value="16:00">16:00</option>
-                                                <option value="17:00">17:00</option>
-                                                <option value="18:00">18:00</option>
-                                            </select>
-                                        </div>
+                                    <label class="detail-label">ご希望の曜日（複数選択可）</label>
+                                    <div class="checkbox-grid">
+                                        <label><input type="checkbox" name="lesson-days" value="tuesday">火曜日</label>
+                                        <label><input type="checkbox" name="lesson-days" value="thursday">木曜日</label>
+                                        <label><input type="checkbox" name="lesson-days" value="consult">相談したい</label>
+                                    </div>
+                                </div>
+                                <div class="detail-group">
+                                    <label class="detail-label">相談したいこと（複数選択可）</label>
+                                    <div class="checkbox-grid">
+                                        <label><input type="checkbox" name="lesson-topics" value="basic-operation">基本操作</label>
+                                        <label><input type="checkbox" name="lesson-topics" value="line">LINE・連絡</label>
+                                        <label><input type="checkbox" name="lesson-topics" value="photo">写真・動画</label>
+                                        <label><input type="checkbox" name="lesson-topics" value="payment">キャッシュレス</label>
+                                        <label><input type="checkbox" name="lesson-topics" value="ai">AI・ChatGPT</label>
+                                        <label><input type="checkbox" name="lesson-topics" value="trouble">トラブル解決</label>
+                                        <label><input type="checkbox" name="lesson-topics" value="setting">設定・機種変更</label>
+                                        <label><input type="checkbox" name="lesson-topics" value="other">その他</label>
                                     </div>
                                 </div>
                             </div>
@@ -547,31 +531,16 @@
                     if (purpose) details += `使用目的: ${purpose}\n`;
                     break;
 
-                case 'rental':
-                    const rentalPurpose = getSelectValue('rental-purpose');
-                    const capacity = getSelectValue('rental-capacity');
-                    const startTime = getSelectValue('rental-start-time');
-                    const endTime = getSelectValue('rental-end-time');
+                case 'lesson':
+                    const lessonDevice = getSelectValue('lesson-device');
+                    const lessonTimeslot = getSelectValue('lesson-timeslot');
+                    const lessonDays = getCheckboxValues('lesson-days');
+                    const lessonTopics = getCheckboxValues('lesson-topics');
 
-                    if (rentalPurpose) details += `利用目的: ${rentalPurpose}\n`;
-                    if (capacity) details += `利用人数: ${capacity}\n`;
-                    if (startTime && endTime) {
-                        details += `利用時間: ${startTime}〜${endTime}\n`;
-                        // 概算料金試算（1時間あたり：最大(3,000円, 600円×人数)）
-                        const persons = parseInt(String(capacity).replace(/\D/g, '')) || 5;
-                        const hourly = Math.max(3000, persons * 600);
-                        const toMinutes = t => { const [h,m] = String(t).split(':').map(Number); return h*60 + (m||0); };
-                        const diffMin = Math.max(0, toMinutes(endTime) - toMinutes(startTime));
-                        const hours = Math.ceil(diffMin / 60); // 端数は切り上げ
-                        if (hours > 0) {
-                            const total = hourly * hours;
-                            details += `概算料金: ${total.toLocaleString('ja-JP')}円（${hours}時間、1時間あたり${hourly.toLocaleString('ja-JP')}円／税込）\n`;
-                        }
-                    } else if (startTime) {
-                        details += `開始時間: ${startTime}\n`;
-                    } else if (endTime) {
-                        details += `終了時間: ${endTime}\n`;
-                    }
+                    if (lessonDevice) details += `使いたい機器: ${lessonDevice}\n`;
+                    if (lessonTimeslot) details += `ご希望の時間帯: ${lessonTimeslot}\n`;
+                    if (lessonDays.length > 0) details += `ご希望の曜日: ${lessonDays.join(', ')}\n`;
+                    if (lessonTopics.length > 0) details += `相談したいこと: ${lessonTopics.join(', ')}\n`;
                     break;
 
                 case 'other':
@@ -728,7 +697,7 @@
                     'ai': 'パソコンAI教室',
                     'instructor': '外部講師',
                     'video': '映像制作',
-                    'rental': 'レンタルスペース',
+                    'lesson': '個人レッスン',
                     'other': 'その他お問い合わせ'
                 };
 
