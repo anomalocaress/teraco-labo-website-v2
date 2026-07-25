@@ -325,7 +325,7 @@
     .business-head { text-align: center; margin-bottom: 30px; }
     .business-head .tl-title { color: var(--tl-text); }
     .business-head p { color: var(--body-text); font-size: 14px; margin-top: 8px; }
-    .business-grid { display: grid; grid-template-columns: 1.35fr 1fr 1fr; gap: 18px; align-items: stretch; }
+    .business-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; align-items: stretch; }
     .business-card {
         min-height: 100%; border-radius: 12px; overflow: hidden;
         color: var(--tl-text); text-decoration: none; background: var(--white);
@@ -338,14 +338,13 @@
         transition: transform .35s var(--ease);
     }
     .business-card--featured { border: 2px solid var(--forest); }
-    .business-card--featured img { height: 205px; }
     .business-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-card-hover); border-color: #c9d8ce; }
     .business-card:hover img { transform: scale(1.035); }
     .business-card:focus-visible { outline: 3px solid var(--forest); outline-offset: 3px; }
     .business-card-body { padding: 22px 22px 24px; width: 100%; display: flex; flex: 1; flex-direction: column; }
     .business-card-label { display: block; color: var(--forest); font-size: 11px; font-weight: 700; letter-spacing: .08em; margin-bottom: 5px; }
     .business-card h3 { color: var(--tl-text); font-size: 19px; font-weight: 700; margin-bottom: 7px; }
-    .business-card--featured h3 { font-family: var(--font-serif); font-size: 23px; }
+    .business-card--featured h3 { font-family: var(--font-serif); font-size: 20px; }
     .business-card p { color: var(--body-text); font-size: 13px; line-height: 1.75; }
     .business-card-link { display: block; color: var(--forest); font-size: 13px; font-weight: 700; margin-top: auto; padding-top: 16px; }
     .business-card-status {
@@ -733,7 +732,7 @@
                     </a>
 
                     <a href="lesson.html" class="svc-card service-card reveal d3" aria-label="個人レッスンの詳細を見る">
-                        <img class="svc-img" src="images/smartphone-class.png" alt="マンツーマンで学ぶ個人レッスン" loading="lazy">
+                        <img class="svc-img" src="images/lesson-oneonone.jpg" alt="タブレットの操作をマンツーマンで教える様子" loading="lazy">
                         <div class="svc-body">
                             <div class="svc-label">個人向け｜マンツーマン</div>
                             <h3>個人レッスン</h3>
@@ -757,7 +756,7 @@
                 </div>
                 <div class="business-grid">
                     <a href="kit.html" class="business-card business-card--featured detail-link reveal d1" aria-label="AI講座 完全実施キットの詳細を見る">
-                        <img src="images/ai-school-clean-v2.jpg" alt="AI講座教材を使った学習環境" loading="lazy">
+                        <img src="images/kit-materials.jpg" alt="AI講座キットの配布資料" loading="lazy">
                         <div class="business-card-body">
                             <span class="business-card-label">学校・塾・自治体向け｜新規事業</span>
                             <span class="business-card-status">2026年9月以降 正式提供予定</span>
